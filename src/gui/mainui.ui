@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainUi</class>
+ <widget class="QWidget" name="MainUi">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1500</width>
+    <height>750</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainUi</string>
+  </property>
+  <widget class="QTextEdit" name="msgRecvTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>760</x>
+     <y>120</y>
+     <width>500</width>
+     <height>250</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="msgSendTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>120</y>
+     <width>500</width>
+     <height>250</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QTextEdit" name="msgReadyToSendTextEdit">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>380</y>
+     <width>500</width>
+     <height>70</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="sendMsgButton">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>460</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>发送消息</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
