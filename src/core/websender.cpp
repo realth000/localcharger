@@ -4,10 +4,10 @@
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 
-WebSender::WebSender(quint16 port, QObject *parent): QObject(parent),
+WebSender::WebSender(QObject *parent): QObject(parent),
       m_socketServer(nullptr)
 {
-    m_socketServer = new QWebSocketServer(QStringLiteral("sad"), QWebSocketServer::SecureMode, this);
+    m_socketServer = new QWebSocketServer(QStringLiteral("sada"), QWebSocketServer::SecureMode, this);
     QSslConfiguration sslConfigure;
     QFile certFile(QStringLiteral(":/config/localhost.cert"));
     QFile keyFile(QStringLiteral(":/config/localhost.key"));
@@ -22,14 +22,16 @@ WebSender::WebSender(quint16 port, QObject *parent): QObject(parent),
     sslConfigure.setPrivateKey(sslKey);
     sslConfigure.setProtocol(QSsl::TlsV1SslV3);
     m_socketServer->setSslConfiguration(sslConfigure);
-    if(m_socketServer->listen(QHostAddress::Any, port)){
-        qDebug() << "SSL Echo Server listening on port" << port;
-        connect(m_socketServer, &QWebSocketServer::newConnection,
-                this, &WebSender::onNewConnection);
-        connect(m_socketServer, &QWebSocketServer::sslErrors,
-                this, &WebSender::onSslErrors);
-    }
+}
 
+WebSender::WebSender(const port_t &port, QObject *parent): WebSender(parent)
+{
+    if(startListenPort(port)){
+        qDebug() << "WebSender: started listening" << port;
+    }
+    else{
+        qDebug() << "WebSender: start failed";
+    }
 }
 
 WebSender::~WebSender()
@@ -38,8 +40,29 @@ WebSender::~WebSender()
     qDeleteAll(m_clientsList);
 }
 
+bool WebSender::isSenderListening() const noexcept
+{
+    return m_socketServer->isListening();
+}
+
+QUrl WebSender::senderUrl() const noexcept
+{
+    return m_socketServer->serverUrl();
+}
+
+port_t WebSender::senderPort() const noexcept
+{
+    return m_socketServer->serverPort();
+}
+
+bool WebSender::start(const port_t &port)
+{
+    return startListenPort(port);
+}
+
 void WebSender::onNewConnection()
 {
+    emit senderConnected();
     qDebug() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
     qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
@@ -49,7 +72,7 @@ void WebSender::onNewConnection()
     m_clientsList << pSocket;
 }
 
-void WebSender::processTextMessage(QString message)
+void WebSender::processTextMessage(const QString &message) const
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
@@ -58,7 +81,7 @@ void WebSender::processTextMessage(QString message)
 
 }
 
-void WebSender::processBinaryMessage(QByteArray message)
+void WebSender::processBinaryMessage(const QByteArray &message) const
 {
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
@@ -68,6 +91,7 @@ void WebSender::processBinaryMessage(QByteArray message)
 
 void WebSender::socketDisconnected()
 {
+    emit senderDisconnected();
     qDebug() << "Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
@@ -82,4 +106,14 @@ void WebSender::onSslErrors(const QList<QSslError> &errors)
     foreach(QSslError error, errors){
         qDebug() << error.errorString();
     }
+}
+
+bool WebSender::startListenPort(const port_t &port)
+{
+    if(m_socketServer->listen(QHostAddress::Any, port)){
+        connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSender::onNewConnection, Qt::UniqueConnection);
+        connect(m_socketServer, &QWebSocketServer::sslErrors, this, &WebSender::onSslErrors, Qt::UniqueConnection);
+        return true;
+    }
+    return false;
 }

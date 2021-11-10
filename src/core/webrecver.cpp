@@ -1,10 +1,46 @@
 ﻿#include "webrecver.h"
 
-WebRecver::WebRecver(const QUrl &url, QObject *parent) : QObject(parent)
+WebRecver::WebRecver(QObject *parent) : QObject(parent)
 {
-    connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected);
-    connect(&m_socket, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors), this, &WebRecver::onSslErrors);
-    m_socket.open(QUrl(url));
+    connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected, Qt::UniqueConnection);
+    connect(&m_socket, &QWebSocket::disconnected, this, &WebRecver::onDisconnected, Qt::UniqueConnection);
+    connect(&m_socket, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors), this, &WebRecver::onSslErrors, Qt::UniqueConnection);
+
+}
+
+WebRecver::WebRecver(const QUrl &url, QObject *parent) : WebRecver(parent)
+{
+    openUrl(url);
+}
+
+WebRecver::~WebRecver()
+{
+    m_socket.close();
+}
+
+QAbstractSocket::SocketState WebRecver::getRecverState() const noexcept
+{
+    return m_socket.state();
+}
+
+QUrl WebRecver::recverUrl() const noexcept
+{
+    return m_socket.requestUrl();
+}
+
+port_t WebRecver::recverPort() const noexcept
+{
+    return m_socket.localPort();
+}
+
+bool WebRecver::start(const QUrl &url)
+{
+    if(!url.isValid()){
+        qDebug() << "Recver start failed: invalid url" << url;
+        return false;
+    }
+    openUrl(url);
+    return true;
 }
 
 void WebRecver::sendMessage(const QString &msg)
@@ -12,17 +48,27 @@ void WebRecver::sendMessage(const QString &msg)
     m_socket.sendTextMessage(msg);
 }
 
+void WebRecver::openUrl(const QUrl &url)
+{
+    m_socket.open(url);
+}
+
 void WebRecver::onConnected()
 {
+    emit recverConnected();
     qDebug() << "WebSocket connected";
     connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived);
+}
+
+void WebRecver::onDisconnected()
+{
+    emit recverDisconnected();
 }
 
 void WebRecver::onTextMessageReceived(QString message)
 {
     qDebug() << "Message received:" << message;
     emit recvedMessage(message);
-
 }
 
 void WebRecver::onSslErrors(const QList<QSslError> &errors)

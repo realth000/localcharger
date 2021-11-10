@@ -16,8 +16,8 @@
   <widget class="QTextEdit" name="msgRecvTextEdit">
    <property name="geometry">
     <rect>
-     <x>760</x>
-     <y>120</y>
+     <x>820</x>
+     <y>240</y>
      <width>500</width>
      <height>250</height>
     </rect>
@@ -27,7 +27,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>120</y>
+     <y>240</y>
      <width>500</width>
      <height>250</height>
     </rect>
@@ -37,7 +37,7 @@
    <property name="geometry">
     <rect>
      <x>240</x>
-     <y>380</y>
+     <y>500</y>
      <width>500</width>
      <height>70</height>
     </rect>
@@ -47,13 +47,91 @@
    <property name="geometry">
     <rect>
      <x>660</x>
-     <y>460</y>
+     <y>580</y>
      <width>80</width>
      <height>30</height>
     </rect>
    </property>
    <property name="text">
     <string>发送消息</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>210</y>
+     <width>90</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sender state:</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="senderStateHintLabel">
+   <property name="geometry">
+    <rect>
+     <x>340</x>
+     <y>210</y>
+     <width>91</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>closed</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="recverStateHintLabel">
+   <property name="geometry">
+    <rect>
+     <x>920</x>
+     <y>210</y>
+     <width>91</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>closed</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>820</x>
+     <y>210</y>
+     <width>90</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Sender state:</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="startSenderPushButton">
+   <property name="geometry">
+    <rect>
+     <x>660</x>
+     <y>210</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>启动</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>1240</x>
+     <y>210</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>启动</string>
    </property>
   </widget>
  </widget>
