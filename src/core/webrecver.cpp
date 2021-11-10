@@ -1,7 +1,5 @@
 ﻿#include "webrecver.h"
 
-#include <QTextDocument>
-
 WebRecver::WebRecver(const QUrl &url, QObject *parent) : QObject(parent)
 {
     connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected);
@@ -22,7 +20,7 @@ void WebRecver::onConnected()
 
 void WebRecver::onTextMessageReceived(QString message)
 {
-    qDebug() << "Message received:" << QTextDocument(message).toRawText();
+    qDebug() << "Message received:" << message;
     emit recvedMessage(message);
 
 }
