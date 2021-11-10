@@ -48,6 +48,8 @@ private:
     WebRecver m_socketRecver;
     port_t m_socketSenderPort;
     QUrl m_socketRecverUrl;
+    SenderState m_socketSenderState;
+    RecverState m_socketRecverState;
 
     void startSender(const port_t &port);
     void updateSenderState(SenderState state);

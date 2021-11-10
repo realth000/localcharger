@@ -8,6 +8,8 @@ MainUi::MainUi(QWidget *parent)
       , ui(new Ui::MainUi)
       , m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT)
       , m_socketRecverUrl(WEBSOCKET_RECVER_URL_DEFAULT)
+      , m_socketSenderState(SenderState::Disconnected)
+      , m_socketRecverState(RecverState::Disconnected)
 {
     ui->setupUi(this);
     initUi();
@@ -42,6 +44,9 @@ MainUi::~MainUi()
 
 void MainUi::on_sendMsgButton_clicked()
 {
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
 #if MSG_SEND_TYPE_HTML
     const QString &msg(ui->msgReadyToSendTextEdit->toHtml());
 #else
