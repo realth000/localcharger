@@ -8,7 +8,7 @@ CONFIG += c++11 no_batch
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-#INCLUDEPATH += src
+INCLUDEPATH += src/include
 
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
@@ -21,7 +21,8 @@ SOURCES += \
 HEADERS += \
     src/core/webrecver.h \
     src/gui/mainui.h \
-    src/core/websender.h
+    src/core/websender.h \
+    src/include/defines.h
 
 FORMS += \
     src/gui/mainui.ui

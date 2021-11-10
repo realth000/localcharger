@@ -1,8 +1,7 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
-
-
 #include <QThread>
+#include "defines.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -30,7 +29,11 @@ MainUi::~MainUi()
 
 void MainUi::on_sendMsgButton_clicked()
 {
+#if MSG_SEND_TYPE_HTML
     const QString &msg(ui->msgReadyToSendTextEdit->toHtml());
+#else
+    const QString &msg(ui->msgReadyToSendTextEdit->toPlainText());
+#endif
     if(msg.isEmpty()){
         return;
     }
