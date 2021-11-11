@@ -36,11 +36,12 @@ private slots:
     void on_sendMsgButton_clicked();
     void recoredRecvedMsg(const QString &msg);
     void on_startSenderPushButton_clicked();
-    void on_pushButton_clicked();
+    void on_startRecverPushButton_clicked();
     void onSenderConnected();
     void onSenderDisconnected();
     void onRecverConnected();
     void onRecverDisconnected();
+    void on_uptSenderWebConfigPushButton_clicked();
 
 private:
     Ui::MainUi *ui;

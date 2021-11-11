@@ -124,7 +124,7 @@ void MainUi::on_startSenderPushButton_clicked()
 }
 
 
-void MainUi::on_pushButton_clicked()
+void MainUi::on_startRecverPushButton_clicked()
 {
     if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
         qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
@@ -132,6 +132,7 @@ void MainUi::on_pushButton_clicked()
     }
     updateRecverState(RecverState::Connecting);
     m_socketRecver.start(m_socketRecverUrl);
+    updateRecverState(RecverState::Connecting);
 }
 
 void MainUi::onSenderConnected()
@@ -152,5 +153,18 @@ void MainUi::onRecverConnected()
 void MainUi::onRecverDisconnected()
 {
     updateRecverState(RecverState::Disconnected);
+}
+
+
+void MainUi::on_uptSenderWebConfigPushButton_clicked()
+{
+    QUrl testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
+    if(!testUrl.isValid()){
+        qDebug() << "invalid url" << testUrl.toString();
+        return;
+    }
+    qDebug() << "update server url to" << testUrl.toString();
+    m_socketRecverUrl = testUrl;
+    m_socketRecver.start(m_socketRecverUrl);
 }
 

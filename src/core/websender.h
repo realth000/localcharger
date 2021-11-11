@@ -28,8 +28,6 @@ public slots:
 
 private slots:
     void onNewConnection();
-    void processTextMessage(const QString &message) const;
-    void processBinaryMessage(const QByteArray &message) const;
     void socketDisconnected();
     void onSslErrors(const QList<QSslError> &errors);
 
