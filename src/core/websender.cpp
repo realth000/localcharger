@@ -72,27 +72,8 @@ void WebSender::onNewConnection()
     qDebug() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
     qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
-    connect(pSocket, &QWebSocket::textMessageReceived, this, &WebSender::processTextMessage);
-    connect(pSocket, &QWebSocket::binaryMessageReceived, this, &WebSender::processBinaryMessage);
     connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected);
     m_clientsList << pSocket;
-}
-
-void WebSender::processTextMessage(const QString &message) const
-{
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if(pClient != nullptr){
-        pClient->sendTextMessage(message);
-    }
-
-}
-
-void WebSender::processBinaryMessage(const QByteArray &message) const
-{
-    QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    if(pClient != nullptr){
-        pClient->sendBinaryMessage(message);
-    }
 }
 
 void WebSender::socketDisconnected()
