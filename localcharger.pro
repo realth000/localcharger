@@ -16,13 +16,19 @@ SOURCES += \
     src/core/main.cpp \
     src/core/webrecver.cpp \
     src/gui/mainui.cpp \
-    src/core/websender.cpp
+    src/core/websender.cpp \
+    src/util/iconinstaller.cpp \
+    src/util/qssinstaller.cpp \
+    src/util/style/proxystyle.cpp
 
 HEADERS += \
     src/core/webrecver.h \
     src/gui/mainui.h \
     src/core/websender.h \
-    src/include/defines.h
+    src/include/defines.h \
+    src/include/iconinstaller.h \
+    src/include/proxystyle.h \
+    src/include/qssinstaller.h
 
 FORMS += \
     src/gui/mainui.ui
@@ -33,4 +39,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 RESOURCES += \
-    src/resource/config.qrc
+    src/resource/config.qrc \
+    src/resource/stylesheet.qrc
