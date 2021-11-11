@@ -60,6 +60,12 @@ bool WebSender::start(const port_t &port)
     return startListenPort(port);
 }
 
+void WebSender::sendMessage(const QString &msg)
+{
+    // TODO: NOW only communicate in the lateset socket connection.
+    m_clientsList.constLast()->sendTextMessage(msg);
+}
+
 void WebSender::onNewConnection()
 {
     emit senderConnected();

@@ -55,7 +55,7 @@ void MainUi::on_sendMsgButton_clicked()
     if(msg.isEmpty()){
         return;
     }
-    m_socketRecver.sendMessage(msg);
+    m_socketSender.sendMessage(msg);
     ui->msgReadyToSendTextEdit->clear();
     ui->msgSendTextEdit->append(msg);
 }
