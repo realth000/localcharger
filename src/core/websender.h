@@ -16,7 +16,7 @@ public:
     explicit WebSender(const port_t &port, QObject *parent = nullptr);
     ~WebSender() override;
     bool isSenderListening() const noexcept;
-    QUrl senderUrl() const noexcept;
+    url_t senderUrl() const noexcept;
     port_t senderPort() const noexcept;
     bool start(const port_t &port);
 signals:

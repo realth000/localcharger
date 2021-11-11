@@ -158,7 +158,7 @@ void MainUi::onRecverDisconnected()
 
 void MainUi::on_uptSenderWebConfigPushButton_clicked()
 {
-    QUrl testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
+    url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
     if(!testUrl.isValid()){
         qDebug() << "invalid url" << testUrl.toString();
         return;
