@@ -10,6 +10,8 @@ MainUi::MainUi(QWidget *parent)
       , m_socketRecverUrl(WEBSOCKET_RECVER_URL_DEFAULT)
       , m_socketSenderState(SenderState::Disconnected)
       , m_socketRecverState(RecverState::Disconnected)
+      , m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION))))
+      , m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX))
 {
     ui->setupUi(this);
     initUi();
@@ -20,6 +22,8 @@ void MainUi::initUi()
 {
     ui->msgSendTextEdit->setReadOnly(true);
     ui->msgRecvTextEdit->setReadOnly(true);
+    ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
+    ui->senderPortLineEdit->setValidator(m_portTypeValidator);
 }
 
 void MainUi::initConnections()
@@ -39,6 +43,8 @@ void MainUi::initConnections()
 MainUi::~MainUi()
 {
     delete ui;
+    delete m_ipTypeValidator;
+    delete m_portTypeValidator;
 }
 
 
