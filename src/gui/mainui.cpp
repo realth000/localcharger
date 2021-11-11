@@ -3,8 +3,8 @@
 #include <QThread>
 #include "defines.h"
 #include "iconinstaller.h"
-#include "proxystyle.h"
 #include "qssinstaller.h"
+#include "titlebar.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -15,6 +15,7 @@ MainUi::MainUi(QWidget *parent)
       , m_socketRecverState(RecverState::Disconnected)
       , m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION))))
       , m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX))
+      , m_pushButtonStyle(new PushButtonStyle)
 {
     ui->setupUi(this);
     initUi();
@@ -23,11 +24,35 @@ MainUi::MainUi(QWidget *parent)
 
 void MainUi::initUi()
 {
+    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet.css").arg(this->objectName(), "rgb(55,85,100)", "rgb(51,51,51)"));
+
+    IconInstaller::installPushButtonIcon(ui->startSenderPushButton, ":/pic/start_connect.png");
+    IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
+    IconInstaller::installPushButtonIcon(ui->uptSenderWebConfigPushButton, ":/pic/reload.png");
+    IconInstaller::installPushButtonIcon(ui->sendMsgButton, ":/pic/send.png");
+    ui->startSenderPushButton->setStyle(m_pushButtonStyle);
+    ui->startRecverPushButton->setStyle(m_pushButtonStyle);
+    ui->uptSenderWebConfigPushButton->setStyle(m_pushButtonStyle);
+    ui->sendMsgButton->setStyle(m_pushButtonStyle);
+
+    // Title bar style
+    ui->titleBar->setFixedWidth(this->width());
+    ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
+    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
+    ui->titleBar->setUseGradient(true);
+    ui->titleBar->initUi(TitleBarMode::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
+                         "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
+    ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
+
     ui->msgSendTextEdit->setReadOnly(true);
     ui->msgRecvTextEdit->setReadOnly(true);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
     ui->senderPortLineEdit->setValidator(m_portTypeValidator);
+
+    updateSenderState(SenderState::Disconnected);
+    updateRecverState(RecverState::Disconnected);
 }
 
 void MainUi::initConnections()
@@ -49,6 +74,7 @@ MainUi::~MainUi()
     delete ui;
     delete m_ipTypeValidator;
     delete m_portTypeValidator;
+    delete m_pushButtonStyle;
 }
 
 
@@ -96,14 +122,17 @@ void MainUi::updateSenderState(SenderState state)
     switch (state) {
     case SenderState::Disconnected:
         ui->senderStateHintLabel->setText("closed");
+        ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Disconnected;
         break;
     case SenderState::Listening:
         ui->senderStateHintLabel->setText("listening");
+        ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Listening;
         break;
     case SenderState::Connected:
         ui->senderStateHintLabel->setText("connected");
+        ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Connected;
         break;
     default:
@@ -116,12 +145,15 @@ void MainUi::updateRecverState(RecverState state)
     switch (state) {
     case RecverState::Disconnected:
         ui->recverStateHintLabel->setText("closed");
+        ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connecting:
         ui->recverStateHintLabel->setText("connecting");
+        ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connected:
         ui->recverStateHintLabel->setText("connected");
+        ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     default:
         break;
