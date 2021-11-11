@@ -1,0 +1,13 @@
+<RCC>
+    <qresource prefix="/">
+        <file>pic/LocalCharger.ico</file>
+        <file>pic/close.png</file>
+        <file>pic/connected.png</file>
+        <file>pic/connecting.png</file>
+        <file>pic/disconnected.png</file>
+        <file>pic/reload.png</file>
+        <file>pic/restart.png</file>
+        <file>pic/send.png</file>
+        <file>pic/start_connect.png</file>
+    </qresource>
+</RCC>
