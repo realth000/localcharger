@@ -48,7 +48,7 @@ private:
     WebSender m_socketSender;
     WebRecver m_socketRecver;
     port_t m_socketSenderPort;
-    QUrl m_socketRecverUrl;
+    url_t m_socketRecverUrl;
     SenderState m_socketSenderState;
     RecverState m_socketRecverState;
 

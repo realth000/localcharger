@@ -7,10 +7,10 @@
 WebSender::WebSender(QObject *parent): QObject(parent),
       m_socketServer(nullptr)
 {
-    m_socketServer = new QWebSocketServer(QStringLiteral("sada"), QWebSocketServer::SecureMode, this);
+    m_socketServer = new QWebSocketServer(QStringLiteral(WEBSOCKET_CONFIG_SENDER_SOCKET_NAME), QWebSocketServer::SecureMode, this);
     QSslConfiguration sslConfigure;
-    QFile certFile(QStringLiteral(":/config/localhost.cert"));
-    QFile keyFile(QStringLiteral(":/config/localhost.key"));
+    QFile certFile(QStringLiteral(WEBSOCKET_CONFIG_CERTFILT_PATH));
+    QFile keyFile(QStringLiteral(WEBSOCKET_CONFIG_KEYFILE_PATH));
     certFile.open(QIODevice::ReadOnly);
     keyFile.open(QIODevice::ReadOnly);
     QSslCertificate certificate(&certFile, QSsl::Pem);
@@ -26,12 +26,8 @@ WebSender::WebSender(QObject *parent): QObject(parent),
 
 WebSender::WebSender(const port_t &port, QObject *parent): WebSender(parent)
 {
-    if(startListenPort(port)){
-        qDebug() << "WebSender: started listening" << port;
-    }
-    else{
-        qDebug() << "WebSender: start failed";
-    }
+    startListenPort(port) ? qDebug() << "WebSender: started listening" << port
+                          : qDebug() << "WebSender: start failed";
 }
 
 WebSender::~WebSender()
@@ -45,7 +41,7 @@ bool WebSender::isSenderListening() const noexcept
     return m_socketServer->isListening();
 }
 
-QUrl WebSender::senderUrl() const noexcept
+url_t WebSender::senderUrl() const noexcept
 {
     return m_socketServer->serverUrl();
 }
@@ -97,10 +93,10 @@ void WebSender::onSslErrors(const QList<QSslError> &errors)
 
 bool WebSender::startListenPort(const port_t &port)
 {
-    if(m_socketServer->listen(QHostAddress::Any, port)){
-        connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSender::onNewConnection, Qt::UniqueConnection);
-        connect(m_socketServer, &QWebSocketServer::sslErrors, this, &WebSender::onSslErrors, Qt::UniqueConnection);
-        return true;
+    if(!m_socketServer->listen(QHostAddress::Any, port)){
+        return false;
     }
-    return false;
+    connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSender::onNewConnection, Qt::UniqueConnection);
+    connect(m_socketServer, &QWebSocketServer::sslErrors, this, &WebSender::onSslErrors, Qt::UniqueConnection);
+    return true;
 }

@@ -8,7 +8,7 @@ WebRecver::WebRecver(QObject *parent) : QObject(parent)
 
 }
 
-WebRecver::WebRecver(const QUrl &url, QObject *parent) : WebRecver(parent)
+WebRecver::WebRecver(const url_t &url, QObject *parent) : WebRecver(parent)
 {
     openUrl(url);
 }
@@ -23,7 +23,7 @@ QAbstractSocket::SocketState WebRecver::getRecverState() const noexcept
     return m_socket.state();
 }
 
-QUrl WebRecver::recverUrl() const noexcept
+url_t WebRecver::recverUrl() const noexcept
 {
     return m_socket.requestUrl();
 }
@@ -33,7 +33,7 @@ port_t WebRecver::recverPort() const noexcept
     return m_socket.localPort();
 }
 
-bool WebRecver::start(const QUrl &url)
+bool WebRecver::start(const url_t &url)
 {
     if(!url.isValid()){
         qDebug() << "Recver start failed: invalid url" << url;
@@ -48,7 +48,7 @@ void WebRecver::sendMessage(const QString &msg)
     m_socket.sendTextMessage(msg);
 }
 
-void WebRecver::openUrl(const QUrl &url)
+void WebRecver::openUrl(const url_t &url)
 {
     m_socket.open(url);
 }
