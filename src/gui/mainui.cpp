@@ -86,12 +86,15 @@ void MainUi::updateSenderState(SenderState state)
     switch (state) {
     case SenderState::Disconnected:
         ui->senderStateHintLabel->setText("closed");
+        m_socketSenderState = SenderState::Disconnected;
         break;
     case SenderState::Listening:
         ui->senderStateHintLabel->setText("listening");
+        m_socketSenderState = SenderState::Listening;
         break;
     case SenderState::Connected:
         ui->senderStateHintLabel->setText("connected");
+        m_socketSenderState = SenderState::Connected;
         break;
     default:
         break;
