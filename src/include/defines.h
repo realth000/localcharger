@@ -5,6 +5,10 @@
 
 #define APP_NAME "LocalCharger"
 
+#define TITLEBAR_TITLETEXT "LocalCharger"
+#define TITLEBAR_TITLEICON ":/pic/LocalCharger.ico"
+#define TITLEBAR_CLOSEICON ":/pic/close.png"
+
 #define MSG_SEND_TYPE_HTML 0
 
 #define WEBSOCKET_SENDER_PORT_DEFAULT 1234
@@ -20,5 +24,7 @@
 
 using url_t = QUrl;
 using port_t = quint16;
+
+
 
 #endif // DEFINES_H

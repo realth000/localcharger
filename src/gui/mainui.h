@@ -5,6 +5,7 @@
 #include <QtGui/QRegularExpressionValidator>
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
+#include "proxystyle.h"
 
 QT_BEGIN_NAMESPACE
     namespace Ui { class MainUi; }
@@ -54,6 +55,9 @@ private:
     RecverState m_socketRecverState;
     QRegularExpressionValidator *m_ipTypeValidator;
     QIntValidator *m_portTypeValidator;
+
+    // styles
+    PushButtonStyle *m_pushButtonStyle;
 
     void startSender(const port_t &port);
     void updateSenderState(SenderState state);
