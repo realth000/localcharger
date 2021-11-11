@@ -23,6 +23,9 @@ signals:
     void senderConnected();
     void senderDisconnected();
 
+public slots:
+    void sendMessage(const QString &msg);
+
 private slots:
     void onNewConnection();
     void processTextMessage(const QString &message) const;
