@@ -2,8 +2,10 @@
 #define MAINUI_H
 
 #include <QtWidgets/QWidget>
+#include <QtGui/QRegularExpressionValidator>
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
+#include "proxystyle.h"
 
 QT_BEGIN_NAMESPACE
     namespace Ui { class MainUi; }
@@ -14,17 +16,51 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
+    enum class SenderState{
+        Disconnected = 0,
+        Listening,
+        Connected
+    };
+    enum class RecverState{
+        Disconnected = 0,
+        Connecting,
+        Connected
+    };
+
+    Q_ENUM(SenderState)
+
     explicit MainUi(QWidget *parent = nullptr);
     void initUi();
+    void initConnections();
     ~MainUi();
 
 private slots:
     void on_sendMsgButton_clicked();
     void recoredRecvedMsg(const QString &msg);
+    void on_startSenderPushButton_clicked();
+    void on_startRecverPushButton_clicked();
+    void onSenderConnected();
+    void onSenderDisconnected();
+    void onRecverConnected();
+    void onRecverDisconnected();
+    void on_uptSenderWebConfigPushButton_clicked();
 
 private:
     Ui::MainUi *ui;
-    WebSender sender;
-    WebRecver recver;
+    WebSender m_socketSender;
+    WebRecver m_socketRecver;
+    port_t m_socketSenderPort;
+    url_t m_socketRecverUrl;
+    SenderState m_socketSenderState;
+    RecverState m_socketRecverState;
+    QRegularExpressionValidator *m_ipTypeValidator;
+    QIntValidator *m_portTypeValidator;
+
+    // styles
+    PushButtonStyle *m_pushButtonStyle;
+
+    void startSender(const port_t &port);
+    void updateSenderState(SenderState state);
+    void updateRecverState(RecverState state);
 };
 #endif // MAINUI_H
