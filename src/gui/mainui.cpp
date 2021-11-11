@@ -2,6 +2,9 @@
 #include "ui_mainui.h"
 #include <QThread>
 #include "defines.h"
+#include "iconinstaller.h"
+#include "proxystyle.h"
+#include "qssinstaller.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent)
@@ -20,6 +23,7 @@ MainUi::MainUi(QWidget *parent)
 
 void MainUi::initUi()
 {
+    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet.css").arg(this->objectName(), "rgb(55,85,100)", "rgb(51,51,51)"));
     ui->msgSendTextEdit->setReadOnly(true);
     ui->msgRecvTextEdit->setReadOnly(true);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
