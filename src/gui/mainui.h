@@ -2,6 +2,7 @@
 #define MAINUI_H
 
 #include <QtWidgets/QWidget>
+#include <QtGui/QRegularExpressionValidator>
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
 
@@ -51,6 +52,8 @@ private:
     url_t m_socketRecverUrl;
     SenderState m_socketSenderState;
     RecverState m_socketRecverState;
+    QRegularExpressionValidator *m_ipTypeValidator;
+    QIntValidator *m_portTypeValidator;
 
     void startSender(const port_t &port);
     void updateSenderState(SenderState state);
