@@ -248,8 +248,8 @@
   <widget class="QPushButton" name="sendFilePushButton">
    <property name="geometry">
     <rect>
-     <x>510</x>
-     <y>640</y>
+     <x>170</x>
+     <y>590</y>
      <width>100</width>
      <height>40</height>
     </rect>

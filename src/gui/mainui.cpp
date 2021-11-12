@@ -114,6 +114,7 @@ void MainUi::startSender(const port_t &port)
 {
     if(m_socketSender.isSenderListening()){
         qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
+        updateSenderState(SenderState::Listening);
         return;
     }
     if(m_socketSender.start(port)){
@@ -209,12 +210,17 @@ void MainUi::onRecverDisconnected()
 
 void MainUi::on_uptSenderWebConfigPushButton_clicked()
 {
+    if(ui->senderUrlLineEdit->text().isEmpty() || ui->senderPortLineEdit->text().isEmpty()){
+        return;
+    }
     url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
     if(!testUrl.isValid()){
         qDebug() << "invalid url" << testUrl.toString();
         return;
     }
     qDebug() << "update server url to" << testUrl.toString();
+    m_socketRecver.stop();
+    updateRecverState(RecverState::Connecting);
     m_socketRecverUrl = testUrl;
     m_socketRecver.start(m_socketRecverUrl);
 }
