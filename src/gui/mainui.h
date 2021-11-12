@@ -35,7 +35,7 @@ public:
     ~MainUi();
 
 private slots:
-    void on_sendMsgButton_clicked();
+    void on_sendMsgPushButton_clicked();
     void recoredRecvedMsg(const QString &msg);
     void on_startSenderPushButton_clicked();
     void on_startRecverPushButton_clicked();
@@ -44,6 +44,7 @@ private slots:
     void onRecverConnected();
     void onRecverDisconnected();
     void on_uptSenderWebConfigPushButton_clicked();
+    void on_sendFilePushButton_clicked();
 
 private:
     Ui::MainUi *ui;

@@ -1,14 +1,16 @@
 ﻿#include "webrecver.h"
+#include "core/jsonparser.h"
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 
-WebRecver::WebRecver(QObject *parent) : QObject(parent)
+WebRecver::WebRecver(QObject *parent, QString fileSavePath) : QObject(parent), m_fileSavePath(fileSavePath)
 {
     connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected, Qt::UniqueConnection);
     connect(&m_socket, &QWebSocket::disconnected, this, &WebRecver::onDisconnected, Qt::UniqueConnection);
     connect(&m_socket, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors), this, &WebRecver::onSslErrors, Qt::UniqueConnection);
-
 }
 
-WebRecver::WebRecver(const url_t &url, QObject *parent) : WebRecver(parent)
+WebRecver::WebRecver(const url_t &url, QObject *parent, QString fileSavePath) : WebRecver(parent, fileSavePath)
 {
     openUrl(url);
 }
@@ -43,6 +45,11 @@ bool WebRecver::start(const url_t &url)
     return true;
 }
 
+void WebRecver::setFileSavePath(QString path)
+{
+    m_fileSavePath = path;
+}
+
 void WebRecver::sendMessage(const QString &msg)
 {
     m_socket.sendTextMessage(msg);
@@ -58,6 +65,7 @@ void WebRecver::onConnected()
     emit recverConnected();
     qDebug() << "WebSocket connected";
     connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived);
+    connect(&m_socket, &QWebSocket::binaryMessageReceived, this, &WebRecver::onBinaryMessageReceived);
 }
 
 void WebRecver::onDisconnected()
@@ -67,8 +75,22 @@ void WebRecver::onDisconnected()
 
 void WebRecver::onTextMessageReceived(QString message)
 {
-    qDebug() << "Message received:" << message;
+    qDebug() << "text message received:" << message;
     emit recvedMessage(message);
+}
+
+void WebRecver::onBinaryMessageReceived(QByteArray message)
+{
+    qDebug() << "binary message received";
+    const int messageType = QString::fromUtf8(message.left(10)).toInt();
+
+    switch (messageType) {
+    case WebSocketBinaryMessageType::SingleFile:
+        saveSingleFile(message);
+        break;
+    default:
+        break;
+    }
 }
 
 void WebRecver::onSslErrors(const QList<QSslError> &errors)
@@ -80,4 +102,41 @@ void WebRecver::onSslErrors(const QList<QSslError> &errors)
         qDebug() << error.errorString();
     }
     m_socket.ignoreSslErrors();
+}
+
+WebSocketBinaryMessageType WebRecver::parseBinaryMessageType(const QByteArray &message)
+{
+    const int messageType = QString::fromUtf8(message.left(WEBSOCKET_MESSAGETYPE_LENGTH)).toInt();
+    switch (messageType) {
+    case WebSocketBinaryMessageType::SingleFile:
+        return WebSocketBinaryMessageType::SingleFile;
+    default:
+        return WebSocketBinaryMessageType();
+    }
+
+}
+
+/*
+ * messageArray:
+ * MessageType          10bytes
+ * FileInfoArrayLength  8bytes (qint64 = qlonglong)
+ * FileInfoArray        FileInfoArrayLength bytes
+ * FileData             FileInfoArray.m_fileSize
+ *
+ */
+void WebRecver::saveSingleFile(const QByteArray &message)
+{
+    const int fileInfoArrayLength = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH).toInt();
+    const QByteArray fileInfoArray = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH, fileInfoArrayLength);
+    WebSocketFileInfo fileInfo = JsonParser::parseFileInfoFromArray(fileInfoArray);
+    qDebug() << fileInfo.m_fileID << fileInfo.m_fileName << fileInfo.m_fileSize << fileInfo.m_fileChkSum;
+    QFile file(m_fileSavePath + NATIVE_PATH_SEP + fileInfo.m_fileName);
+    if(!file.open(QIODevice::WriteOnly)){
+        qDebug() << "WebRecver can't save file not open" << QFileInfo(file).absoluteFilePath();
+        return;
+    }
+    const qint64 fileWriteSize = file.write(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH - WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH - fileInfoArrayLength));
+    file.close();
+    qDebug() << "WebSocket: write file" << QFileInfo(file).absoluteFilePath() << fileWriteSize;
+    emit recvedMessage(QString("File recvied: %1 (%2 bytes)").arg(QFileInfo(file).fileName(), QString::number(fileInfo.m_fileSize)));
 }

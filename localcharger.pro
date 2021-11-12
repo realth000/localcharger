@@ -8,25 +8,29 @@ CONFIG += c++11 no_batch
 # In order to do so, uncomment the following line.
 #DEFINES += QT_DISABLE_DEPRECATED_BEFORE=0x060000    # disables all the APIs deprecated before Qt 6.0.0
 
-INCLUDEPATH += src/include
+INCLUDEPATH += src src/include
 
+VERSION = 0.2.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"
 RC_ICONS = "src/resource/pic/LocalCharger.ico"
 
 SOURCES += \
+    src/core/jsonparser.cpp \
     src/core/main.cpp \
     src/core/webrecver.cpp \
     src/gui/mainui.cpp \
     src/core/websender.cpp \
     src/utils/iconinstaller.cpp \
     src/utils/qssinstaller.cpp \
+    src/utils/randomgenerator.cpp \
     src/utils/style/proxystyle.cpp \
     src/utils/widget/messageboxexx.cpp \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
+    src/core/jsonparser.h \
     src/core/webrecver.h \
     src/gui/mainui.h \
     src/core/websender.h \
@@ -35,7 +39,8 @@ HEADERS += \
     src/include/messageboxexx.h \
     src/include/proxystyle.h \
     src/include/qssinstaller.h \
-    src/include/titlebar.h
+    src/include/titlebar.h \
+    src/utils/randomgenerator.h
 
 FORMS += \
     src/gui/mainui.ui \
