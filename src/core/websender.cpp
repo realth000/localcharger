@@ -62,6 +62,11 @@ void WebSender::sendMessage(const QString &msg)
     m_clientsList.constLast()->sendTextMessage(msg);
 }
 
+void WebSender::sendFile(const QByteArray &fileDataArray)
+{
+    m_clientsList.constLast()->sendBinaryMessage(fileDataArray);
+}
+
 void WebSender::onNewConnection()
 {
     emit senderConnected();

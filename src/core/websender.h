@@ -25,6 +25,7 @@ signals:
 
 public slots:
     void sendMessage(const QString &msg);
+    void sendFile(const QByteArray &fileDataArray);
 
 private slots:
     void onNewConnection();

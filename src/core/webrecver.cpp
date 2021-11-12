@@ -58,6 +58,7 @@ void WebRecver::onConnected()
     emit recverConnected();
     qDebug() << "WebSocket connected";
     connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived);
+    connect(&m_socket, &QWebSocket::binaryMessageReceived, this, &WebRecver::onBinaryMessageReceived);
 }
 
 void WebRecver::onDisconnected()
@@ -68,6 +69,12 @@ void WebRecver::onDisconnected()
 void WebRecver::onTextMessageReceived(QString message)
 {
     qDebug() << "Message received:" << message;
+    emit recvedMessage(message);
+}
+
+void WebRecver::onBinaryMessageReceived(QByteArray message)
+{
+    qDebug() << message;
     emit recvedMessage(message);
 }
 

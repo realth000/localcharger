@@ -1,6 +1,7 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
-#include <QThread>
+#include <QtCore/QThread>
+#include <QtWidgets/QFileDialog>
 #include "defines.h"
 #include "iconinstaller.h"
 #include "qssinstaller.h"
@@ -31,11 +32,11 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->startSenderPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->uptSenderWebConfigPushButton, ":/pic/reload.png");
-    IconInstaller::installPushButtonIcon(ui->sendMsgButton, ":/pic/send.png");
+    IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
     ui->uptSenderWebConfigPushButton->setStyle(m_pushButtonStyle);
-    ui->sendMsgButton->setStyle(m_pushButtonStyle);
+    ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
@@ -78,7 +79,7 @@ MainUi::~MainUi()
 }
 
 
-void MainUi::on_sendMsgButton_clicked()
+void MainUi::on_sendMsgPushButton_clicked()
 {
     if(m_socketSenderState != SenderState::Connected){
         return;
@@ -208,5 +209,29 @@ void MainUi::on_uptSenderWebConfigPushButton_clicked()
     qDebug() << "update server url to" << testUrl.toString();
     m_socketRecverUrl = testUrl;
     m_socketRecver.start(m_socketRecverUrl);
+}
+
+
+void MainUi::on_sendFilePushButton_clicked()
+{
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
+    QString filePath = QFileDialog::getOpenFileName(this, "发送文件", QCoreApplication::applicationFilePath());
+    if(filePath.isEmpty()){
+        return;
+    }
+    QFile fileToSend(filePath);
+    if(!fileToSend.exists()){
+        qDebug() << "file not exists:" << filePath;
+        return;
+    }
+    if(!fileToSend.open(QIODevice::ReadOnly)){
+        qDebug() << "can not open file" << filePath;
+        return;
+    }
+    m_socketSender.sendFile(fileToSend.readAll());
+    fileToSend.close();
+    qDebug() << "send file finish:" << filePath;
 }
 
