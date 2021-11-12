@@ -12,7 +12,7 @@ QString RandomGenerator::generateFromString(const int &length, const QString &sr
     }
     QString retString;
     retString.resize(length);
-#if QT_VERSION >= QT_VERSION_CHECK(5,15,0)
+#if QT_VERSION >= QT_VERSION_CHECK(5,10,0)
     for(int i = 0; i < length; i++){
         int len = QRandomGenerator::securelySeeded().bounded(0,srcString.length());
         retString[i] = srcString.at(len);

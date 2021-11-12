@@ -20,6 +20,7 @@ public:
     url_t recverUrl() const noexcept;
     port_t recverPort() const noexcept;
     bool start(const url_t &url);
+    void stop();
     void setFileSavePath(QString path);
 
 signals:

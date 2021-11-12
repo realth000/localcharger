@@ -45,6 +45,12 @@ bool WebRecver::start(const url_t &url)
     return true;
 }
 
+void WebRecver::stop()
+{
+    m_socket.abort();
+    m_socket.close();
+}
+
 void WebRecver::setFileSavePath(QString path)
 {
     m_fileSavePath = path;
@@ -52,6 +58,7 @@ void WebRecver::setFileSavePath(QString path)
 
 void WebRecver::sendMessage(const QString &msg)
 {
+    qDebug() << "send";
     m_socket.sendTextMessage(msg);
 }
 
@@ -64,8 +71,8 @@ void WebRecver::onConnected()
 {
     emit recverConnected();
     qDebug() << "WebSocket connected";
-    connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived);
-    connect(&m_socket, &QWebSocket::binaryMessageReceived, this, &WebRecver::onBinaryMessageReceived);
+    connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived, Qt::UniqueConnection);
+    connect(&m_socket, &QWebSocket::binaryMessageReceived, this, &WebRecver::onBinaryMessageReceived, Qt::UniqueConnection);
 }
 
 void WebRecver::onDisconnected()
