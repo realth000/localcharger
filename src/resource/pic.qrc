@@ -9,5 +9,6 @@
         <file>pic/restart.png</file>
         <file>pic/send.png</file>
         <file>pic/start_connect.png</file>
+        <file>pic/send_file.png</file>
     </qresource>
 </RCC>

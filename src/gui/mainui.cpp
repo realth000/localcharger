@@ -8,19 +8,21 @@
 #include "titlebar.h"
 
 MainUi::MainUi(QWidget *parent)
-    : QWidget(parent)
-      , ui(new Ui::MainUi)
-      , m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT)
-      , m_socketRecverUrl(WEBSOCKET_RECVER_URL_DEFAULT)
-      , m_socketSenderState(SenderState::Disconnected)
-      , m_socketRecverState(RecverState::Disconnected)
-      , m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION))))
-      , m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX))
-      , m_pushButtonStyle(new PushButtonStyle)
+    : QWidget(parent),
+      ui(new Ui::MainUi),
+      m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
+      m_socketRecverUrl(QStringLiteral(WEBSOCKET_RECVER_URL_DEFAULT)),
+      m_socketSenderState(SenderState::Disconnected),
+      m_socketRecverState(RecverState::Disconnected),
+      m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
+      m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
+      m_pushButtonStyle(new PushButtonStyle)
 {
     ui->setupUi(this);
     initUi();
     initConnections();
+
+    m_socketRecver.setFileSavePath(QCoreApplication::applicationDirPath());
 }
 
 void MainUi::initUi()
@@ -33,27 +35,33 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->uptSenderWebConfigPushButton, ":/pic/reload.png");
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
+    IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
     ui->uptSenderWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
+    ui->sendFilePushButton->setStyle(m_pushButtonStyle);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
-    ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
+    ui->titleBar->setCloseIcon(QStringLiteral(TITLEBAR_CLOSEICON));
+    ui->titleBar->setTitleText(QStringLiteral(TITLEBAR_TITLETEXT));
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBarMode::NoMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
-    ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
+    ui->titleBar->setTitleIcon(QStringLiteral(TITLEBAR_TITLEICON));
 
     ui->msgSendTextEdit->setReadOnly(true);
     ui->msgRecvTextEdit->setReadOnly(true);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
     ui->senderPortLineEdit->setValidator(m_portTypeValidator);
 
+    ui->msgSendTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
+    ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
+
     updateSenderState(SenderState::Disconnected);
     updateRecverState(RecverState::Disconnected);
+
 }
 
 void MainUi::initConnections()
@@ -230,7 +238,7 @@ void MainUi::on_sendFilePushButton_clicked()
         qDebug() << "can not open file" << filePath;
         return;
     }
-    m_socketSender.sendFile(fileToSend.readAll());
+    m_socketSender.sendFile(filePath);
     fileToSend.close();
     qDebug() << "send file finish:" << filePath;
 }

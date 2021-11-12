@@ -16,12 +16,12 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     this->setFixedSize(this->width(), this->height());
 
     // 标题栏样式
-    ui->titleBar->setCloseIcon(TITLEBAR_CLOSEICON);
-    ui->titleBar->setTitleText(TITLEBAR_TITLETEXT);
+    ui->titleBar->setCloseIcon(QStringLiteral(TITLEBAR_CLOSEICON));
+    ui->titleBar->setTitleText(QStringLiteral(TITLEBAR_TITLETEXT));
     ui->titleBar->setUseGradient(true);
     ui->titleBar->initUi(TitleBarMode::NoMinAndMaxButton, "rgb(240,255,255)", "rgb(93,94,95)",
                          "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop:0 rgb(18,18,18), stop: 1 rgb(21,21,21))", "rgb(240,255,255)");
-    ui->titleBar->setTitleIcon(TITLEBAR_TITLEICON);
+    ui->titleBar->setTitleIcon(QStringLiteral(TITLEBAR_TITLEICON));
 
     // 样式
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_messageboxexx.css").arg(this->objectName()).arg("rgb(55,85,100)")

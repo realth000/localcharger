@@ -13,13 +13,14 @@ class WebRecver : public QObject
 {
     Q_OBJECT
 public:
-    explicit WebRecver(QObject *parent = nullptr);
-    explicit WebRecver(const url_t &url, QObject *parent = nullptr);
+    explicit WebRecver(QObject *parent = nullptr, QString fileSavePath = "../");
+    explicit WebRecver(const url_t &url, QObject *parent = nullptr, QString fileSavePath = "../");
     ~WebRecver() override;
     QAbstractSocket::SocketState getRecverState() const noexcept;
     url_t recverUrl() const noexcept;
     port_t recverPort() const noexcept;
     bool start(const url_t &url);
+    void setFileSavePath(QString path);
 
 signals:
     void recvedMessage(const QString msg);
@@ -39,6 +40,10 @@ private slots:
 
 private:
     QWebSocket m_socket;
+    QMap<QString , WebSocketFileInfo > m_fileInfoMap;
+    QString m_fileSavePath;
+    WebSocketBinaryMessageType parseBinaryMessageType(const QByteArray &message);
+    void saveSingleFile(const QByteArray &message);
 };
 
 #endif // WEBRECVER_H

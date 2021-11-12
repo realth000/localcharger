@@ -1,8 +1,11 @@
 ﻿#include "websender.h"
 #include <QtCore/QFile>
 #include <QtCore/QDebug>
+#include <QtCore/QFileInfo>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
+#include "core/jsonparser.h"
+#include "utils/randomgenerator.h"
 
 WebSender::WebSender(QObject *parent): QObject(parent),
       m_socketServer(nullptr)
@@ -62,9 +65,41 @@ void WebSender::sendMessage(const QString &msg)
     m_clientsList.constLast()->sendTextMessage(msg);
 }
 
-void WebSender::sendFile(const QByteArray &fileDataArray)
+void WebSender::sendFile(const QString &filePath)
 {
-    m_clientsList.constLast()->sendBinaryMessage(fileDataArray);
+    QFile fileToSend(filePath);
+    QFileInfo fileInfo(filePath);
+    if(!fileToSend.exists()){
+        qDebug() << "file not exists:" << filePath;
+        return;
+    }
+    if(!fileInfo.isFile()){
+        qDebug() << filePath << "is not a file";
+        return;
+    }
+    if(!fileToSend.open(QIODevice::ReadOnly)){
+        qDebug() << "can not open file" << filePath;
+        return;
+    }
+    /*
+     * messageArray:
+     * MessageType          10bytes
+     * FileInfoArrayLength  8bytes (qint64 = qlonglong)
+     * FileInfoArray        FileInfoArrayLength bytes
+     * FileData             FileInfoArray.m_fileSize
+     *
+     */
+    QByteArray messageArray;
+    const QByteArray fileInfoArray = generateFileInfoMessage(filePath);
+    QByteArray fileDataArray = fileToSend.readAll();
+    fileToSend.close();
+    // length = 10 bytes
+    messageArray.append(QString::number(WebSocketBinaryMessageType::SingleFile).toUtf8());
+    messageArray.append(QString::number(qint64(fileInfoArray.length())).toStdString().c_str(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
+    messageArray.append(fileInfoArray);
+    messageArray.append(fileDataArray);
+    qDebug() << "WebSender: about to send file, array total length" << messageArray.length();
+    m_clientsList.constLast()->sendBinaryMessage(messageArray);
 }
 
 void WebSender::onNewConnection()
@@ -104,4 +139,16 @@ bool WebSender::startListenPort(const port_t &port)
     connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebSender::onNewConnection, Qt::UniqueConnection);
     connect(m_socketServer, &QWebSocketServer::sslErrors, this, &WebSender::onSslErrors, Qt::UniqueConnection);
     return true;
+}
+
+QByteArray WebSender::generateFileInfoMessage(const QString &filePath)
+{
+    QFile file(filePath);
+    if(!file.exists() || !file.open(QIODevice::ReadOnly)){
+        qDebug() << "can not read file" << filePath;
+        return QByteArray();
+    }
+    QFileInfo fileInfo(filePath);
+    return JsonParser::genFileInfoFromString(WebSocketFileInfo(fileInfo.fileName(),fileInfo.size(),
+                                                               "", RandomGenerator::generateFromString(WEBSOCKET_FILEINFO_FILEID_LENGTH)));
 }
