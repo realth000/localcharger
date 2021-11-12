@@ -43,7 +43,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="sendMsgButton">
+  <widget class="QPushButton" name="sendMsgPushButton">
    <property name="geometry">
     <rect>
      <x>510</x>
@@ -243,6 +243,19 @@
    </property>
    <property name="text">
     <string/>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="sendFilePushButton">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>520</y>
+     <width>100</width>
+     <height>40</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>发送文件</string>
    </property>
   </widget>
  </widget>
