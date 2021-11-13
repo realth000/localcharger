@@ -3,6 +3,7 @@
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
 #include "qssinstaller.h"
@@ -20,7 +21,9 @@ MainUi::MainUi(QWidget *parent)
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
-      m_pushButtonStyle(new PushButtonStyle)
+      m_pushButtonStyle(new PushButtonStyle),
+      m_hScrollStyle(new HorizontalScrollBarStyle),
+      m_vScrollStyle(new VerticalScrollBarStyle)
 {
     ui->setupUi(this);
     loadConfig();
@@ -79,6 +82,12 @@ void MainUi::initUi()
     ui->msgSendTextEdit->setFocusPolicy(Qt::NoFocus);
     ui->msgRecvTextEdit->setFocusPolicy(Qt::NoFocus);
     ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::ClickFocus);
+    ui->msgSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgRecvTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgRecvTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgReadyToSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgReadyToSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
 
     ui->senderUrlLineEdit->setText(m_sockerSenderIp);
     ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
@@ -108,7 +117,11 @@ MainUi::~MainUi()
     delete ui;
     delete m_ipTypeValidator;
     delete m_portTypeValidator;
+
+    // delete styles
     delete m_pushButtonStyle;
+    delete m_hScrollStyle;
+    delete m_vScrollStyle;
 }
 
 
