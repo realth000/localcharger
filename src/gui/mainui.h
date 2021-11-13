@@ -30,6 +30,7 @@ public:
     Q_ENUM(SenderState)
 
     explicit MainUi(QWidget *parent = nullptr);
+//    void initConfig();
     void initUi();
     void initConnections();
     ~MainUi();
@@ -47,6 +48,8 @@ private slots:
     void on_sendFilePushButton_clicked();
     bool updateWebSocketConfig();
 
+    void on_saveConfigPushButton_clicked();
+
 private:
     Ui::MainUi *ui;
     WebSender m_socketSender;
@@ -59,6 +62,7 @@ private:
     RecverState m_socketRecverState;
     QRegularExpressionValidator *m_ipTypeValidator;
     QIntValidator *m_portTypeValidator;
+    const QString configFilePath;
 
     // styles
     PushButtonStyle *m_pushButtonStyle;
@@ -66,5 +70,7 @@ private:
     void startSender(const port_t &port);
     void updateSenderState(SenderState state);
     void updateRecverState(RecverState state);
+    void loadConfig();
+    void saveConfig();
 };
 #endif // MAINUI_H
