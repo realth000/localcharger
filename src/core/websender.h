@@ -19,6 +19,7 @@ public:
     url_t senderUrl() const noexcept;
     port_t senderPort() const noexcept;
     bool start(const port_t &port);
+    void stop();
 
 signals:
     void senderConnected();
@@ -35,7 +36,7 @@ private slots:
 
 private:
     QWebSocketServer *m_socketServer;
-    QList<QWebSocket *> m_clientsList;
+    QWebSocket * m_currentSocket;
     bool startListenPort(const port_t &port);
     QByteArray generateFileInfoMessage(const QString &filePath);
 };

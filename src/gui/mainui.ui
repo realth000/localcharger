@@ -146,16 +146,6 @@
      <string>远端端口</string>
     </property>
    </widget>
-   <widget class="QLineEdit" name="senderPortLineEdit">
-    <property name="geometry">
-     <rect>
-      <x>100</x>
-      <y>60</y>
-      <width>161</width>
-      <height>30</height>
-     </rect>
-    </property>
-   </widget>
    <widget class="QLineEdit" name="senderUrlLineEdit">
     <property name="geometry">
      <rect>
@@ -177,6 +167,16 @@
     </property>
     <property name="text">
      <string>远端IP</string>
+    </property>
+   </widget>
+   <widget class="QLineEdit" name="senderPortLineEdit">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>60</y>
+      <width>161</width>
+      <height>30</height>
+     </rect>
     </property>
    </widget>
   </widget>
@@ -294,7 +294,7 @@
     </property>
    </widget>
   </widget>
-  <widget class="QPushButton" name="uptSenderWebConfigPushButton">
+  <widget class="QPushButton" name="updateWebConfigPushButton">
    <property name="geometry">
     <rect>
      <x>620</x>

@@ -44,10 +44,9 @@ private slots:
     void onSenderDisconnected();
     void onRecverConnected();
     void onRecverDisconnected();
-    void on_uptSenderWebConfigPushButton_clicked();
+    void on_updateWebConfigPushButton_clicked();
     void on_sendFilePushButton_clicked();
     bool updateWebSocketConfig();
-
     void on_saveConfigPushButton_clicked();
 
 private:
@@ -68,6 +67,9 @@ private:
     PushButtonStyle *m_pushButtonStyle;
 
     void startSender(const port_t &port);
+    void stopSender();
+    void startRecver(const url_t &url);
+    void stopRecver();
     void updateSenderState(SenderState state);
     void updateRecverState(RecverState state);
     void loadConfig();

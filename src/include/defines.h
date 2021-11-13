@@ -3,6 +3,9 @@
 #include <QtCore/QtGlobal>
 #include <QtCore/QUrl>
 
+#define TO_STR_(I1) #I1
+#define TO_STR(I2) TO_STR_(I2)
+
 #define APP_NAME "LocalCharger"
 #define APP_CONFIGFILE_NAME "config.ini"
 #define APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH   "/WebSocket/SenderIP"
@@ -21,7 +24,7 @@
 
 #define WEBSOCKET_SENDER_IP_DEFAULT "localhost"
 #define WEBSOCKET_SENDER_PORT_DEFAULT 1234
-#define WEBSOCKET_RECVER_URL_DEFAULT "wss://localhost:1234"
+#define WEBSOCKET_RECVER_URL_DEFAULT "wss://" WEBSOCKET_SENDER_IP_DEFAULT ":" TO_STR(WEBSOCKET_SENDER_PORT_DEFAULT)
 #define WEBSOCKET_RECVER_PORT_DEFAULT 1234
 
 #define WEBSOCKET_CONFIG_SENDER_SOCKET_NAME APP_NAME "Server"
