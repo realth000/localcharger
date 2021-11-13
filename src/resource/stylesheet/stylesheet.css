@@ -96,11 +96,17 @@ QTextEdit{
     selection-color:rgb(240,255,255);
     selection-background-color:rgb(93,94,95);
 }
+QTextEdit#msgReadyToSendTextEdit{
+    border-bottom:none;
+}
 
 QGroupBox{
     color:rgb(240,255,255);
     background-color:%3;
     border:1px solid %2;
+}
+QGroupBox#msgSendActionGroupBox{
+    border-top:none;
 }
 
 QRadioButton{
