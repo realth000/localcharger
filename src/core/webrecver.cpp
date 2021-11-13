@@ -1,7 +1,7 @@
 ﻿#include "webrecver.h"
-#include "core/jsonparser.h"
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include "core/jsonparser.h"
 
 WebRecver::WebRecver(QObject *parent, QString fileSavePath) : QObject(parent), m_fileSavePath(fileSavePath)
 {
@@ -81,13 +81,12 @@ void WebRecver::onDisconnected()
     emit recverDisconnected();
 }
 
-void WebRecver::onTextMessageReceived(QString message)
+void WebRecver::onTextMessageReceived(const QString &message)
 {
-    qDebug() << "text message received:" << message;
     emit recvedMessage(message);
 }
 
-void WebRecver::onBinaryMessageReceived(QByteArray message)
+void WebRecver::onBinaryMessageReceived(const QByteArray &message)
 {
     qDebug() << "binary message received";
     const int messageType = QString::fromUtf8(message.left(10)).toInt();

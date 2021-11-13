@@ -6,6 +6,7 @@
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
 #include "utils/randomgenerator.h"
+#include <QCoreApplication>
 
 WebSender::WebSender(QObject *parent): QObject(parent),
       m_socketServer(nullptr),
