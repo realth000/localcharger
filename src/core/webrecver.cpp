@@ -6,7 +6,7 @@
 WebRecver::WebRecver(QObject *parent, QString fileSavePath) : QObject(parent), m_fileSavePath(fileSavePath)
 {
     connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected, Qt::UniqueConnection);
-    connect(&m_socket, &QWebSocket::disconnected, this, &WebRecver::onDisconnected, Qt::UniqueConnection);
+    connect(&m_socket, &QWebSocket::disconnected, this, &WebRecver::onDisconnected, Qt::QueuedConnection);
     connect(&m_socket, QOverload<const QList<QSslError>&>::of(&QWebSocket::sslErrors), this, &WebRecver::onSslErrors, Qt::UniqueConnection);
 }
 
