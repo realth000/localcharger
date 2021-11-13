@@ -35,8 +35,8 @@ private slots:
     void openUrl(const url_t &url);
     void onConnected();
     void onDisconnected();
-    void onTextMessageReceived(QString message);
-    void onBinaryMessageReceived(QByteArray message);
+    void onTextMessageReceived(const QString &message);
+    void onBinaryMessageReceived(const QByteArray &message);
     void onSslErrors(const QList<QSslError> &errors);
 
 private:

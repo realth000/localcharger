@@ -13,7 +13,7 @@
   <property name="windowTitle">
    <string>MainUi</string>
   </property>
-  <widget class="QTextEdit" name="msgRecvTextEdit">
+  <widget class="TextEditEx" name="msgRecvTextEdit">
    <property name="geometry">
     <rect>
      <x>630</x>
@@ -23,7 +23,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QTextEdit" name="msgSendTextEdit">
+  <widget class="TextEditEx" name="msgSendTextEdit">
    <property name="geometry">
     <rect>
      <x>170</x>
@@ -33,7 +33,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QTextEdit" name="msgReadyToSendTextEdit">
+  <widget class="TextEditEx" name="msgReadyToSendTextEdit">
    <property name="geometry">
     <rect>
      <x>170</x>
@@ -353,6 +353,11 @@
    <extends>QGroupBox</extends>
    <header location="global">titlebar.h</header>
    <container>1</container>
+  </customwidget>
+  <customwidget>
+   <class>TextEditEx</class>
+   <extends>QTextEdit</extends>
+   <header location="global">src/utils/widget/texteditex.h</header>
   </customwidget>
  </customwidgets>
  <resources/>
