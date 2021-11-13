@@ -47,8 +47,9 @@ bool WebRecver::start(const url_t &url)
 
 void WebRecver::stop()
 {
-    m_socket.abort();
-    m_socket.close();
+    if(m_socket.state() != QAbstractSocket::UnconnectedState && m_socket.state() != QAbstractSocket::ClosingState){
+        m_socket.close();
+    }
 }
 
 void WebRecver::setFileSavePath(QString path)

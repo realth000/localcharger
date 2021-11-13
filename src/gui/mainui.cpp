@@ -360,4 +360,3 @@ void MainUi::on_saveConfigPushButton_clicked()
         saveConfig();
     }
 }
-
