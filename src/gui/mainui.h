@@ -45,13 +45,16 @@ private slots:
     void onRecverDisconnected();
     void on_uptSenderWebConfigPushButton_clicked();
     void on_sendFilePushButton_clicked();
+    bool updateWebSocketConfig();
 
 private:
     Ui::MainUi *ui;
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    QString m_sockerSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
+    port_t m_socketRecverPort;
     SenderState m_socketSenderState;
     RecverState m_socketRecverState;
     QRegularExpressionValidator *m_ipTypeValidator;

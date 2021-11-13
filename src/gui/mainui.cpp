@@ -10,8 +10,10 @@
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::MainUi),
+      m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
       m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
       m_socketRecverUrl(QStringLiteral(WEBSOCKET_RECVER_URL_DEFAULT)),
+      m_socketRecverPort(WEBSOCKET_RECVER_PORT_DEFAULT),
       m_socketSenderState(SenderState::Disconnected),
       m_socketRecverState(RecverState::Disconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
@@ -55,10 +57,16 @@ void MainUi::initUi()
     ui->msgRecvTextEdit->setReadOnly(true);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
     ui->senderPortLineEdit->setValidator(m_portTypeValidator);
+    ui->recverPortLineEdit->setValidator(m_portTypeValidator);
 
     ui->msgSendTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
     ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
 
+    ui->senderUrlLineEdit->setText(m_sockerSenderIp);
+    ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
+    ui->recverPortLineEdit->setText(QString::number(m_socketRecverPort));
+
+    updateWebSocketConfig();
     updateSenderState(SenderState::Disconnected);
     updateRecverState(RecverState::Disconnected);
 
@@ -210,7 +218,7 @@ void MainUi::onRecverDisconnected()
 
 void MainUi::on_uptSenderWebConfigPushButton_clicked()
 {
-    if(ui->senderUrlLineEdit->text().isEmpty() || ui->senderPortLineEdit->text().isEmpty()){
+    if(!updateWebSocketConfig()){
         return;
     }
     url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
@@ -247,5 +255,44 @@ void MainUi::on_sendFilePushButton_clicked()
     m_socketSender.sendFile(filePath);
     fileToSend.close();
     qDebug() << "send file finish:" << filePath;
+}
+
+bool MainUi::updateWebSocketConfig()
+{
+    bool ret = true;
+    style()->unpolish(ui->senderUrlLineEdit);
+    style()->unpolish(ui->senderPortLineEdit);
+    style()->unpolish(ui->recverPortLineEdit);
+    const QString senderIP = ui->senderUrlLineEdit->text();
+    if(senderIP == QStringLiteral("localhost") || senderIP.count(".") == 3){
+        m_sockerSenderIp = ui->senderUrlLineEdit->text();
+        ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        qDebug() << "Invalid sender ip set in config";
+        ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    if(!ui->senderPortLineEdit->text().isEmpty()){
+        m_socketSenderPort = ui->senderPortLineEdit->text().toInt();
+        ui->senderPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        ui->senderPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    if(!ui->recverPortLineEdit->text().isEmpty()){
+        m_socketRecverPort = ui->recverPortLineEdit->text().toInt();
+        ui->recverPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        ui->recverPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    style()->polish(ui->senderUrlLineEdit);
+    style()->polish(ui->senderPortLineEdit);
+    style()->polish(ui->recverPortLineEdit);
+    qDebug() << "update" << m_sockerSenderIp << m_socketSenderPort << m_socketRecverPort;
+    return ret;
 }
 
