@@ -42,19 +42,19 @@ void MainUi::initUi()
 
     IconInstaller::installPushButtonIcon(ui->startSenderPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
-    IconInstaller::installPushButtonIcon(ui->uptSenderWebConfigPushButton, ":/pic/reload.png");
+    IconInstaller::installPushButtonIcon(ui->updateWebConfigPushButton, ":/pic/reload.png");
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
-    ui->uptSenderWebConfigPushButton->setStyle(m_pushButtonStyle);
+    ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
     ui->saveConfigPushButton->setStyle(m_pushButtonStyle);
     ui->startSenderPushButton->setFocusPolicy(Qt::NoFocus);
     ui->startRecverPushButton->setFocusPolicy(Qt::NoFocus);
-    ui->uptSenderWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->updateWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
     ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
@@ -78,14 +78,15 @@ void MainUi::initUi()
     ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
     ui->msgSendTextEdit->setFocusPolicy(Qt::NoFocus);
     ui->msgRecvTextEdit->setFocusPolicy(Qt::NoFocus);
-    ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::NoFocus);
+    ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::ClickFocus);
 
     ui->senderUrlLineEdit->setText(m_sockerSenderIp);
     ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
     ui->recverPortLineEdit->setText(QString::number(m_socketRecverPort));
+
     this->setTabOrder(ui->recverPortLineEdit, ui->senderUrlLineEdit);
     this->setTabOrder(ui->senderUrlLineEdit, ui->senderPortLineEdit);
-//    this->setTabOrder(ui->senderPortLineEdit, ui->recverPortLineEdit);
+    this->setFocus();
 }
 
 void MainUi::initConnections()
@@ -137,10 +138,10 @@ void MainUi::recoredRecvedMsg(const QString &msg)
 void MainUi::startSender(const port_t &port)
 {
     if(m_socketSender.isSenderListening()){
-        qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
-        updateSenderState(SenderState::Listening);
-        return;
+        qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort() << "stop first";
+        stopSender();
     }
+
     if(m_socketSender.start(port)){
         qDebug() << "Sender start listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Listening);
@@ -149,6 +150,23 @@ void MainUi::startSender(const port_t &port)
         qDebug() << "Sender failed to listen" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Disconnected);
     }
+}
+
+void MainUi::stopSender()
+{
+    m_socketSender.stop();
+}
+
+void MainUi::startRecver(const url_t &url)
+{
+    m_socketRecver.stop();
+    updateRecverState(RecverState::Connecting);
+    m_socketRecver.start(url);
+}
+
+void MainUi::stopRecver()
+{
+    m_socketRecver.stop();
 }
 
 void MainUi::updateSenderState(SenderState state)
@@ -218,19 +236,21 @@ void MainUi::saveConfig()
 
 void MainUi::on_startSenderPushButton_clicked()
 {
+    stopSender();
     startSender(m_socketSenderPort);
 }
 
 
 void MainUi::on_startRecverPushButton_clicked()
 {
+    stopRecver();
     if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
         qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
         return;
     }
-    updateRecverState(RecverState::Connecting);
-    m_socketRecver.start(m_socketRecverUrl);
-    updateRecverState(RecverState::Connecting);
+    m_socketRecverUrl.setHost(ui->senderUrlLineEdit->text());
+    m_socketRecverUrl.setPort(ui->senderPortLineEdit->text().toInt());
+    startRecver(m_socketRecverUrl);
 }
 
 void MainUi::onSenderConnected()
@@ -254,21 +274,19 @@ void MainUi::onRecverDisconnected()
 }
 
 
-void MainUi::on_uptSenderWebConfigPushButton_clicked()
+void MainUi::on_updateWebConfigPushButton_clicked()
 {
     if(!updateWebSocketConfig()){
         return;
     }
-    url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
+    const url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
     if(!testUrl.isValid()){
         qDebug() << "invalid url" << testUrl.toString();
         return;
     }
-    qDebug() << "update server url to" << testUrl.toString();
-    m_socketRecver.stop();
-    updateRecverState(RecverState::Connecting);
     m_socketRecverUrl = testUrl;
-    m_socketRecver.start(m_socketRecverUrl);
+    on_startSenderPushButton_clicked();
+    on_startRecverPushButton_clicked();
 }
 
 
