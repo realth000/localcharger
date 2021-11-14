@@ -1,7 +1,9 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
+#include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
 #include "qssinstaller.h"
@@ -10,19 +12,29 @@
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
       ui(new Ui::MainUi),
+      m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
       m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
       m_socketRecverUrl(QStringLiteral(WEBSOCKET_RECVER_URL_DEFAULT)),
+      m_socketRecverPort(WEBSOCKET_RECVER_PORT_DEFAULT),
       m_socketSenderState(SenderState::Disconnected),
       m_socketRecverState(RecverState::Disconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
-      m_pushButtonStyle(new PushButtonStyle)
+      configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
+      m_pushButtonStyle(new PushButtonStyle),
+      m_hScrollStyle(new HorizontalScrollBarStyle),
+      m_vScrollStyle(new VerticalScrollBarStyle)
 {
     ui->setupUi(this);
+    loadConfig();
     initUi();
     initConnections();
 
     m_socketRecver.setFileSavePath(QCoreApplication::applicationDirPath());
+
+    updateWebSocketConfig();
+    updateSenderState(SenderState::Disconnected);
+    updateRecverState(RecverState::Disconnected);
 }
 
 void MainUi::initUi()
@@ -33,14 +45,22 @@ void MainUi::initUi()
 
     IconInstaller::installPushButtonIcon(ui->startSenderPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
-    IconInstaller::installPushButtonIcon(ui->uptSenderWebConfigPushButton, ":/pic/reload.png");
+    IconInstaller::installPushButtonIcon(ui->updateWebConfigPushButton, ":/pic/reload.png");
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
+    IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
-    ui->uptSenderWebConfigPushButton->setStyle(m_pushButtonStyle);
+    ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
+    ui->saveConfigPushButton->setStyle(m_pushButtonStyle);
+    ui->startSenderPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->startRecverPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->updateWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
+    ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
@@ -55,13 +75,27 @@ void MainUi::initUi()
     ui->msgRecvTextEdit->setReadOnly(true);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
     ui->senderPortLineEdit->setValidator(m_portTypeValidator);
+    ui->recverPortLineEdit->setValidator(m_portTypeValidator);
 
     ui->msgSendTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
     ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
+    ui->msgSendTextEdit->setFocusPolicy(Qt::NoFocus);
+    ui->msgRecvTextEdit->setFocusPolicy(Qt::NoFocus);
+    ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::ClickFocus);
+    ui->msgSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgRecvTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgRecvTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgReadyToSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->msgReadyToSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
 
-    updateSenderState(SenderState::Disconnected);
-    updateRecverState(RecverState::Disconnected);
+    ui->senderUrlLineEdit->setText(m_sockerSenderIp);
+    ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
+    ui->recverPortLineEdit->setText(QString::number(m_socketRecverPort));
 
+    this->setTabOrder(ui->recverPortLineEdit, ui->senderUrlLineEdit);
+    this->setTabOrder(ui->senderUrlLineEdit, ui->senderPortLineEdit);
+    this->setFocus();
 }
 
 void MainUi::initConnections()
@@ -83,7 +117,11 @@ MainUi::~MainUi()
     delete ui;
     delete m_ipTypeValidator;
     delete m_portTypeValidator;
+
+    // delete styles
     delete m_pushButtonStyle;
+    delete m_hScrollStyle;
+    delete m_vScrollStyle;
 }
 
 
@@ -113,9 +151,10 @@ void MainUi::recoredRecvedMsg(const QString &msg)
 void MainUi::startSender(const port_t &port)
 {
     if(m_socketSender.isSenderListening()){
-        qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
-        return;
+        qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort() << "stop first";
+        stopSender();
     }
+
     if(m_socketSender.start(port)){
         qDebug() << "Sender start listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Listening);
@@ -124,6 +163,23 @@ void MainUi::startSender(const port_t &port)
         qDebug() << "Sender failed to listen" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Disconnected);
     }
+}
+
+void MainUi::stopSender()
+{
+    m_socketSender.stop();
+}
+
+void MainUi::startRecver(const url_t &url)
+{
+    m_socketRecver.stop();
+    updateRecverState(RecverState::Connecting);
+    m_socketRecver.start(url);
+}
+
+void MainUi::stopRecver()
+{
+    m_socketRecver.stop();
 }
 
 void MainUi::updateSenderState(SenderState state)
@@ -153,7 +209,7 @@ void MainUi::updateRecverState(RecverState state)
 {
     switch (state) {
     case RecverState::Disconnected:
-        ui->recverStateHintLabel->setText("closed");
+//        ui->recverStateHintLabel->setText("closed");
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connecting:
@@ -169,21 +225,45 @@ void MainUi::updateRecverState(RecverState state)
     }
 }
 
+void MainUi::loadConfig()
+{
+    if(!QFileInfo::exists(configFilePath)){
+        qDebug() << "config file not found, load default config";
+        return;
+    }
+    const QSettings *configIni = new QSettings(configFilePath, QSettings::IniFormat);
+    m_sockerSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
+    m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
+    m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
+    delete configIni;
+}
+
+void MainUi::saveConfig()
+{
+    QSettings *configIni = new QSettings(configFilePath, QSettings::IniFormat);
+    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_sockerSenderIp);
+    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
+    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
+    delete configIni;
+}
+
 void MainUi::on_startSenderPushButton_clicked()
 {
+    stopSender();
     startSender(m_socketSenderPort);
 }
 
 
 void MainUi::on_startRecverPushButton_clicked()
 {
+    stopRecver();
     if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
         qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
         return;
     }
-    updateRecverState(RecverState::Connecting);
-    m_socketRecver.start(m_socketRecverUrl);
-    updateRecverState(RecverState::Connecting);
+    m_socketRecverUrl.setHost(ui->senderUrlLineEdit->text());
+    m_socketRecverUrl.setPort(ui->senderPortLineEdit->text().toInt());
+    startRecver(m_socketRecverUrl);
 }
 
 void MainUi::onSenderConnected()
@@ -207,16 +287,19 @@ void MainUi::onRecverDisconnected()
 }
 
 
-void MainUi::on_uptSenderWebConfigPushButton_clicked()
+void MainUi::on_updateWebConfigPushButton_clicked()
 {
-    url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
+    if(!updateWebSocketConfig()){
+        return;
+    }
+    const url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
     if(!testUrl.isValid()){
         qDebug() << "invalid url" << testUrl.toString();
         return;
     }
-    qDebug() << "update server url to" << testUrl.toString();
     m_socketRecverUrl = testUrl;
-    m_socketRecver.start(m_socketRecverUrl);
+    on_startSenderPushButton_clicked();
+    on_startRecverPushButton_clicked();
 }
 
 
@@ -243,3 +326,50 @@ void MainUi::on_sendFilePushButton_clicked()
     qDebug() << "send file finish:" << filePath;
 }
 
+bool MainUi::updateWebSocketConfig()
+{
+    bool ret = true;
+    int pos = 0;
+    QString test = ui->senderUrlLineEdit->text();
+    style()->unpolish(ui->senderUrlLineEdit);
+    style()->unpolish(ui->senderPortLineEdit);
+    style()->unpolish(ui->recverPortLineEdit);
+    if(m_ipTypeValidator->validate(test, pos) == QValidator::Acceptable){
+        m_sockerSenderIp = ui->senderUrlLineEdit->text();
+        ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        qDebug() << "Invalid sender ip set in config";
+        ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    if(!ui->senderPortLineEdit->text().isEmpty()){
+        m_socketSenderPort = ui->senderPortLineEdit->text().toInt();
+        ui->senderPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        ui->senderPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    if(!ui->recverPortLineEdit->text().isEmpty()){
+        m_socketRecverPort = ui->recverPortLineEdit->text().toInt();
+        ui->recverPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
+    }
+    else{
+        ui->recverPortLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
+        ret = false;
+    }
+    style()->polish(ui->senderUrlLineEdit);
+    style()->polish(ui->senderPortLineEdit);
+    style()->polish(ui->recverPortLineEdit);
+    qDebug() << "update" << m_sockerSenderIp << m_socketSenderPort << m_socketRecverPort;
+    return ret;
+}
+
+
+void MainUi::on_saveConfigPushButton_clicked()
+{
+    if(updateWebSocketConfig()){
+        saveConfig();
+    }
+}

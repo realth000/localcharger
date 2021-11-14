@@ -27,6 +27,7 @@ SOURCES += \
     src/utils/randomgenerator.cpp \
     src/utils/style/proxystyle.cpp \
     src/utils/widget/messageboxexx.cpp \
+    src/utils/widget/texteditex.cpp \
     src/utils/widget/titlebar.cpp
 
 HEADERS += \
@@ -40,7 +41,8 @@ HEADERS += \
     src/include/proxystyle.h \
     src/include/qssinstaller.h \
     src/include/titlebar.h \
-    src/utils/randomgenerator.h
+    src/utils/randomgenerator.h \
+    src/utils/widget/texteditex.h
 
 FORMS += \
     src/gui/mainui.ui \
