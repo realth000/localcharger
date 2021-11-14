@@ -62,18 +62,12 @@ QLineEdit#logLineEdit{
     font:14px;
 }
 
-QLineEdit#srcDirHintLineEdit{
-    color:rgb(230,230,230);
-    border:1px solid %2;
-    background:transparent;
-    font:14px;
+QLineEdit[textValidity='valid']{
+    border: 1px solid %2;
 }
 
-QLineEdit#dstDirHintLineEdit{
-    color:rgb(230,230,230);
-    border:1px solid %2;
-    background:transparent;
-    font:14px;
+QLineEdit[textValidity='invalid']{
+    border: 1px solid rgb(240,80,70);
 }
 
 QLineEdit{
@@ -102,11 +96,17 @@ QTextEdit{
     selection-color:rgb(240,255,255);
     selection-background-color:rgb(93,94,95);
 }
+QTextEdit#msgReadyToSendTextEdit{
+    border-bottom:none;
+}
 
 QGroupBox{
     color:rgb(240,255,255);
     background-color:%3;
     border:1px solid %2;
+}
+QGroupBox#msgSendActionGroupBox{
+    border-top:none;
 }
 
 QRadioButton{

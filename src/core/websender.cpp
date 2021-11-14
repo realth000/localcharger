@@ -6,9 +6,11 @@
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
 #include "utils/randomgenerator.h"
+#include <QCoreApplication>
 
 WebSender::WebSender(QObject *parent): QObject(parent),
-      m_socketServer(nullptr)
+      m_socketServer(nullptr),
+      m_currentSocket(nullptr)
 {
     m_socketServer = new QWebSocketServer(QStringLiteral(WEBSOCKET_CONFIG_SENDER_SOCKET_NAME), QWebSocketServer::SecureMode, this);
     QSslConfiguration sslConfigure;
@@ -36,7 +38,9 @@ WebSender::WebSender(const port_t &port, QObject *parent): WebSender(parent)
 WebSender::~WebSender()
 {
     m_socketServer->close();
-    qDeleteAll(m_clientsList);
+    if(m_currentSocket != nullptr){
+        delete m_currentSocket;
+    }
 }
 
 bool WebSender::isSenderListening() const noexcept
@@ -59,10 +63,20 @@ bool WebSender::start(const port_t &port)
     return startListenPort(port);
 }
 
+void WebSender::stop()
+{
+    if(m_currentSocket != nullptr){
+        m_currentSocket->close();
+        delete m_currentSocket;
+        m_currentSocket = nullptr;
+    }
+    m_socketServer->close();
+}
+
 void WebSender::sendMessage(const QString &msg)
 {
     // TODO: NOW only communicate in the lateset socket connection.
-    m_clientsList.constLast()->sendTextMessage(msg);
+    m_currentSocket->sendTextMessage(msg);
 }
 
 void WebSender::sendFile(const QString &filePath)
@@ -99,7 +113,7 @@ void WebSender::sendFile(const QString &filePath)
     messageArray.append(fileInfoArray);
     messageArray.append(fileDataArray);
     qDebug() << "WebSender: about to send file, array total length" << messageArray.length();
-    m_clientsList.constLast()->sendBinaryMessage(messageArray);
+    m_currentSocket->sendBinaryMessage(messageArray);
 }
 
 void WebSender::onNewConnection()
@@ -108,8 +122,11 @@ void WebSender::onNewConnection()
     qDebug() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
     qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
-    connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected);
-    m_clientsList << pSocket;
+    connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected, Qt::QueuedConnection);
+    if(m_currentSocket != nullptr){
+        delete m_currentSocket;
+    }
+    m_currentSocket = pSocket;
 }
 
 void WebSender::socketDisconnected()
@@ -118,7 +135,7 @@ void WebSender::socketDisconnected()
     qDebug() << "Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
-        m_clientsList.removeAll(pClient);
+        m_currentSocket = nullptr;
         pClient->deleteLater();
     }
 }
