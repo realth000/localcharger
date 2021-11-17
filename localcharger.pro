@@ -10,12 +10,25 @@ CONFIG += c++11 no_batch
 
 INCLUDEPATH += src src/include
 
-VERSION = 0.2.0
+VERSION = 0.3.1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"
 RC_ICONS = "src/resource/pic/LocalCharger.ico"
 
+#DEFINES += COMPILE_VID
+
+win32 {
+    CONFIG(debug,debug|release){
+        INCLUDEPATH += C:\VisualLeakDetector\include
+        DEPENDPATH += C:\VisualLeakDetector\include
+        if(contains(DEFINES, COMPILE_VID)) {
+            LIBS += -LC:/VisualLeakDetector/lib/Win64 -lvld
+            DEFINES += ENABLE_VID
+        }
+
+    }
+}
 SOURCES += \
     src/core/jsonparser.cpp \
     src/core/main.cpp \

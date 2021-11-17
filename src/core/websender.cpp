@@ -1,12 +1,14 @@
 ﻿#include "websender.h"
-#include <QtCore/QFile>
+#include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QtMath>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
 #include "utils/randomgenerator.h"
-#include <QCoreApplication>
+
 
 WebSender::WebSender(QObject *parent): QObject(parent),
       m_socketServer(nullptr),
@@ -105,15 +107,27 @@ void WebSender::sendFile(const QString &filePath)
      */
     QByteArray messageArray;
     const QByteArray fileInfoArray = generateFileInfoMessage(filePath);
-    QByteArray fileDataArray = fileToSend.readAll();
+    QByteArray fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
+    qint64 fileFrameID = 0;
+    qint64 fileSendBytes = 0;
+    while(!fileDataArray.isEmpty()){
+        // TODO: processEvents can control speed but controls too much
+        // length = 10 bytes
+        QCoreApplication::processEvents();
+        messageArray.append(QString::number(WebSocketBinaryMessageType::SingleFile).toUtf8());
+        messageArray.append(QString::number(qint64(fileInfoArray.length())).toStdString().c_str(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
+        messageArray.append(fileInfoArray);
+        messageArray.append(QString::number(fileFrameID).toStdString().c_str(), WEBSOCKET_FILEFRAME_ID_LENGTH);
+        messageArray.append(fileDataArray);
+        m_currentSocket->sendBinaryMessage(messageArray);
+        messageArray.clear();
+        fileSendBytes += fileDataArray.length();
+        fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
+        fileFrameID ++;
+    }
     fileToSend.close();
-    // length = 10 bytes
-    messageArray.append(QString::number(WebSocketBinaryMessageType::SingleFile).toUtf8());
-    messageArray.append(QString::number(qint64(fileInfoArray.length())).toStdString().c_str(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
-    messageArray.append(fileInfoArray);
-    messageArray.append(fileDataArray);
-    qDebug() << "WebSender: about to send file, array total length" << messageArray.length();
-    m_currentSocket->sendBinaryMessage(messageArray);
+    qDebug() << "WebSender: about to send file, array total length" << fileSendBytes;
+
 }
 
 void WebSender::onNewConnection()
@@ -122,6 +136,7 @@ void WebSender::onNewConnection()
     qDebug() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
     qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
+    pSocket->setPauseMode(QAbstractSocket::PauseOnSslErrors);
     connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected, Qt::QueuedConnection);
     if(m_currentSocket != nullptr){
         delete m_currentSocket;

@@ -2,6 +2,10 @@
 #include <QtWidgets/QApplication>
 #include <QFont>
 
+#ifdef ENABLE_VID
+#include "vld.h"
+#endif
+
 int main(int argc, char *argv[])
 {
     QFont appFont;
