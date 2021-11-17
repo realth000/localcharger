@@ -95,7 +95,7 @@ void WebRecver::onBinaryMessageReceived(const QByteArray &message)
 
     switch (messageType) {
     case WebSocketBinaryMessageType::SingleFile:
-        saveSingleFile(message);
+        saveSingleFileFrame(message);
         break;
     default:
         break;
@@ -133,25 +133,29 @@ WebSocketBinaryMessageType WebRecver::parseBinaryMessageType(const QByteArray &m
  * FileData             FileInfoArray.m_fileSize
  *
  */
-void WebRecver::saveSingleFile(const QByteArray &message)
+void WebRecver::saveSingleFileFrame(const QByteArray &message)
 {
     const int fileInfoArrayLength = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH).toInt();
     const QByteArray fileInfoArray = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH, fileInfoArrayLength);
     const WebSocketFileInfo fileInfo = JsonParser::parseFileInfoFromArray(fileInfoArray);
     const int fileFrameID = QString::fromUtf8(message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH + fileInfoArrayLength, WEBSOCKET_FILEFRAME_ID_LENGTH)).toInt();
-    qDebug() << fileInfo.m_fileID << fileInfo.m_fileName << fileInfo.m_fileSize << fileInfo.m_fileChkSum;
+    qDebug() << fileInfo.m_fileID << fileInfo.m_fileName << fileInfo.m_fileSize << fileInfo.m_fileChkSum << fileInfo.m_fileFrameCount;
     qDebug() << "receive id =" << fileFrameID;
     QFile file(m_fileSavePath + NATIVE_PATH_SEP + fileInfo.m_fileName);
-    if(fileFrameID == 0 && file.exists()){
-        file.remove();
+    if(fileFrameID == 0){
+        emit recvFileStart(file.fileName(), file.size());
+        if(file.exists()){
+            file.remove();
+        }
     }
     if(!file.open(QIODevice::Append)){
         qDebug() << "WebRecver can't save file not open" << QFileInfo(file).absoluteFilePath();
         return;
     }
-//    const qint64 fileWriteSize = file.write(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH - WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH - fileInfoArrayLength - WEBSOCKET_FILEFRAME_ID_LENGTH));
-    int fileWriteSize = file.write(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH - WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH - fileInfoArrayLength - WEBSOCKET_FILEFRAME_ID_LENGTH));
+    qint64 fileWriteSize = file.write(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH - WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH - fileInfoArrayLength - WEBSOCKET_FILEFRAME_ID_LENGTH));
     file.close();
     qDebug() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(QFileInfo(file).absoluteFilePath(), QString::number(fileWriteSize), QString::number(fileFrameID));
-    emit recvedMessage(QString("File recvied: %1 (%2 bytes)").arg(QFileInfo(file).fileName(), QString::number(fileInfo.m_fileSize)));
+    if(fileFrameID == fileInfo.m_fileFrameCount -1){
+        emit recvFileFinish(file.fileName(), file.size());
+    }
 }

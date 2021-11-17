@@ -48,6 +48,10 @@ private slots:
     void on_sendFilePushButton_clicked();
     bool updateWebSocketConfig();
     void on_saveConfigPushButton_clicked();
+    void onSendFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
+    void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
 
 private:
     Ui::MainUi *ui;

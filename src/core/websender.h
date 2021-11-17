@@ -20,9 +20,12 @@ public:
     port_t senderPort() const noexcept;
     bool start(const port_t &port);
     void stop();
+
 signals:
     void senderConnected();
     void senderDisconnected();
+    void sendFileStart(QString fileName, qint64 sendBytes);
+    void sendFileFinish(QString fileName, qint64 sendBytes);
 
 public slots:
     void sendMessage(const QString &msg);
