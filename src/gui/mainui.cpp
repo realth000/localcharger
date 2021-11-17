@@ -2,12 +2,14 @@
 #include "ui_mainui.h"
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
+#include <QtNetwork/QNetworkInterface>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
 #include "qssinstaller.h"
 #include "titlebar.h"
+#include "utils/networkinfohelper.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
@@ -29,6 +31,8 @@ MainUi::MainUi(QWidget *parent)
     loadConfig();
     initUi();
     initConnections();
+
+    getLocalIp();
 
     m_socketRecver.setFileSavePath(QCoreApplication::applicationDirPath());
 
@@ -245,6 +249,20 @@ void MainUi::saveConfig()
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
     delete configIni;
+}
+
+void MainUi::getLocalIp()
+{
+    // Get local ip address and netmask
+    // TODO: Support more than one ip and IPV6
+    const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
+    if(ipList.length() == 1){
+        ui->recverUrlHintLabel->setText(QString("%1/%2").arg(ipList[0].ipV4Address, QString::number(ipList[0].prefixLength)));
+    }
+    else{
+        ui->recverUrlHintLabel->setText(QStringLiteral("获取失败，需要自行查看"));
+        qDebug() << "需要自行查看";
+    }
 }
 
 void MainUi::on_startSenderPushButton_clicked()

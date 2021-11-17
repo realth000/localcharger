@@ -76,5 +76,6 @@ private:
     void updateRecverState(RecverState state);
     void loadConfig();
     void saveConfig();
+    void getLocalIp();
 };
 #endif // MAINUI_H
