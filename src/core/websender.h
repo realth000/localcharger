@@ -20,7 +20,6 @@ public:
     port_t senderPort() const noexcept;
     bool start(const port_t &port);
     void stop();
-
 signals:
     void senderConnected();
     void senderDisconnected();

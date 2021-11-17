@@ -209,7 +209,7 @@ void MainUi::updateRecverState(RecverState state)
 {
     switch (state) {
     case RecverState::Disconnected:
-//        ui->recverStateHintLabel->setText("closed");
+        ui->recverStateHintLabel->setText("closed");
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connecting:
