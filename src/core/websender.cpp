@@ -136,6 +136,7 @@ void WebSender::onNewConnection()
     qDebug() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
     qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
+    pSocket->setPauseMode(QAbstractSocket::PauseOnSslErrors);
     connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected, Qt::QueuedConnection);
     if(m_currentSocket != nullptr){
         delete m_currentSocket;
