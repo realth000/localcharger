@@ -36,6 +36,7 @@ SOURCES += \
     src/gui/mainui.cpp \
     src/core/websender.cpp \
     src/utils/iconinstaller.cpp \
+    src/utils/networkinfohelper.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/randomgenerator.cpp \
     src/utils/style/proxystyle.cpp \
@@ -54,6 +55,7 @@ HEADERS += \
     src/include/proxystyle.h \
     src/include/qssinstaller.h \
     src/include/titlebar.h \
+    src/utils/networkinfohelper.h \
     src/utils/randomgenerator.h \
     src/utils/widget/texteditex.h
 
