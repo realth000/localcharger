@@ -176,6 +176,7 @@ void MainUi::startSender(const port_t &port)
 void MainUi::stopSender()
 {
     m_socketSender.stop();
+    updateSenderState(SenderState::Disconnected);
 }
 
 void MainUi::startRecver(const url_t &url)
@@ -188,6 +189,7 @@ void MainUi::startRecver(const url_t &url)
 void MainUi::stopRecver()
 {
     m_socketRecver.stop();
+    updateRecverState(RecverState::Disconnected);
 }
 
 void MainUi::updateSenderState(SenderState state)
