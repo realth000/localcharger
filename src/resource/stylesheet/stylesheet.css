@@ -141,6 +141,22 @@ QComboBox QAbstractItemView{
     outline:none;
 }
 
+QPushButton#selectSaveFilePathPushButton{
+    color:rgb(240,255,255);
+    background:transparent;
+    border:none;
+}
+
+QPushButton#selectSaveFilePathPushButton:hover{
+    background:rgb(64,64,61);
+    border:1px solid %2;
+}
+
+QPushButton#selectSaveFilePathPushButton:pressed{
+    background:rgb(51,51,51);
+    border:1px solid %2;
+}
+
 /*QComboBox{
     color:#f0ffff;
     border:1px solid #375564;
