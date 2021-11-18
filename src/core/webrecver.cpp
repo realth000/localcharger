@@ -1,9 +1,14 @@
 ﻿#include "webrecver.h"
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
+#include <QtCore/QThread>
 #include "core/jsonparser.h"
+#include "core/threadworker.h"
 
-WebRecver::WebRecver(QObject *parent, QString fileSavePath) : QObject(parent), m_fileSavePath(fileSavePath)
+WebRecver::WebRecver(QObject *parent, QString fileSavePath) :
+      QObject(parent),
+      m_fileSavePath(fileSavePath),
+      m_fileSavedSize(0)
 {
     connect(&m_socket, &QWebSocket::connected, this, &WebRecver::onConnected, Qt::UniqueConnection);
     connect(&m_socket, &QWebSocket::disconnected, this, &WebRecver::onDisconnected, Qt::QueuedConnection);
@@ -63,6 +68,12 @@ void WebRecver::sendMessage(const QString &msg)
     m_socket.sendTextMessage(msg);
 }
 
+void WebRecver::onPrepareRecvFile()
+{
+    ThreadWorker::resetSemaphore();
+    m_fileSavedSize = 0;
+}
+
 void WebRecver::openUrl(const url_t &url)
 {
     m_socket.open(url);
@@ -90,7 +101,6 @@ void WebRecver::onTextMessageReceived(const QString &message)
 
 void WebRecver::onBinaryMessageReceived(const QByteArray &message)
 {
-    qDebug() << "binary message received";
     const int messageType = QString::fromUtf8(message.left(10)).toInt();
 
     switch (messageType) {
@@ -135,6 +145,44 @@ WebSocketBinaryMessageType WebRecver::parseBinaryMessageType(const QByteArray &m
  */
 void WebRecver::saveSingleFileFrame(const QByteArray &message)
 {
+#if 1
+    int messageOffset = WEBSOCKET_MESSAGETYPE_LENGTH;
+    const int fileInfoArrayLength = message.mid(messageOffset, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH).toInt();
+    messageOffset += WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH;
+    const QByteArray fileInfoArray = message.mid(messageOffset, fileInfoArrayLength);
+    messageOffset += fileInfoArrayLength;
+    const int fileFrameID = QString::fromUtf8(message.mid(messageOffset, WEBSOCKET_FILEFRAME_ID_LENGTH)).toInt();
+    messageOffset += WEBSOCKET_FILEFRAME_ID_LENGTH;
+    const WebSocketFileInfo fileInfo = JsonParser::parseFileInfoFromArray(fileInfoArray);
+    const QFileInfo saveFileInfo(m_fileSavePath + NATIVE_PATH_SEP + fileInfo.m_fileName);
+
+    if(fileFrameID == 0){
+        m_fileSavedSize = 0;
+        emit recvFileStart(saveFileInfo.absoluteFilePath(), fileInfo.m_fileSize);
+    }
+    qint64 fileSaveSize = 0;
+    QThread *saveThread = new QThread();
+    ThreadWorker *saveThreadWorker = new ThreadWorker(message.right(message.length() - messageOffset),
+                                                      saveFileInfo.absoluteFilePath(),
+                                                      fileFrameID);
+    // manage lifetime
+    connect(saveThread, &QThread::started, saveThreadWorker, &ThreadWorker::saveFileFrameToDisk);
+    connect(saveThreadWorker, &ThreadWorker::saveFileFinish, saveThread, &QThread::quit);
+    connect(saveThread, &QThread::finished, saveThread, &QThread::deleteLater);
+    connect(saveThread, &QThread::finished, saveThreadWorker, &ThreadWorker::deleteLater);
+
+    connect(saveThreadWorker, &ThreadWorker::saveFileFinish, this,
+            [this, &fileSaveSize, fileFrameID, fileInfo, saveFileInfo](qint64 writeBytes){
+            fileSaveSize = writeBytes;
+            m_fileSavedSize += writeBytes;
+            qDebug() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
+            if(fileFrameID == fileInfo.m_fileFrameCount -1){
+                emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
+            }
+        });
+    saveThreadWorker->moveToThread(saveThread);
+    saveThread->start();
+#else
     const int fileInfoArrayLength = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH).toInt();
     const QByteArray fileInfoArray = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH, fileInfoArrayLength);
     const WebSocketFileInfo fileInfo = JsonParser::parseFileInfoFromArray(fileInfoArray);
@@ -158,4 +206,5 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
     if(fileFrameID == fileInfo.m_fileFrameCount -1){
         emit recvFileFinish(file.fileName(), file.size());
     }
+#endif
 }

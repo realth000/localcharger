@@ -32,6 +32,7 @@ win32 {
 SOURCES += \
     src/core/jsonparser.cpp \
     src/core/main.cpp \
+    src/core/threadworker.cpp \
     src/core/webrecver.cpp \
     src/gui/mainui.cpp \
     src/core/websender.cpp \
@@ -46,6 +47,7 @@ SOURCES += \
 
 HEADERS += \
     src/core/jsonparser.h \
+    src/core/threadworker.h \
     src/core/webrecver.h \
     src/gui/mainui.h \
     src/core/websender.h \

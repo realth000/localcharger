@@ -11,5 +11,6 @@
         <file>pic/start_connect.png</file>
         <file>pic/send_file.png</file>
         <file>pic/save_config.png</file>
+        <file>pic/openfolder.png</file>
     </qresource>
 </RCC>
