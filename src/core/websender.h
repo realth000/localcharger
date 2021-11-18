@@ -26,6 +26,7 @@ signals:
     void senderDisconnected();
     void sendFileStart(QString fileName, qint64 sendBytes);
     void sendFileFinish(QString fileName, qint64 sendBytes);
+    void prepareRecvFile();
 
 public slots:
     void sendMessage(const QString &msg);

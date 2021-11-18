@@ -53,6 +53,7 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
+    IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
     ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
@@ -66,7 +67,7 @@ void MainUi::initUi()
     ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
     ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
-//    ui->selectSaveFilePathPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->selectSaveFilePathPushButton->setFocusPolicy(Qt::NoFocus);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
@@ -123,6 +124,9 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+
+    // clear info before send file
+    connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
 }
 
 MainUi::~MainUi()

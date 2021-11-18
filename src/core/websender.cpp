@@ -7,6 +7,7 @@
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
+#include "core/threadworker.h"
 #include "utils/randomgenerator.h"
 
 
@@ -97,6 +98,7 @@ void WebSender::sendFile(const QString &filePath)
         qDebug() << "can not open file" << filePath;
         return;
     }
+    emit prepareRecvFile();
     /*
      * messageArray:
      * MessageType          10bytes
