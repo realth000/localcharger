@@ -48,7 +48,7 @@ bool WebRecver::start(const url_t &url)
 void WebRecver::stop()
 {
     if(m_socket.state() != QAbstractSocket::UnconnectedState && m_socket.state() != QAbstractSocket::ClosingState){
-        m_socket.close();
+        m_socket.abort();
     }
 }
 
@@ -143,7 +143,7 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
     qDebug() << "receive id =" << fileFrameID;
     QFile file(m_fileSavePath + NATIVE_PATH_SEP + fileInfo.m_fileName);
     if(fileFrameID == 0){
-        emit recvFileStart(file.fileName(), file.size());
+        emit recvFileStart(file.fileName(), fileInfo.m_fileSize);
         if(file.exists()){
             file.remove();
         }
