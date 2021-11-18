@@ -11,6 +11,7 @@
 #define APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH   "/WebSocket/SenderIP"
 #define APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH "/WebSocket/SenderPort"
 #define APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH "/WebSocket/RecverPort"
+#define APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH "/WebSocket/RecverSaveFilePath"
 
 #define TITLEBAR_TITLETEXT "LocalCharger" " " APP_VERSION
 #define TITLEBAR_TITLEICON ":/pic/LocalCharger.ico"
