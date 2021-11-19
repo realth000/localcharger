@@ -111,8 +111,8 @@
   <widget class="QGroupBox" name="recverConfigGroupBox">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>130</y>
+     <x>730</x>
+     <y>110</y>
      <width>291</width>
      <height>111</height>
     </rect>
@@ -235,10 +235,10 @@
   <widget class="QGroupBox" name="senderConfigGroupBox">
    <property name="geometry">
     <rect>
-     <x>320</x>
-     <y>40</y>
+     <x>430</x>
+     <y>110</y>
      <width>291</width>
-     <height>81</height>
+     <height>111</height>
     </rect>
    </property>
    <property name="title">
@@ -248,7 +248,7 @@
     <property name="geometry">
      <rect>
       <x>30</x>
-      <y>30</y>
+      <y>60</y>
       <width>70</width>
       <height>30</height>
      </rect>
@@ -261,7 +261,30 @@
     <property name="geometry">
      <rect>
       <x>100</x>
-      <y>30</y>
+      <y>60</y>
+      <width>161</width>
+      <height>30</height>
+     </rect>
+    </property>
+   </widget>
+   <widget class="QLabel" name="label_7">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>20</y>
+      <width>81</width>
+      <height>30</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>查看本地IP</string>
+    </property>
+   </widget>
+   <widget class="QComboBox" name="recverUrlHintComboBox">
+    <property name="geometry">
+     <rect>
+      <x>100</x>
+      <y>20</y>
       <width>161</width>
       <height>30</height>
      </rect>
@@ -271,8 +294,8 @@
   <widget class="QPushButton" name="updateWebConfigPushButton">
    <property name="geometry">
     <rect>
-     <x>620</x>
-     <y>80</y>
+     <x>1030</x>
+     <y>120</y>
      <width>42</width>
      <height>42</height>
     </rect>
@@ -297,8 +320,8 @@
   <widget class="QPushButton" name="saveConfigPushButton">
    <property name="geometry">
     <rect>
-     <x>620</x>
-     <y>130</y>
+     <x>1030</x>
+     <y>170</y>
      <width>42</width>
      <height>42</height>
     </rect>
@@ -345,6 +368,42 @@
      <string>发文件</string>
     </property>
    </widget>
+  </widget>
+  <widget class="QLineEdit" name="saveFilePathLineEdit">
+   <property name="geometry">
+    <rect>
+     <x>510</x>
+     <y>50</y>
+     <width>361</width>
+     <height>30</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_8">
+   <property name="geometry">
+    <rect>
+     <x>430</x>
+     <y>50</y>
+     <width>80</width>
+     <height>30</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>保存路径</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="selectSaveFilePathPushButton">
+   <property name="geometry">
+    <rect>
+     <x>880</x>
+     <y>45</y>
+     <width>42</width>
+     <height>42</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
   </widget>
  </widget>
  <customwidgets>

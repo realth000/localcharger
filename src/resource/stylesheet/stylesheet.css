@@ -141,19 +141,6 @@ QComboBox QAbstractItemView{
     outline:none;
 }
 
-/*QComboBox{
-    color:#f0ffff;
-    border:1px solid #375564;
-    background:rgb(49,49,49);
-    border-radius:0px;
-    selection-color:#f0ffff;
-}
-
-QComboBox QAbstractItemView{
-    border:1px solid #375564;
-    outline:none;
-}
-
 QComboBox QAbstractItemView::item{
     color:#f0ffff;
     height:20px;
@@ -161,6 +148,5 @@ QComboBox QAbstractItemView::item{
 }
 
 QComboBox QAbstractItemView::item:selected{
-    background-color:rgb(105,145,145);
-}*/
-
+    background-color:rgb(30,59,82);
+}

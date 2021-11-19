@@ -32,10 +32,12 @@ win32 {
 SOURCES += \
     src/core/jsonparser.cpp \
     src/core/main.cpp \
+    src/core/threadworker.cpp \
     src/core/webrecver.cpp \
     src/gui/mainui.cpp \
     src/core/websender.cpp \
     src/utils/iconinstaller.cpp \
+    src/utils/networkinfohelper.cpp \
     src/utils/qssinstaller.cpp \
     src/utils/randomgenerator.cpp \
     src/utils/style/proxystyle.cpp \
@@ -45,6 +47,7 @@ SOURCES += \
 
 HEADERS += \
     src/core/jsonparser.h \
+    src/core/threadworker.h \
     src/core/webrecver.h \
     src/gui/mainui.h \
     src/core/websender.h \
@@ -54,6 +57,7 @@ HEADERS += \
     src/include/proxystyle.h \
     src/include/qssinstaller.h \
     src/include/titlebar.h \
+    src/utils/networkinfohelper.h \
     src/utils/randomgenerator.h \
     src/utils/widget/texteditex.h
 

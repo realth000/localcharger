@@ -7,6 +7,7 @@
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
+#include "core/threadworker.h"
 #include "utils/randomgenerator.h"
 
 
@@ -81,22 +82,23 @@ void WebSender::sendMessage(const QString &msg)
     m_currentSocket->sendTextMessage(msg);
 }
 
-void WebSender::sendFile(const QString &filePath)
+bool WebSender::sendFile(const QString &filePath)
 {
     QFile fileToSend(filePath);
     QFileInfo fileInfo(filePath);
     if(!fileToSend.exists()){
         qDebug() << "file not exists:" << filePath;
-        return;
+        return false;
     }
     if(!fileInfo.isFile()){
         qDebug() << filePath << "is not a file";
-        return;
+        return false;
     }
     if(!fileToSend.open(QIODevice::ReadOnly)){
         qDebug() << "can not open file" << filePath;
-        return;
+        return false;
     }
+    emit prepareRecvFile();
     /*
      * messageArray:
      * MessageType          10bytes
@@ -110,6 +112,7 @@ void WebSender::sendFile(const QString &filePath)
     QByteArray fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
     qint64 fileFrameID = 0;
     qint64 fileSendBytes = 0;
+    emit sendFileStart(filePath, fileToSend.size());
     while(!fileDataArray.isEmpty()){
         // TODO: processEvents can control speed but controls too much
         // length = 10 bytes
@@ -127,7 +130,8 @@ void WebSender::sendFile(const QString &filePath)
     }
     fileToSend.close();
     qDebug() << "WebSender: about to send file, array total length" << fileSendBytes;
-
+    emit sendFileFinish(filePath, fileSendBytes);
+    return true;
 }
 
 void WebSender::onNewConnection()
@@ -181,6 +185,9 @@ QByteArray WebSender::generateFileInfoMessage(const QString &filePath)
         return QByteArray();
     }
     QFileInfo fileInfo(filePath);
-    return JsonParser::genFileInfoFromString(WebSocketFileInfo(fileInfo.fileName(),fileInfo.size(),
-                                                               "", RandomGenerator::generateFromString(WEBSOCKET_FILEINFO_FILEID_LENGTH)));
+    return JsonParser::genFileInfoFromString(WebSocketFileInfo(fileInfo.fileName(),
+                                             fileInfo.size(),
+                                             "",
+                                             RandomGenerator::generateFromString(WEBSOCKET_FILEINFO_FILEID_LENGTH),
+                                             qCeil(qreal(fileInfo.size())/WEBSOCKET_FILEFRAME_FRAME_LENGTH)));
 }
