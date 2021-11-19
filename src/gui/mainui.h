@@ -48,6 +48,12 @@ private slots:
     void on_sendFilePushButton_clicked();
     bool updateWebSocketConfig();
     void on_saveConfigPushButton_clicked();
+    void onSendFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
+    void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
+    void on_selectSaveFilePathPushButton_clicked();
+    void on_saveFilePathLineEdit_textChanged(const QString &arg1);
 
 private:
     Ui::MainUi *ui;
@@ -61,12 +67,14 @@ private:
     RecverState m_socketRecverState;
     QRegularExpressionValidator *m_ipTypeValidator;
     QIntValidator *m_portTypeValidator;
-    const QString configFilePath;
+    const QString m_configFilePath;
+    QString m_saveFileDirPath;
 
     // styles
     PushButtonStyle *m_pushButtonStyle;
     HorizontalScrollBarStyle *m_hScrollStyle;
     VerticalScrollBarStyle *m_vScrollStyle;
+    ComboBoxStyle *m_comboBoxStyle;
 
     void startSender(const port_t &port);
     void stopSender();
@@ -74,7 +82,9 @@ private:
     void stopRecver();
     void updateSenderState(SenderState state);
     void updateRecverState(RecverState state);
+    void loadDefaultConfig();
     void loadConfig();
     void saveConfig();
+    void getLocalIp();
 };
 #endif // MAINUI_H

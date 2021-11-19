@@ -27,9 +27,12 @@ signals:
     void recvedMessage(const QString msg);
     void recverConnected();
     void recverDisconnected();
+    void recvFileStart(QString filePath, qint64 recvBytes);
+    void recvFileFinish(QString filePath, qint64 recvBytes);
 
 public slots:
     void sendMessage(const QString &msg);
+    void onPrepareRecvFile();
 
 private slots:
     void openUrl(const url_t &url);
@@ -43,8 +46,9 @@ private:
     QWebSocket m_socket;
     QMap<QString , WebSocketFileInfo > m_fileInfoMap;
     QString m_fileSavePath;
+    qint64 m_fileSavedSize;
     WebSocketBinaryMessageType parseBinaryMessageType(const QByteArray &message);
-    void saveSingleFile(const QByteArray &message);
+    void saveSingleFileFrame(const QByteArray &message);
 };
 
 #endif // WEBRECVER_H

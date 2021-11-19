@@ -11,6 +11,7 @@
 #define APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH   "/WebSocket/SenderIP"
 #define APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH "/WebSocket/SenderPort"
 #define APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH "/WebSocket/RecverPort"
+#define APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH "/WebSocket/RecverSaveFilePath"
 
 #define TITLEBAR_TITLETEXT "LocalCharger" " " APP_VERSION
 #define TITLEBAR_TITLEICON ":/pic/LocalCharger.ico"
@@ -31,11 +32,12 @@
 #define WEBSOCKET_CONFIG_CERTFILT_PATH               ":/config/localhost.cert"
 #define WEBSOCKET_CONFIG_KEYFILE_PATH                ":/config/localhost.key"
 
-#define WEBSOCKET_FILEINFO_FILENAME_NAME   "fileName"
-#define WEBSOCKET_FILEINFO_FILESIZE_NAME   "fileSize"
-#define WEBSOCKET_FILEINFO_FILECHKSUM_NAME "fileChkSum"
-#define WEBSOCKET_FILEINFO_FILEID_NAME     "fileID"
-#define WEBSOCKET_FILEINFO_FILEID_LENGTH   32
+#define WEBSOCKET_FILEINFO_FILENAME_NAME        "fileName"
+#define WEBSOCKET_FILEINFO_FILESIZE_NAME        "fileSize"
+#define WEBSOCKET_FILEINFO_FILECHKSUM_NAME      "fileChkSum"
+#define WEBSOCKET_FILEINFO_FILEID_NAME          "fileID"
+#define WEBSOCKET_FILEINFO_FILEID_LENGTH        32
+#define WEBSOCKET_FILEINFO_FILEFRAME_COUNT_NAME "fileFrameCount"
 #define WEBSOCKET_FILEFRAME_FRAME_LENGTH   104857600 // 1024*1024*100=100MB
 #define WEBSOCKET_FILEFRAME_ID_LENGTH      8
 
@@ -45,6 +47,16 @@
 #define VALIDATOR_TYPE_IP_EXPRESSION "^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|localhost$"
 #define VALIDATOR_TYPE_PORT_MIN      0
 #define VALIDATOR_TYPE_PORT_MAX      65535
+
+#define MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR "#3366ff"
+#define MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR "#ffffcc"
+#define MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR  "#009966"
+#define MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR  "#ffffcc"
+
+#define MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR "#3366ff"
+#define MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR "#ffffcc"
+#define MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR  "#009966"
+#define MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR  "#ffffcc"
 
 #if defined(Q_OS_WINDOWS) || defined(Q_OS_WIN)
 #define NATIVE_PATH_SEP "\\"
@@ -57,15 +69,16 @@ using port_t = quint16;
 
 struct WebSocketFileInfo{
     explicit WebSocketFileInfo(){};
-    explicit WebSocketFileInfo(QString fileName, qint64 fileSize, QString fileChkSum, QString fileID):
+    explicit WebSocketFileInfo(QString fileName, qint64 fileSize, QString fileChkSum, QString fileID, qint64 fileFrameCount):
           m_fileName(fileName),
           m_fileSize(fileSize),
           m_fileChkSum(fileChkSum),
-          m_fileID(fileID){};
+          m_fileID(fileID),m_fileFrameCount(fileFrameCount){};
     QString m_fileName;
     qint64 m_fileSize;
     QString m_fileChkSum = "";
     QString m_fileID;
+    qint64 m_fileFrameCount;
 };
 
 /*

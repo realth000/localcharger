@@ -2,12 +2,15 @@
 #include "ui_mainui.h"
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
+#include <QtNetwork/QNetworkInterface>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QListView>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
 #include "qssinstaller.h"
 #include "titlebar.h"
+#include "utils/networkinfohelper.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
@@ -20,17 +23,20 @@ MainUi::MainUi(QWidget *parent)
       m_socketRecverState(RecverState::Disconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
-      configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
+      m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
+      m_saveFileDirPath(QCoreApplication::applicationDirPath()),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
-      m_vScrollStyle(new VerticalScrollBarStyle)
+      m_vScrollStyle(new VerticalScrollBarStyle),
+      m_comboBoxStyle(new ComboBoxStyle)
 {
     ui->setupUi(this);
+    loadDefaultConfig();
     loadConfig();
     initUi();
     initConnections();
 
-    m_socketRecver.setFileSavePath(QCoreApplication::applicationDirPath());
+    getLocalIp();
 
     updateWebSocketConfig();
     updateSenderState(SenderState::Disconnected);
@@ -49,18 +55,21 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
+    IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder.png");
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
     ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
     ui->saveConfigPushButton->setStyle(m_pushButtonStyle);
+    ui->selectSaveFilePathPushButton->setStyle(m_pushButtonStyle);
     ui->startSenderPushButton->setFocusPolicy(Qt::NoFocus);
     ui->startRecverPushButton->setFocusPolicy(Qt::NoFocus);
     ui->updateWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
     ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->selectSaveFilePathPushButton->setFocusPolicy(Qt::NoFocus);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
@@ -73,6 +82,8 @@ void MainUi::initUi()
 
     ui->msgSendTextEdit->setReadOnly(true);
     ui->msgRecvTextEdit->setReadOnly(true);
+    ui->saveFilePathLineEdit->setReadOnly(true);
+    ui->saveFilePathLineEdit->setFocusPolicy(Qt::NoFocus);
     ui->senderUrlLineEdit->setValidator(m_ipTypeValidator);
     ui->senderPortLineEdit->setValidator(m_portTypeValidator);
     ui->recverPortLineEdit->setValidator(m_portTypeValidator);
@@ -92,24 +103,35 @@ void MainUi::initUi()
     ui->senderUrlLineEdit->setText(m_sockerSenderIp);
     ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
     ui->recverPortLineEdit->setText(QString::number(m_socketRecverPort));
+    ui->saveFilePathLineEdit->setText(m_saveFileDirPath);
 
     this->setTabOrder(ui->recverPortLineEdit, ui->senderUrlLineEdit);
     this->setTabOrder(ui->senderUrlLineEdit, ui->senderPortLineEdit);
     this->setFocus();
+
+    ui->recverUrlHintComboBox->setView(new QListView(ui->recverUrlHintComboBox));
+    ui->recverUrlHintComboBox->setStyle(m_comboBoxStyle);
 }
 
 void MainUi::initConnections()
 {
-    // passing message
-    connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
-
     // passing sender state
     connect(&m_socketSender, &WebSender::senderConnected, this, &MainUi::onSenderConnected);
     connect(&m_socketSender, &WebSender::senderDisconnected, this, &MainUi::onSenderDisconnected);
+    // passing sender message
+    connect(&m_socketSender, &WebSender::sendFileStart, this, &MainUi::onSendFileStart);
+    connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &MainUi::onRecverConnected);
     connect(&m_socketRecver, &WebRecver::recverDisconnected, this, &MainUi::onRecverDisconnected);
+    // passing recver message
+    connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
+    connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
+    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+
+    // clear info before send file
+    connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
 }
 
 MainUi::~MainUi()
@@ -122,6 +144,7 @@ MainUi::~MainUi()
     delete m_pushButtonStyle;
     delete m_hScrollStyle;
     delete m_vScrollStyle;
+    delete m_comboBoxStyle;
 }
 
 
@@ -168,6 +191,7 @@ void MainUi::startSender(const port_t &port)
 void MainUi::stopSender()
 {
     m_socketSender.stop();
+    updateSenderState(SenderState::Disconnected);
 }
 
 void MainUi::startRecver(const url_t &url)
@@ -180,6 +204,7 @@ void MainUi::startRecver(const url_t &url)
 void MainUi::stopRecver()
 {
     m_socketRecver.stop();
+    updateRecverState(RecverState::Disconnected);
 }
 
 void MainUi::updateSenderState(SenderState state)
@@ -225,26 +250,45 @@ void MainUi::updateRecverState(RecverState state)
     }
 }
 
+void MainUi::loadDefaultConfig()
+{
+    m_socketRecver.setFileSavePath(m_saveFileDirPath);
+}
+
 void MainUi::loadConfig()
 {
-    if(!QFileInfo::exists(configFilePath)){
+    if(!QFileInfo::exists(m_configFilePath)){
         qDebug() << "config file not found, load default config";
         return;
     }
-    const QSettings *configIni = new QSettings(configFilePath, QSettings::IniFormat);
+    const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
     m_sockerSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
     m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
     m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
+    m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
     delete configIni;
 }
 
 void MainUi::saveConfig()
 {
-    QSettings *configIni = new QSettings(configFilePath, QSettings::IniFormat);
+    QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_sockerSenderIp);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
+    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
     delete configIni;
+}
+
+void MainUi::getLocalIp()
+{
+    // Get local ip address and netmask
+    // TODO: Support more than one ip and IPV6
+    const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
+    QStringList ipStringList;
+    foreach(IpInfo ip, ipList){
+        ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
+    }
+    ui->recverUrlHintComboBox->insertItems(0, ipStringList);
 }
 
 void MainUi::on_startSenderPushButton_clicked()
@@ -317,13 +361,7 @@ void MainUi::on_sendFilePushButton_clicked()
         qDebug() << "file not exists:" << filePath;
         return;
     }
-    if(!fileToSend.open(QIODevice::ReadOnly)){
-        qDebug() << "can not open file" << filePath;
-        return;
-    }
-    m_socketSender.sendFile(filePath);
-    fileToSend.close();
-    qDebug() << "send file finish:" << filePath;
+    m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
 }
 
 bool MainUi::updateWebSocketConfig()
@@ -372,4 +410,56 @@ void MainUi::on_saveConfigPushButton_clicked()
     if(updateWebSocketConfig()){
         saveConfig();
     }
+}
+
+void MainUi::onSendFileStart(const QString &fielPath, const qint64 &fileSize)
+{
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">Sending file:"
+                                        "</font> %1 "
+                                        "<font color=\"%4\">(%2 bytes)"
+                                        "</font>").
+                                arg(fielPath, QString::number(fileSize), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
+}
+
+void MainUi::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
+{
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">File sended:"
+                                        "</font> %1 "
+                                        "<font color=\"%4\">(%2 bytes)"
+                                        "</font>").
+                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR));
+}
+
+void MainUi::onRecvFileStart(const QString &fielPath, const qint64 &fileSize)
+{
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">Recving file:"
+                                        "</font> %1 "
+                                        "<font color=\"%4\">(%2 bytes)"
+                                        "</font>").
+                                arg(fielPath, QString::number(fileSize), MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR));
+}
+
+void MainUi::onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes)
+{
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">File recvied:"
+                                        "</font> %1 "
+                                        "<font color=\"%4\">(%2 bytes)"
+                                        "</font>").
+                                arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
+}
+
+void MainUi::on_selectSaveFilePathPushButton_clicked()
+{
+    QString savePath = QFileDialog::getExistingDirectory(this, "保存到", QCoreApplication::applicationDirPath());
+    if(savePath.isEmpty()){
+        return;
+    }
+    ui->saveFilePathLineEdit->setText(savePath);
+}
+
+
+void MainUi::on_saveFilePathLineEdit_textChanged(const QString &arg1)
+{
+    m_socketRecver.setFileSavePath(arg1);
+    m_saveFileDirPath = arg1;
 }
