@@ -140,3 +140,13 @@ QComboBox QAbstractItemView{
     border:1px solid #375564;
     outline:none;
 }
+
+QComboBox QAbstractItemView::item{
+    color:#f0ffff;
+    height:20px;
+    background:rgb(49,49,49);
+}
+
+QComboBox QAbstractItemView::item:selected{
+    background-color:rgb(30,59,82);
+}
