@@ -82,21 +82,21 @@ void WebSender::sendMessage(const QString &msg)
     m_currentSocket->sendTextMessage(msg);
 }
 
-void WebSender::sendFile(const QString &filePath)
+bool WebSender::sendFile(const QString &filePath)
 {
     QFile fileToSend(filePath);
     QFileInfo fileInfo(filePath);
     if(!fileToSend.exists()){
         qDebug() << "file not exists:" << filePath;
-        return;
+        return false;
     }
     if(!fileInfo.isFile()){
         qDebug() << filePath << "is not a file";
-        return;
+        return false;
     }
     if(!fileToSend.open(QIODevice::ReadOnly)){
         qDebug() << "can not open file" << filePath;
-        return;
+        return false;
     }
     emit prepareRecvFile();
     /*
@@ -131,6 +131,7 @@ void WebSender::sendFile(const QString &filePath)
     fileToSend.close();
     qDebug() << "WebSender: about to send file, array total length" << fileSendBytes;
     emit sendFileFinish(filePath, fileSendBytes);
+    return true;
 }
 
 void WebSender::onNewConnection()

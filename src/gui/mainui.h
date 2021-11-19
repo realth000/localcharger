@@ -74,6 +74,7 @@ private:
     PushButtonStyle *m_pushButtonStyle;
     HorizontalScrollBarStyle *m_hScrollStyle;
     VerticalScrollBarStyle *m_vScrollStyle;
+    ComboBoxStyle *m_comboBoxStyle;
 
     void startSender(const port_t &port);
     void stopSender();

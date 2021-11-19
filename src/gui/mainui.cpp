@@ -4,6 +4,7 @@
 #include <QtCore/QThread>
 #include <QtNetwork/QNetworkInterface>
 #include <QtWidgets/QFileDialog>
+#include <QtWidgets/QListView>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
@@ -26,7 +27,8 @@ MainUi::MainUi(QWidget *parent)
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
-      m_vScrollStyle(new VerticalScrollBarStyle)
+      m_vScrollStyle(new VerticalScrollBarStyle),
+      m_comboBoxStyle(new ComboBoxStyle)
 {
     ui->setupUi(this);
     loadDefaultConfig();
@@ -106,6 +108,9 @@ void MainUi::initUi()
     this->setTabOrder(ui->recverPortLineEdit, ui->senderUrlLineEdit);
     this->setTabOrder(ui->senderUrlLineEdit, ui->senderPortLineEdit);
     this->setFocus();
+
+    ui->recverUrlHintComboBox->setView(new QListView(ui->recverUrlHintComboBox));
+    ui->recverUrlHintComboBox->setStyle(m_comboBoxStyle);
 }
 
 void MainUi::initConnections()
@@ -139,6 +144,7 @@ MainUi::~MainUi()
     delete m_pushButtonStyle;
     delete m_hScrollStyle;
     delete m_vScrollStyle;
+    delete m_comboBoxStyle;
 }
 
 
@@ -278,13 +284,11 @@ void MainUi::getLocalIp()
     // Get local ip address and netmask
     // TODO: Support more than one ip and IPV6
     const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
-    if(ipList.length() == 1){
-        ui->recverUrlHintLabel->setText(QString("%1/%2").arg(ipList[0].ipV4Address, QString::number(ipList[0].prefixLength)));
+    QStringList ipStringList;
+    foreach(IpInfo ip, ipList){
+        ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
     }
-    else{
-        ui->recverUrlHintLabel->setText(QStringLiteral("获取失败，需要自行查看"));
-        qDebug() << "需要自行查看";
-    }
+    ui->recverUrlHintComboBox->insertItems(0, ipStringList);
 }
 
 void MainUi::on_startSenderPushButton_clicked()
@@ -357,13 +361,7 @@ void MainUi::on_sendFilePushButton_clicked()
         qDebug() << "file not exists:" << filePath;
         return;
     }
-    if(!fileToSend.open(QIODevice::ReadOnly)){
-        qDebug() << "can not open file" << filePath;
-        return;
-    }
-    m_socketSender.sendFile(filePath);
-    fileToSend.close();
-    qDebug() << "send file finish:" << filePath;
+    m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
 }
 
 bool MainUi::updateWebSocketConfig()
@@ -465,4 +463,3 @@ void MainUi::on_saveFilePathLineEdit_textChanged(const QString &arg1)
     m_socketRecver.setFileSavePath(arg1);
     m_saveFileDirPath = arg1;
 }
-
