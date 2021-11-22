@@ -1,6 +1,6 @@
 ﻿import QtQuick 2.0
-import QtQuick.Controls 2.15
-import QtQuick.Layouts 1.15
+import QtQuick.Controls 2.10
+import QtQuick.Layouts 1.10
 
 Item {
     id: mainWorkPageItem
