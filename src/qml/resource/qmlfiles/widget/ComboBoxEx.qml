@@ -109,7 +109,6 @@ ComboBox {
 
                 cvs.fill()
                 cvs.stroke()
-                console.log(canvas.width, canvas.height)
             }
         }
 
@@ -120,10 +119,7 @@ ComboBox {
 
 
     function resetModel(elementList) {
-        console.log("reset model")
         for(let element of elementList){
-            console.log(element)
-            console.log(typeof(element))
             if (find(element) === -1){
                 model.append({text: element})
             }

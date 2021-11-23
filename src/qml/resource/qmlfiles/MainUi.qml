@@ -61,7 +61,6 @@ ApplicationWindow {
             console.log(msg)
         }
         onQmlUpdateLocalUrlLists: {
-            console.log(ipStringList)
             configPage.loadIpUrls(ipStringList);
         }
     }
