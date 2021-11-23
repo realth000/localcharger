@@ -9,8 +9,8 @@ QmlHandler::QmlHandler(QObject *parent)
       m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
       m_socketRecverUrl(QStringLiteral(WEBSOCKET_RECVER_URL_DEFAULT)),
       m_socketRecverPort(WEBSOCKET_RECVER_PORT_DEFAULT),
-      m_socketSenderState(SenderState::Disconnected),
-      m_socketRecverState(RecverState::Disconnected),
+      m_socketSenderState(QmlSenderState::SenderDisconnected),
+      m_socketRecverState(QmlRecverState::RecverDisconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
@@ -21,13 +21,77 @@ QmlHandler::QmlHandler(QObject *parent)
 
 void QmlHandler::initHandler()
 {
-    emit qmlMessageInfo("123");
-
     loadDefaultConfig();
     loadConfig();
+    initConnections();
+
     getLocalIp();
-    updateSenderState(SenderState::Disconnected);
-    updateRecverState(RecverState::Disconnected);
+
+    updateSenderState(QmlSenderState::SenderDisconnected);
+    updateRecverState(QmlRecverState::RecverDisconnected);
+}
+
+void QmlHandler::startSender()
+{
+    stopSender();
+    startSender(m_socketSenderPort);
+}
+
+void QmlHandler::startRecver()
+{
+    stopRecver();
+    if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
+        qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
+        return;
+    }
+    m_socketRecverUrl.setHost(m_sockerSenderIp);
+    m_socketRecverUrl.setPort(m_socketSenderPort);
+    startRecver(m_socketRecverUrl);
+}
+
+void QmlHandler::onSenderConnected()
+{
+    updateSenderState(QmlSenderState::SenderConnected);
+}
+
+void QmlHandler::onSenderDisconnected()
+{
+    updateSenderState(QmlSenderState::SenderDisconnected);
+}
+
+void QmlHandler::onRecverConnected()
+{
+    updateRecverState(QmlRecverState::RecverConnected);
+}
+
+void QmlHandler::onRecverDisconnected()
+{
+    updateRecverState(QmlRecverState::RecverDisconnected);
+}
+
+void QmlHandler::initConnections()
+{
+    // passing sender state
+    connect(&m_socketSender, &WebSender::senderConnected, this, &QmlHandler::onSenderConnected);
+    connect(&m_socketSender, &WebSender::senderDisconnected, this, &QmlHandler::onSenderDisconnected);
+
+    // TOOD: transport files
+    // passing sender message
+//    connect(&m_socketSender, &WebSender::sendFileStart, this, &QmlHandler::onSendFileStart);
+//    connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::onSendFileFinish);
+
+    // passing recver state
+    connect(&m_socketRecver, &WebRecver::recverConnected, this, &QmlHandler::onRecverConnected);
+    connect(&m_socketRecver, &WebRecver::recverDisconnected, this, &QmlHandler::onRecverDisconnected);
+
+    // TODO: transport files
+    // passing recver message
+//    connect(&m_socketRecver, &WebRecver::recvedMessage, this, &QmlHandler::recoredRecvedMsg);
+//    connect(&m_socketRecver, &WebRecver::recvFileStart, this, &QmlHandler::onRecvFileStart);
+//    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::onRecvFileFinish);
+
+    // clear info before send file
+    connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -39,45 +103,45 @@ void QmlHandler::startSender(const port_t &port)
 
     if(m_socketSender.start(port)){
         qDebug() << "Sender start listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
-        updateSenderState(SenderState::Listening);
+        updateSenderState(QmlSenderState::SenderListening);
     }
     else{
         qDebug() << "Sender failed to listen" << m_socketSender.senderUrl() << m_socketSender.senderPort();
-        updateSenderState(SenderState::Disconnected);
+        updateSenderState(QmlSenderState::SenderDisconnected);
     }
 }
 
 void QmlHandler::stopSender()
 {
     m_socketSender.stop();
-    updateSenderState(SenderState::Disconnected);
+    updateSenderState(QmlSenderState::SenderDisconnected);
 }
 
 void QmlHandler::startRecver(const url_t &url)
 {
     m_socketRecver.stop();
-    updateRecverState(RecverState::Connecting);
+    updateRecverState(QmlRecverState::RecverConnecting);
     m_socketRecver.start(url);
 }
 
 void QmlHandler::stopRecver()
 {
     m_socketRecver.stop();
-    updateRecverState(RecverState::Disconnected);
+    updateRecverState(QmlRecverState::RecverDisconnected);
 }
 
-void QmlHandler::updateSenderState(SenderState state)
+void QmlHandler::updateSenderState(QmlSenderState state)
 {
     switch (state) {
-    case SenderState::Disconnected:
-        m_socketSenderState = SenderState::Disconnected;
+    case QmlSenderState::SenderDisconnected:
+        m_socketSenderState = QmlSenderState::SenderDisconnected;
 
         break;
-    case SenderState::Listening:
-        m_socketSenderState = SenderState::Listening;
+    case QmlSenderState::SenderListening:
+        m_socketSenderState = QmlSenderState::SenderListening;
         break;
-    case SenderState::Connected:
-        m_socketSenderState = SenderState::Connected;
+    case QmlSenderState::SenderConnected:
+        m_socketSenderState = QmlSenderState::SenderConnected;
         break;
     default:
         break;
@@ -85,17 +149,17 @@ void QmlHandler::updateSenderState(SenderState state)
     emit qmlUpdateSenderState(m_socketSenderState);
 }
 
-void QmlHandler::updateRecverState(RecverState state)
+void QmlHandler::updateRecverState(QmlRecverState state)
 {
     switch (state) {
-    case RecverState::Disconnected:
-        m_socketRecverState = RecverState::Disconnected;
+    case QmlRecverState::RecverDisconnected:
+        m_socketRecverState = QmlRecverState::RecverDisconnected;
         break;
-    case RecverState::Connecting:
-        m_socketRecverState = RecverState::Connecting;
+    case QmlRecverState::RecverConnecting:
+        m_socketRecverState = QmlRecverState::RecverConnecting;
         break;
-    case RecverState::Connected:
-        m_socketRecverState = RecverState::Connected;
+    case QmlRecverState::RecverConnected:
+        m_socketRecverState = QmlRecverState::RecverConnected;
         break;
     default:
         break;
@@ -120,6 +184,7 @@ void QmlHandler::loadConfig()
     m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
     m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
     delete configIni;
+    emit qmlUpdateSocketConfig(m_sockerSenderIp, m_socketSenderPort, m_socketRecverPort);
 }
 
 void QmlHandler::saveConfig()

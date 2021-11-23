@@ -7,6 +7,8 @@ Rectangle {
     id: gbexMainRect
     property QtObject labelRect: gbexLabel
     property QtObject separator: gbexSeparater
+    property QtObject item1: item1
+    property QtObject item2: item2
     readonly property int titleHeight: labelHeight + gbexSeparater.height
     property string iconPath
     property string labelText
@@ -23,7 +25,6 @@ Rectangle {
     width: parent.width
     height: 200
     color: "transparent"
-
     Rectangle {
         id: gbexBackgroundRect
         width: parent.width

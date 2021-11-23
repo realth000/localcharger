@@ -19,11 +19,12 @@ ApplicationWindow {
         StackLayout {
             id: mainStackLayout
             currentIndex: mainTabBar.currentIndex
+            MainWorkPage {
+                id: workPage
+            }
+
             MainConfigPage {
                 id: configPage
-
-            }
-            MainWorkPage {
 
             }
         }
@@ -34,14 +35,6 @@ ApplicationWindow {
             height: 70
             spacing: 0
             TabButtonEx {
-                id: mainConigPageTabButtonEx
-                width: mainTabBar.width/2
-                height: mainTabBar.height
-                texts: "设定"
-                iconChecked: "qrc:/pic/qmlsettings.png"
-                iconUnchecked: "qrc:/pic/qmlsettings2.png"
-            }
-            TabButtonEx {
                 id: mainWorkPAgeTabButtonEx
                 width: mainTabBar.width/2
                 height: mainTabBar.height
@@ -49,7 +42,14 @@ ApplicationWindow {
                 iconChecked: "qrc:/pic/qmlsend.png"
                 iconUnchecked: "qrc:/pic/qmlsend2.png"
             }
-
+            TabButtonEx {
+                id: mainConigPageTabButtonEx
+                width: mainTabBar.width/2
+                height: mainTabBar.height
+                texts: "设定"
+                iconChecked: "qrc:/pic/qmlsettings.png"
+                iconUnchecked: "qrc:/pic/qmlsettings2.png"
+            }
         }
     }
 
@@ -61,9 +61,21 @@ ApplicationWindow {
             console.log(msg)
         }
         onQmlUpdateLocalUrlLists: {
-            configPage.loadIpUrls(ipStringList);
+            configPage.loadIpUrls(ipStringList)
+        }
+        onQmlUpdateSocketConfig: {
+            configPage.updateSocketConfig(senderIp, senderPort, recverPort)
+        }
+        onQmlUpdateSenderState: {
+            workPage.updateSenderState(state)
+            console.log(typeof(state), state, state == QmlHandler.SenderDisconnected)
+        }
+        onQmlUpdateRecverState: {
+            workPage.updateRecverState(state)
+            console.log("new recver state =", state)
         }
     }
+
     Component.onCompleted: {
         mainQmlHandler.initHandler()
     }
