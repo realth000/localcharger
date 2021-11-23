@@ -7,5 +7,7 @@
         <file>qmlfiles/widget/TextFieldEx.qml</file>
         <file>qmlfiles/widget/SeparatorEx.qml</file>
         <file>qmlfiles/widget/ComboBoxEx.qml</file>
+        <file>qmlfiles/widget/ButtonEx.qml</file>
+        <file>qmlfiles/widget/GroupBoxEx.qml</file>
     </qresource>
 </RCC>
