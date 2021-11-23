@@ -5,11 +5,9 @@ import QtGraphicalEffects 1.12
 
 Button{
     id: self
-    QtObject{
-        enum IconPos{
-            IconAbove = 0x00000000,
-            IconLeft = 0x00000001
-        }
+    enum IconPos{
+        IconAbove = 0,
+        IconLeft = 1
     }
     property bool borderBottom: false
     property color borderBottomColor: "#4b6876"
@@ -28,7 +26,7 @@ Button{
     property string texts
     property bool useTexts: true
     property bool useIcon: true
-    property int iconPos: 0
+    property int iconPos: ButtonEx.iconPos.IconAbove
     property int textsSize: 16
     property int textsLeftMargin: 0
     property bool iconAntialiasing: true
@@ -215,8 +213,8 @@ Button{
         horizontalRadius: self.height
         verticalRadius: self.height
         gradient: Gradient{
-            GradientStop{position:0.1; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
-            GradientStop{position:0.9; color: self.checked ? bgSelectedColor + "40" : bgSelectedColor + "40"}
+            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : Qt.lighter(bgSelectedColor, 1.5) }
+            GradientStop{position:0.9; color: self.checked ? bgSelectedColor : bgSelectedColor}
         }
     }
 
@@ -244,5 +242,8 @@ Button{
         pressWaveAniLeft.stop();
         self.pressWaveLeftArea=0;
         pressWaveGraLeft.visible=false;
+    }
+    Component.onCompleted: {
+        console.log(bgSelectedColor, Qt.lighter(bgSelectedColor, 1.5))
     }
 }

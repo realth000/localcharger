@@ -5,10 +5,12 @@ import "widget"
 
 Item {
     // settings
-    property int localPort: 1234
-    property int remotePort: 1234
     property string remoteUrl: ""
-    property QtObject root: mainConfigPageItem
+    property int remotePort: 1234
+    property int localPort: 1234
+
+    readonly property QtObject root: mainConfigPageItem
+
     id: mainConfigPageItem
     // background
     Rectangle {
@@ -32,7 +34,6 @@ Item {
             anchors.topMargin: 10
             anchors.left: localGroupBoxEx.separator.left
             anchors.right: localGroupBoxEx.separator.right
-
             Text {
                 id: localUrlText
                 Layout.preferredWidth: 100
@@ -114,7 +115,7 @@ Item {
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: parent.height
                 text: remoteUrl
-                horizontalAlignment: Text.AlignHCenter
+                horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
@@ -152,10 +153,14 @@ Item {
         }
     }
 
-
-
-    function loadIpUrls(ipStringList){
+    function loadIpUrls(ipStringList) {
         localUrlComboBoxEx.resetModel(ipStringList)
+    }
+
+    function updateSocketConfig(senderIp, senderPort, recverPort) {
+        remoteUrl = senderIp
+        remotePort = senderPort
+        localPort = recverPort
     }
 
 }

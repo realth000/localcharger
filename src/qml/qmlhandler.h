@@ -12,17 +12,40 @@
 class QmlHandler : public QObject
 {
     Q_OBJECT
+
 public:
     explicit QmlHandler(QObject *parent = nullptr);
+    enum QmlSenderState{
+        SenderDisconnected = static_cast<int>(SenderState::Disconnected),
+        SenderListening = static_cast<int>(SenderState::Listening),
+        SenderConnected = static_cast<int>(SenderState::Connected)
+    };
+    Q_ENUM(QmlSenderState)
+    enum class QmlRecverState{
+        RecverDisconnected = static_cast<int>(RecverState::Disconnected),
+        RecverConnecting = static_cast<int>(RecverState::Connecting),
+        RecverConnected = static_cast<int>(RecverState::Connected)
+    };
+    Q_ENUM(QmlRecverState)
 
 signals:
     void qmlMessageInfo(QString msg);
-    void qmlUpdateSenderState(SenderState state);
-    void qmlUpdateRecverState(RecverState state);
+    void qmlUpdateSenderState(QmlHandler::QmlSenderState state);
+    void qmlUpdateRecverState(QmlHandler::QmlRecverState state);
     void qmlUpdateLocalUrlLists(QStringList ipStringList);
+    void qmlUpdateSocketConfig(QString senderIp, int senderPort, int recverPort);
+    void qmlUpdateSenderIp(QString senderIp);
+    void qmlUpdateSenderPort(int senderPort);
+    void qmlUpdateRecverPort(int recverPort);
 
 public slots:
     void initHandler();
+    void startSender();
+    void startRecver();
+    void onSenderConnected();
+    void onSenderDisconnected();
+    void onRecverConnected();
+    void onRecverDisconnected();
 
 private:
     WebSender m_socketSender;
@@ -31,19 +54,20 @@ private:
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
     port_t m_socketRecverPort;
-    SenderState m_socketSenderState;
-    RecverState m_socketRecverState;
+    QmlSenderState m_socketSenderState;
+    QmlRecverState m_socketRecverState;
     QRegularExpressionValidator *m_ipTypeValidator;
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
 
+    void initConnections();
     void startSender(const port_t &port);
     void stopSender();
     void startRecver(const url_t &url);
     void stopRecver();
-    void updateSenderState(SenderState state);
-    void updateRecverState(RecverState state);
+    void updateSenderState(QmlSenderState state);
+    void updateRecverState(QmlRecverState state);
     void loadDefaultConfig();
     void loadConfig();
     void saveConfig();
