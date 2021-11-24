@@ -91,3 +91,4 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 win32-msvc* {
   QMAKE_CXXFLAGS += /utf-8
 }
+android: include(C:/Programming/Android/SDK/android_openssl/openssl.pri)

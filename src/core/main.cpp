@@ -23,6 +23,8 @@ int main(int argc, char *argv[])
     appFont.setFamily("Microsoft YaHei");
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     appFont.setFamily("Dejavu Sans Mono");
+#elif defined(Q_OS_ANDROID)
+    appFont.setFamily("Noto Sans");
 #endif
     appFont.setStyleStrategy(QFont::PreferAntialias);
 

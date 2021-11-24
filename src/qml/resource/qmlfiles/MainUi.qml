@@ -57,9 +57,12 @@ ApplicationWindow {
 
     QmlHandler {
         id: mainQmlHandler
+        // debug
         onQmlMessageInfo: {
             console.log(msg)
         }
+
+        // settings and state
         onQmlUpdateLocalUrlLists: {
             configPage.loadIpUrls(ipStringList)
         }
@@ -74,11 +77,17 @@ ApplicationWindow {
             workPage.updateRecverState(state)
             console.log("new recver state =", state)
         }
+
+        // files/messages info display
         onQmlAppendSendedMessage: {
             workPage.appendSendedMessage(msg)
         }
         onQmlAppendRecvedMessage: {
             workPage.appendRecvedMessage(msg)
+        }
+        onQmlClearToSendMsg: {
+            workPage.appendSendedMessage(workPage.getToSendMessage())
+            workPage.clearToSendMessage()
         }
     }
 
