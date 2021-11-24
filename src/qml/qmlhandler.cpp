@@ -77,8 +77,8 @@ void QmlHandler::initConnections()
 
     // TOOD: transport files
     // passing sender message
-//    connect(&m_socketSender, &WebSender::sendFileStart, this, &QmlHandler::onSendFileStart);
-//    connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileStart, this, &QmlHandler::onSendFileStart);
+    connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::onSendFileFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &QmlHandler::onRecverConnected);
@@ -86,9 +86,9 @@ void QmlHandler::initConnections()
 
     // TODO: transport files
     // passing recver message
-//    connect(&m_socketRecver, &WebRecver::recvedMessage, this, &QmlHandler::recoredRecvedMsg);
-//    connect(&m_socketRecver, &WebRecver::recvFileStart, this, &QmlHandler::onRecvFileStart);
-//    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvedMessage, this, &QmlHandler::onRecoredRecvedMsg);
+    connect(&m_socketRecver, &WebRecver::recvFileStart, this, &QmlHandler::onRecvFileStart);
+    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::onRecvFileFinish);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -207,4 +207,44 @@ void QmlHandler::getLocalIp()
         ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
     }
     emit qmlUpdateLocalUrlLists(ipStringList);
+}
+
+void QmlHandler::onRecoredRecvedMsg(const QString &msg)
+{
+    emit qmlAppendRecvedMessage(msg);
+}
+
+void QmlHandler::onSendFileStart(const QString &fielPath, const qint64 &fileSize)
+{
+    // TODO: send message here
+    emit qmlAppendSendedMessage(QString("<font color=\"%3\">Sending file:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
+                                arg(fielPath, QString::number(fileSize), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
+}
+
+void QmlHandler::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
+{
+    // TODO: send message here
+    emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
+                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
+
+}
+
+void QmlHandler::onRecvFileStart(const QString &fielPath, const qint64 &fileSize)
+{
+    emit qmlAppendRecvedMessage(QString("<font color=\"%3\">Recving file:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
+                                arg(fielPath, QString::number(fileSize), MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR));
+}
+
+void QmlHandler::onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes)
+{
+    emit qmlAppendRecvedMessage(QString("<font color=\"%3\">File recvied:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
+                                arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
 }

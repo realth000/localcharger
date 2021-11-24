@@ -37,6 +37,8 @@ signals:
     void qmlUpdateSenderIp(QString senderIp);
     void qmlUpdateSenderPort(int senderPort);
     void qmlUpdateRecverPort(int recverPort);
+    void qmlAppendSendedMessage(QString msg);
+    void qmlAppendRecvedMessage(QString msg);
 
 public slots:
     void initHandler();
@@ -72,6 +74,13 @@ private:
     void loadConfig();
     void saveConfig();
     void getLocalIp();
+
+private slots:
+    void onRecoredRecvedMsg(const QString &msg);
+    void onSendFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
+    void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
+    void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
 };
 
 #endif // QMLHANDLER_H
