@@ -16,21 +16,7 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
-    enum class SenderState{
-        Disconnected = 0,
-        Listening,
-        Connected
-    };
-    enum class RecverState{
-        Disconnected = 0,
-        Connecting,
-        Connected
-    };
-
-    Q_ENUM(SenderState)
-
     explicit MainUi(QWidget *parent = nullptr);
-//    void initConfig();
     void initUi();
     void initConnections();
     ~MainUi();
