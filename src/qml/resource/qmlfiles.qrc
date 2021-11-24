@@ -9,5 +9,6 @@
         <file>qmlfiles/widget/ComboBoxEx.qml</file>
         <file>qmlfiles/widget/ButtonEx.qml</file>
         <file>qmlfiles/widget/GroupBoxEx.qml</file>
+        <file>qmlfiles/widget/TextAreaEx.qml</file>
     </qresource>
 </RCC>

@@ -243,7 +243,4 @@ Button{
         self.pressWaveLeftArea=0;
         pressWaveGraLeft.visible=false;
     }
-    Component.onCompleted: {
-        console.log(bgSelectedColor, Qt.lighter(bgSelectedColor, 1.5))
-    }
 }

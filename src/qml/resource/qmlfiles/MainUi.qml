@@ -74,6 +74,12 @@ ApplicationWindow {
             workPage.updateRecverState(state)
             console.log("new recver state =", state)
         }
+        onQmlAppendSendedMessage: {
+            workPage.appendSendedMessage(msg)
+        }
+        onQmlAppendRecvedMessage: {
+            workPage.appendRecvedMessage(msg)
+        }
     }
 
     Component.onCompleted: {
