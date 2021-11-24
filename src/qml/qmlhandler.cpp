@@ -5,7 +5,7 @@
 
 QmlHandler::QmlHandler(QObject *parent)
     : QObject(parent),
-      m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
+      m_socketSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
       m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
       m_socketRecverUrl(QStringLiteral(WEBSOCKET_RECVER_URL_DEFAULT)),
       m_socketRecverPort(WEBSOCKET_RECVER_PORT_DEFAULT),
@@ -29,6 +29,8 @@ void QmlHandler::initHandler()
 
     updateSenderState(QmlSenderState::SenderDisconnected);
     updateRecverState(QmlRecverState::RecverDisconnected);
+
+    qDebug() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
 }
 
 void QmlHandler::startSender()
@@ -44,7 +46,7 @@ void QmlHandler::startRecver()
         qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
         return;
     }
-    m_socketRecverUrl.setHost(m_sockerSenderIp);
+    m_socketRecverUrl.setHost(m_socketSenderIp);
     m_socketRecverUrl.setPort(m_socketSenderPort);
     startRecver(m_socketRecverUrl);
 }
@@ -67,6 +69,33 @@ void QmlHandler::onRecverConnected()
 void QmlHandler::onRecverDisconnected()
 {
     updateRecverState(QmlRecverState::RecverDisconnected);
+}
+
+void QmlHandler::sendMessage(const QString &msg)
+{
+    if(m_socketSenderState != QmlSenderState::SenderConnected){
+        return;
+    }
+    if(msg.isEmpty()){
+        return;
+    }
+    m_socketSender.sendMessage(msg);
+    emit qmlClearToSendMsg();
+}
+
+void QmlHandler::setSenderUrl(const QString &url)
+{
+    m_socketSenderIp = url;
+}
+
+void QmlHandler::setSenderPort(const QString &port)
+{
+    m_socketSenderPort = port.toInt();
+}
+
+void QmlHandler::setRecverPort(const QString &port)
+{
+    m_socketRecverPort = port.toInt();
 }
 
 void QmlHandler::initConnections()
@@ -176,21 +205,23 @@ void QmlHandler::loadConfig()
 {
     if(!QFileInfo::exists(m_configFilePath)){
         qDebug() << "config file not found, load default config";
+        qDebug() << m_socketSenderIp << m_socketSenderPort << m_socketRecverPort;
+        emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
         return;
     }
     const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    m_sockerSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
+    m_socketSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
     m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
     m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
     m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
     delete configIni;
-    emit qmlUpdateSocketConfig(m_sockerSenderIp, m_socketSenderPort, m_socketRecverPort);
+    emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
 }
 
 void QmlHandler::saveConfig()
 {
     QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_sockerSenderIp);
+    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_socketSenderIp);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);

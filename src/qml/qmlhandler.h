@@ -39,6 +39,7 @@ signals:
     void qmlUpdateRecverPort(int recverPort);
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
+    void qmlClearToSendMsg();
 
 public slots:
     void initHandler();
@@ -48,11 +49,15 @@ public slots:
     void onSenderDisconnected();
     void onRecverConnected();
     void onRecverDisconnected();
+    void sendMessage(const QString &msg);
+    void setSenderUrl(const QString & url);
+    void setSenderPort(const QString &port);
+    void setRecverPort(const QString &port);
 
 private:
     WebSender m_socketSender;
     WebRecver m_socketRecver;
-    QString m_sockerSenderIp;
+    QString m_socketSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
     port_t m_socketRecverPort;

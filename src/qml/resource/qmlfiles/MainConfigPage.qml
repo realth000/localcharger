@@ -69,15 +69,17 @@ Item {
                 font.pixelSize: localUrlText.font.pixelSize
                 color: localUrlText.color
             }
-            Text {
-                id: locatPortText2
-                Layout.preferredHeight: localUrlComboBoxEx.height
+            TextFieldEx {
+                id: locatPortTextFieldEx
                 Layout.fillWidth: true
-                text: localPort
+                Layout.preferredHeight: parent.height
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: localUrlText.font.pixelSize
-                color: localUrlText.color
+                font.pixelSize: 16
+                color: remoteUrlText.color
+                onTextEdited: {
+                    mainQmlHandler.setRecverPort(text)
+                }
             }
         }
     }
@@ -110,15 +112,17 @@ Item {
                 font.pixelSize: 16
                 color: localUrlText.color
             }
-            Text {
-                id: remoteUrlText2
-                Layout.preferredWidth: 100
+            TextFieldEx {
+                id: remoteUrlTextFieldEx
+                Layout.fillWidth: true
                 Layout.preferredHeight: parent.height
-                text: remoteUrl
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
+                onTextEdited: {
+                    mainQmlHandler.setSenderUrl(text)
+                }
             }
         }
 
@@ -140,15 +144,17 @@ Item {
                 font.pixelSize: localUrlText.font.pixelSize
                 color: localUrlText.color
             }
-            Text {
-                id: remotePortText2
-                Layout.preferredHeight: localUrlComboBoxEx.height
+            TextFieldEx {
+                id: remotePortTextFieldEx
                 Layout.fillWidth: true
-                text: remotePort
+                Layout.preferredHeight: parent.height
                 horizontalAlignment: Text.AlignLeft
                 verticalAlignment: Text.AlignVCenter
-                font.pixelSize: localUrlText.font.pixelSize
-                color: localUrlText.color
+                font.pixelSize: 16
+                color: remoteUrlText.color
+                onTextEdited: {
+                    mainQmlHandler.setSenderPort(text)
+                }
             }
         }
     }
@@ -159,8 +165,12 @@ Item {
 
     function updateSocketConfig(senderIp, senderPort, recverPort) {
         remoteUrl = senderIp
+        remoteUrlTextFieldEx.text = remoteUrl
         remotePort = senderPort
+        remotePortTextFieldEx.text = remotePort
         localPort = recverPort
+        locatPortTextFieldEx.text = localPort
+        console.log("123", senderIp, senderPort, recverPort)
     }
 
 }

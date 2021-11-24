@@ -20,7 +20,7 @@ Item {
         }
 
         contentWidth:parent.width
-        contentHeight: socketCtlGroupBoxEx.height + recvedGroupBoxEx.height + sendedGroupBoxEx.height + 50
+        contentHeight: socketCtlGroupBoxEx.height + recvedGroupBoxEx.height + sendedGroupBoxEx.height + toSendGroupBoxEx.height + 60
 
         GroupBoxEx {
             id: socketCtlGroupBoxEx
@@ -119,6 +119,20 @@ Item {
         GroupBoxEx {
             id: toSendGroupBoxEx
             labelText: "待发送"
+            labelHeight: 40
+            height: toSendTextArea.height + titleHeight
+            anchors.top: sendedGroupBoxEx.bottom
+            anchors.topMargin: 10
+            anchors.left: sendedGroupBoxEx.left
+            anchors.right: sendedGroupBoxEx.right
+            TextAreaEx {
+                id: toSendTextArea
+                height: 200
+                anchors.top: toSendGroupBoxEx.labelRect.bottom
+                anchors.topMargin: 10
+                anchors.left: toSendGroupBoxEx.separator.left
+                anchors.right: toSendGroupBoxEx.separator.right
+            }
         }
     }
     RowLayout {
@@ -154,7 +168,7 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
-
+                mainQmlHandler.sendMessage(toSendTextArea.text)
             }
 
         }
@@ -193,5 +207,21 @@ Item {
 
     function updateRecverState(state) {
         recverState = state
+    }
+
+    function getToSendMessage() {
+        return toSendTextArea.text
+    }
+
+    function clearToSendMessage() {
+        toSendTextArea.clear()
+    }
+
+    function appendSendedMessage(msg) {
+        sendedTextArea.append(msg)
+    }
+
+    function appendRecvedMessage(msg) {
+        recvedTextArea.append(msg)
     }
 }
