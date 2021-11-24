@@ -12,5 +12,9 @@
         <file>pic/send_file.png</file>
         <file>pic/save_config.png</file>
         <file>pic/openfolder.png</file>
+        <file>pic/qmlsettings.png</file>
+        <file>pic/qmlsettings2.png</file>
+        <file>pic/qmlsend2.png</file>
+        <file>pic/qmlsend.png</file>
     </qresource>
 </RCC>

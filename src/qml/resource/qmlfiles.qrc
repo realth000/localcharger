@@ -1,0 +1,14 @@
+<RCC>
+    <qresource prefix="/">
+        <file>qmlfiles/MainUi.qml</file>
+        <file>qmlfiles/MainConfigPage.qml</file>
+        <file>qmlfiles/MainWorkPage.qml</file>
+        <file>qmlfiles/widget/TabButtonEx.qml</file>
+        <file>qmlfiles/widget/TextFieldEx.qml</file>
+        <file>qmlfiles/widget/SeparatorEx.qml</file>
+        <file>qmlfiles/widget/ComboBoxEx.qml</file>
+        <file>qmlfiles/widget/ButtonEx.qml</file>
+        <file>qmlfiles/widget/GroupBoxEx.qml</file>
+        <file>qmlfiles/widget/TextAreaEx.qml</file>
+    </qresource>
+</RCC>
