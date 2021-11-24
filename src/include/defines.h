@@ -92,4 +92,16 @@ enum  WebSocketBinaryMessageType{
     SingleFile = 0x511781EF
 };
 
+enum class SenderState{
+    Disconnected = 0,
+    Listening,
+    Connected
+};
+enum class RecverState{
+    Disconnected = 0,
+    Connecting,
+    Connected
+};
+
+
 #endif // DEFINES_H

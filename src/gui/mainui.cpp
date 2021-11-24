@@ -414,37 +414,33 @@ void MainUi::on_saveConfigPushButton_clicked()
 
 void MainUi::onSendFileStart(const QString &fielPath, const qint64 &fileSize)
 {
-    ui->msgSendTextEdit->append(QString("<font color=\"%3\">Sending file:"
-                                        "</font> %1 "
-                                        "<font color=\"%4\">(%2 bytes)"
-                                        "</font>").
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">Sending file:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(fileSize), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
 }
 
 void MainUi::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
 {
-    ui->msgSendTextEdit->append(QString("<font color=\"%3\">File sended:"
-                                        "</font> %1 "
-                                        "<font color=\"%4\">(%2 bytes)"
-                                        "</font>").
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">File sended:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR));
 }
 
 void MainUi::onRecvFileStart(const QString &fielPath, const qint64 &fileSize)
 {
-    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">Recving file:"
-                                        "</font> %1 "
-                                        "<font color=\"%4\">(%2 bytes)"
-                                        "</font>").
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">Recving file:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(fileSize), MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR));
 }
 
 void MainUi::onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes)
 {
-    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">File recvied:"
-                                        "</font> %1 "
-                                        "<font color=\"%4\">(%2 bytes)"
-                                        "</font>").
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">File recvied:</font>"
+                                        " %1 "
+                                        "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
 }
 
