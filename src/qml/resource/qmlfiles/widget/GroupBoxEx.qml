@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import QtQuick.Controls 2.5
 import QtQml 2.12
 import QtQuick.Layouts 1.12
@@ -22,6 +22,7 @@ Rectangle {
     property int separatorLeftMargin: 15
     property int separatorRightMargin: 15
     property color separatorColor: labelColor
+    property color backgroundColor: "transparent"
     width: parent.width
     height: 200
     color: "transparent"
@@ -29,7 +30,7 @@ Rectangle {
         id: gbexBackgroundRect
         width: parent.width
         height: parent.height
-        color: "transparent"
+        color: backgroundColor
     }
     ButtonEx {
         id: gbexLabel
