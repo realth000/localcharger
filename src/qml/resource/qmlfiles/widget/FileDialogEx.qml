@@ -143,11 +143,13 @@ Rectangle {
     ButtonEx {
         id: okBtnEx
         checkable: false
-        useIcon: false
-        texts: "确定"
+        iconUnchecked: "qrc:/pic/yes.png"
+        iconPos: ButtonEx.IconPos.IconLeft
+        texts: "确定"      
         textsSize: 20
+        textsUncheckedColor: "#f0ffff"
         width: parent.width/2
-        height: 60
+        height: 50
         anchors.left: parent.left
         anchors.bottom: parent.bottom
         bgColor: "#282828"
@@ -160,9 +162,11 @@ Rectangle {
     ButtonEx {
         id: cancelBtnEx
         checkable: false
-        useIcon: false
+        iconUnchecked: "qrc:/pic/no.png"
+        iconPos: ButtonEx.IconPos.IconLeft
         texts: "取消"
         textsSize: 20
+        textsUncheckedColor: "#f0ffff"
         width: okBtnEx.width
         height: okBtnEx.height
         anchors.right: parent.right

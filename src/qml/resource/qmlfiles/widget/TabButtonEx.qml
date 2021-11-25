@@ -10,8 +10,8 @@ TabButton {
     property color bgColorEnd: "#333333"
 //    property color textsCheckedColor: "#28292a"
 //    property color textsCheckedColor: "#8b98b6"
-    property color textsCheckedColor: "#f0ffff"
-    property color textsUncheckedColor: "#336666"
+    property color textsCheckedColor: "#336666"
+    property color textsUncheckedColor: "#f0ffff"
     property string iconChecked
     property string iconUnchecked
     property int iconHeight: 30

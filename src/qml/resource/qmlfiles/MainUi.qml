@@ -42,16 +42,16 @@ ApplicationWindow {
                 width: mainTabBar.width/2
                 height: mainTabBar.height
                 texts: "传送"
-                iconChecked: "qrc:/pic/qmlsend.png"
-                iconUnchecked: "qrc:/pic/qmlsend2.png"
+                iconChecked: "qrc:/pic/qmlsend2.png"
+                iconUnchecked: "qrc:/pic/qmlsend.png"
             }
             TabButtonEx {
                 id: mainConigPageTabButtonEx
                 width: mainTabBar.width/2
                 height: mainTabBar.height
-                texts: "设定"
-                iconChecked: "qrc:/pic/qmlsettings.png"
-                iconUnchecked: "qrc:/pic/qmlsettings2.png"
+                texts: "设置"
+                iconChecked: "qrc:/pic/qmlsettings2.png"
+                iconUnchecked: "qrc:/pic/qmlsettings.png"
             }
         }
     }

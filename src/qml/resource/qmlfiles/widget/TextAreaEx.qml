@@ -16,5 +16,11 @@ TextArea {
         border.width: borderWidth
         border.color: borderColor
     }
-
+    leftPadding: 10
+    rightPadding: 10
+    wrapMode: Text.WrapAnywhere
+    selectByMouse: true
+    selectedTextColor: textColor
+//    selectionColor: "#5d5e5f"
+    selectionColor: "#336666"
 }

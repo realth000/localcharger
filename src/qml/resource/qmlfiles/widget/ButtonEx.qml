@@ -45,7 +45,7 @@ Button{
     property int leftMargin: 0
     property int bottomMargin: 0
 
-
+    property bool enablePressWave: true
     property double pressWaveLeftArea: 0.0
     property real pressWaveRightArea: 0
     property int pressWaveDuration: 300
@@ -205,18 +205,24 @@ Button{
         border.width: borderWidth
         border.color: borderColor
     }
+
     RadialGradient{
         id: pressWaveGradient
         z: -1
-        anchors.horizontalCenter: self.left
+//        anchors.horizontalCenter: self.left
         anchors.horizontalCenterOffset: pressWaveStartPosX
         anchors.verticalCenter: self.verticalCenter
-        width: self.width*pressWaveLeftArea*2
+        anchors.leftMargin: pressWaveStartPosX * (1-pressWaveLeftArea)
+        anchors.rightMargin: (self.width - pressWaveStartPosX)*(1-pressWaveLeftArea)
+        anchors.right: self.right
+        anchors.left: self.left
+//        width: self.width*pressWaveLeftArea*2
         height: self.height
-        horizontalRadius: self.height
-        verticalRadius: self.height
+        horizontalRadius: 100
+        verticalRadius: 100
+        clip: true
         gradient: Gradient{
-            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : bgSelectedColor }
+            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : bgSelectedColor}
             GradientStop{position:0.9; color: self.checked ? bgSelectedColor : bgSelectedColor}
         }
     }
@@ -226,26 +232,21 @@ Button{
         target: self
         property: "pressWaveLeftArea"
         from: 0.0
-        to: 1.0
+        to: 1
         duration: self.pressWaveDuration
         running: false
+        onStopped: {
+            self.pressWaveLeftArea=0;
+            pressWaveGradient.visible=false;
+        }
     }
 
     onPressed: {
+        if(!enablePressWave){
+            return
+        }
         pressWaveStartPosX = pressX;
         pressWaveGradient.visible=true;
         pressWaveAnimation.start();
-    }
-    onPressedChanged: {
-        pressWaveAnimation.stop();
-        self.pressWaveLeftArea=0;
-        pressWaveGradient.visible=false;
-        console.log("press changed, stop")
-    }
-    onReleased: {
-        pressWaveAnimation.stop();
-        self.pressWaveLeftArea=0;
-        pressWaveGradient.visible=false;
-        console.log("released, stop")
     }
 }
