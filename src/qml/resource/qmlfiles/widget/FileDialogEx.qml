@@ -1,4 +1,4 @@
-import QtQuick 2.12
+﻿import QtQuick 2.12
 import Qt.labs.folderlistmodel 2.12
 import QtQml 2.12
 
@@ -7,6 +7,7 @@ Rectangle {
     property bool files: false
     property bool dirs: true
     readonly property bool dirsFirst: true
+    property int fontSize: 18
     signal changeSelectedDir(string newDir)
     anchors.fill: parent
     visible: false
@@ -58,9 +59,10 @@ Rectangle {
                 useIcon: false
                 posToLeft: true
                 texts: model.folder.toString().replace("/storage/emulated/0", "/~").replace("file://", "").replace(new RegExp("/",'g'), "►")
-                textsSize: 17
+                textsSize: fontSize
                 borderBottom: true
                 textsLeftMargin: 10
+                borderBottomMargin: 0
             }
         }
     }
@@ -72,19 +74,19 @@ Rectangle {
         anchors.top: parent.top
         anchors.right: parent.right
         color: "transparent"
-        ButtonEx{
+        ButtonEx {
             width: parent.height
             height: parent.height
             checkable: false
             useTexts: false
-            posToLeft: true
+            posToLeft: false
             leftMargin: 0
             iconUnchecked: "qrc:/pic/arrow_up.png"
             onClicked: {
                 console.log("parent path = ", model.parentFolder)
-               let parentPath = model.parentFolder.toString()
+                let parentPath = model.parentFolder.toString()
 
-                if(parentPath === "file:///" || model.parentFolder.toString() === ""){
+                if(parentPath === "file:///" || model.parentFolder.toString() === "" || model.parentFolder.toString() === "file:///storage/emulated"){
                     return;
                 }
 
@@ -126,7 +128,7 @@ Rectangle {
                         bgSelectedColor: "transparent"
                         bgColor: "#282828"
                         texts: model.fileName
-                        textsSize: 18
+                        textsSize: fontSize
                         textsUncheckedColor: "#f0ffff"
                         textsLeftMargin: 15
                         borderBottom: true
@@ -148,7 +150,7 @@ Rectangle {
         height: 60
         anchors.left: parent.left
         anchors.bottom: parent.bottom
-        bgColor: "#232323"
+        bgColor: "#282828"
         onClicked: {
             var d = model.folder;
             mainDialog.changeSelectedDir(d.toString().replace("file://", ""));
@@ -165,7 +167,7 @@ Rectangle {
         height: okBtnEx.height
         anchors.right: parent.right
         anchors.bottom: parent.bottom
-        bgColor: "#232323"
+        bgColor: "#282828"
         onClicked: {
             mainDialog.close();
         }

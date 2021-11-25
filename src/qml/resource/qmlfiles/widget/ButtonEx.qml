@@ -11,6 +11,7 @@ Button{
     }
     property bool borderBottom: false
     property color borderBottomColor: "#4b6876"
+    property int borderBottomMargin: 15
     property bool thisIsButtonEx: true
     property color bgSelectedColor: "#40403d"
     property color bgColor: "#232323"
@@ -191,6 +192,7 @@ Button{
         visible: borderBottom
         width: parent.width
         color: borderBottomColor
+        margin: borderBottomMargin
         height: 1
     }
 
@@ -204,7 +206,8 @@ Button{
         border.color: borderColor
     }
     RadialGradient{
-        id: pressWaveGraLeft
+        id: pressWaveGradient
+        z: -1
         anchors.horizontalCenter: self.left
         anchors.horizontalCenterOffset: pressWaveStartPosX
         anchors.verticalCenter: self.verticalCenter
@@ -213,13 +216,13 @@ Button{
         horizontalRadius: self.height
         verticalRadius: self.height
         gradient: Gradient{
-            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : Qt.lighter(bgSelectedColor, 1.5) }
+            GradientStop{position:0.1; color: self.checked ? bgSelectedColor : bgSelectedColor }
             GradientStop{position:0.9; color: self.checked ? bgSelectedColor : bgSelectedColor}
         }
     }
 
     PropertyAnimation{
-        id: pressWaveAniLeft
+        id: pressWaveAnimation
         target: self
         property: "pressWaveLeftArea"
         from: 0.0
@@ -230,17 +233,19 @@ Button{
 
     onPressed: {
         pressWaveStartPosX = pressX;
-        pressWaveGraLeft.visible=true;
-        pressWaveAniLeft.start();
+        pressWaveGradient.visible=true;
+        pressWaveAnimation.start();
     }
     onPressedChanged: {
-        pressWaveAniLeft.stop();
+        pressWaveAnimation.stop();
         self.pressWaveLeftArea=0;
-        pressWaveGraLeft.visible=false;
+        pressWaveGradient.visible=false;
+        console.log("press changed, stop")
     }
     onReleased: {
-        pressWaveAniLeft.stop();
+        pressWaveAnimation.stop();
         self.pressWaveLeftArea=0;
-        pressWaveGraLeft.visible=false;
+        pressWaveGradient.visible=false;
+        console.log("released, stop")
     }
 }
