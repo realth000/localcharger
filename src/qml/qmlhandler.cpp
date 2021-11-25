@@ -98,6 +98,12 @@ void QmlHandler::setRecverPort(const QString &port)
     m_socketRecverPort = port.toInt();
 }
 
+void QmlHandler::setFileSavePath(const QString &filePath)
+{
+    m_saveFileDirPath = filePath;
+    m_socketRecver.setFileSavePath(filePath);
+}
+
 void QmlHandler::initConnections()
 {
     // passing sender state
@@ -199,6 +205,7 @@ void QmlHandler::updateRecverState(QmlRecverState state)
 void QmlHandler::loadDefaultConfig()
 {
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
+    emit qmlUpdateFileSavePath(m_saveFileDirPath);
 }
 
 void QmlHandler::loadConfig()
@@ -216,6 +223,7 @@ void QmlHandler::loadConfig()
     m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
     delete configIni;
     emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
+    emit qmlUpdateFileSavePath(m_saveFileDirPath);
 }
 
 void QmlHandler::saveConfig()
