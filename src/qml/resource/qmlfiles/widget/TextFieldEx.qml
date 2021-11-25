@@ -17,6 +17,8 @@ TextField {
     property color cursorColor: textsColor
     property int cursorWidth: 2
     property bool enableNativeBorder: false
+    property int textLeftPadding: 10
+
     passwordCharacter: passwordCharacterEx
     color: textsColor
     font.bold: textsBold
@@ -24,7 +26,7 @@ TextField {
     verticalAlignment: Qt.AlignVCenter
     cursorDelegate: cursorEx
     clip: textsClip
-    leftPadding: 2
+    leftPadding: textLeftPadding
     selectionColor: borderColor
     selectByMouse: true
     background:  Rectangle {

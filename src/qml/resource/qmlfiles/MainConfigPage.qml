@@ -91,6 +91,7 @@ Item {
         labelHeight: localGroupBoxEx.labelHeight
         height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
         anchors.top: localGroupBoxEx.bottom
+        anchors.topMargin: 10
         anchors.left: localGroupBoxEx.left
         anchors.right: localGroupBoxEx.right
 
@@ -161,20 +162,21 @@ Item {
     }
     GroupBoxEx {
         id: selevtSaveDirGroupBoxEx
-        labelText: "接收"
+        labelText: "保存位置"
         labelHeight: localGroupBoxEx.labelHeight
-        height:selectSaveDirButtonEx.height + titleHeight + 10
         anchors.top: remoteGroupBoxEx.bottom
+        anchors.bottom: parent.bottom
         anchors.left: remoteGroupBoxEx.left
         anchors.right: remoteGroupBoxEx.right
 
         TextFieldEx {
             id: selectSaveDirButtonEx
             height: 40
+            clip: true
             anchors.top: selevtSaveDirGroupBoxEx.labelRect.bottom
             anchors.topMargin: 10
-            anchors.left: selevtSaveDirGroupBoxEx.left
-            anchors.right: selevtSaveDirGroupBoxEx.right
+            anchors.left: selevtSaveDirGroupBoxEx.separator.left
+            anchors.right: selevtSaveDirGroupBoxEx.separator.right
             bgColor: "transparent"
             readOnly: true
             text: fileSavePath
@@ -186,6 +188,7 @@ Item {
 
     FileDialogEx {
         id: setSavePathFileDialogEx
+        fontSize: 12
         onChangeSelectedDir: {
             console.log("file dialog: new dir = ", newDir)
             fileSavePath = newDir
