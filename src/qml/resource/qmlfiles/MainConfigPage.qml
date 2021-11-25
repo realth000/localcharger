@@ -23,10 +23,9 @@ Item {
         id: localGroupBoxEx
         labelText: "发送"
         labelHeight: 40
+        iconPath: "qrc:/pic/sended2.png"
         height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight
         anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
         RowLayout {
             id: localUrlRowLayout
             height: 40
@@ -88,12 +87,11 @@ Item {
     GroupBoxEx {
         id: remoteGroupBoxEx
         labelText: "接收"
+        iconPath: "qrc:/pic/received2.png"
         labelHeight: localGroupBoxEx.labelHeight
         height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
         anchors.top: localGroupBoxEx.bottom
-        anchors.topMargin: 10
-        anchors.left: localGroupBoxEx.left
-        anchors.right: localGroupBoxEx.right
+        anchors.topMargin: 20
 
         RowLayout {
             id: remoteUrlRowLayout
@@ -133,8 +131,8 @@ Item {
             height: remoteUrlRowLayout.height
             spacing: remoteUrlRowLayout.spacing
             anchors.top: remoteUrlRowLayout.bottom
+            anchors.topMargin: 20
             anchors.left: remoteUrlRowLayout.left
-            anchors.topMargin: 10
             anchors.right: remoteUrlRowLayout.right
             Text {
                 id: remotePortText
@@ -165,10 +163,9 @@ Item {
         labelText: "保存位置"
         labelHeight: localGroupBoxEx.labelHeight
         anchors.top: remoteGroupBoxEx.bottom
+        anchors.topMargin: 20
         anchors.bottom: parent.bottom
-        anchors.left: remoteGroupBoxEx.left
-        anchors.right: remoteGroupBoxEx.right
-
+        iconPath: "qrc:/pic/openfolder2.png"
         TextFieldEx {
             id: selectSaveDirButtonEx
             height: 40
