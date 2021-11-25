@@ -26,7 +26,7 @@ Button{
     property string texts
     property bool useTexts: true
     property bool useIcon: true
-    property int iconPos: ButtonEx.iconPos.IconAbove
+    property int iconPos: ButtonEx.IconPos.IconAbove
     property int textsSize: 16
     property int textsLeftMargin: 0
     property bool iconAntialiasing: true

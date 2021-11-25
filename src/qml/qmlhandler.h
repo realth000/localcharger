@@ -40,6 +40,7 @@ signals:
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
+    void qmlUpdateFileSavePath(QString path);
 
 public slots:
     void initHandler();
@@ -53,6 +54,7 @@ public slots:
     void setSenderUrl(const QString & url);
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);
+    void setFileSavePath(const QString &filePath);
 
 private:
     WebSender m_socketSender;
