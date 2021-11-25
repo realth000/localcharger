@@ -24,31 +24,44 @@ Item {
 
         GroupBoxEx {
             id: socketCtlGroupBoxEx
-            labelText: "网络"
+            labelText: "连接端"
             labelHeight: 40
-            height: socketCtlRowLayout.height + titleHeight
+            iconPath: "qrc:/pic/link2.png"
+            height: socketSendCtlRowLayout.height + socketRecvCtlRowLayout.height + titleHeight
             anchors.top: parent.top
-            anchors.left: parent.left
-            anchors.right: parent.right
             RowLayout {
-                id: socketCtlRowLayout
+                id: socketSendCtlRowLayout
                 height: 40
-                spacing: 10
+                spacing: 0
                 anchors.top: socketCtlGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: socketCtlGroupBoxEx.separator.left
                 anchors.right: socketCtlGroupBoxEx.separator.right
 
                 ButtonEx {
-                    id: startSenderButtonEx
-                    Layout.preferredWidth: parent.width/2
+                    id:  senderStateButtonEx
+                    Layout.preferredWidth: (parent.width - spacing)/2
                     Layout.preferredHeight: parent.height
                     bgColor: "transparent"
                     checkable: false
-                    texts: "发送"
+                    texts: getSenderStateString()
+                    textsUncheckedColor: "#336666"
+                    iconUnchecked: getSenderStateIcon()
+                    iconPos: ButtonEx.IconPos.IconLeft
+                    posToLeft: true
+                    leftMargin:(parent.width - spacing)/6
+                }
+
+                ButtonEx {
+                    id: startSenderButtonEx
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: parent.height
+                    bgColor: "transparent"
+                    checkable: false
+                    texts: "启动发送端"
                     textsUncheckedColor: "#f0ffff"
                     textsBold: true
-                    iconUnchecked: getSenderStateIcon()
+                    iconUnchecked: "qrc:/pic/start_connect.png"
                     iconPos: ButtonEx.IconPos.IconLeft
                     iconWidth: 30
                     iconHeight: 30
@@ -56,16 +69,41 @@ Item {
                         mainQmlHandler.startSender()
                     }
                 }
+
+            }
+            RowLayout {
+                id: socketRecvCtlRowLayout
+                height: 40
+                spacing: 0
+                anchors.top: socketSendCtlRowLayout.bottom
+                anchors.topMargin: 10
+                anchors.left: socketCtlGroupBoxEx.separator.left
+                anchors.right: socketCtlGroupBoxEx.separator.right
+
                 ButtonEx {
-                    id: startRecverButtonEx
-                    Layout.preferredWidth: parent.width/2
+                    id:  recverStateButtonEx
+                    Layout.preferredWidth: (parent.width - spacing)/2
                     Layout.preferredHeight: parent.height
                     bgColor: "transparent"
                     checkable: false
-                    texts: "接收"
+                    texts: getRecverStateString()
+                    textsUncheckedColor: "#336666"
+                    iconUnchecked: getRecverStateIcon()
+                    iconPos: ButtonEx.IconPos.IconLeft
+                    posToLeft: true
+                    leftMargin:(parent.width - spacing)/6
+                }
+
+                ButtonEx {
+                    id: startRecverButtonEx
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: parent.height
+                    bgColor: "transparent"
+                    checkable: false
+                    texts: "启动接收端"
                     textsUncheckedColor: "#f0ffff"
                     textsBold: true
-                    iconUnchecked: getRecverStateIcon()
+                    iconUnchecked: "qrc:/pic/start_connect.png"
                     iconPos: ButtonEx.IconPos.IconLeft
                     iconWidth: 30
                     iconHeight: 30
@@ -74,17 +112,17 @@ Item {
                     }
                 }
             }
+
         }
 
         GroupBoxEx {
             id: recvedGroupBoxEx
             labelText: "已接收"
             labelHeight: 40
+            iconPath: "qrc:/pic/received2.png"
             height: recvedTextArea.height + titleHeight
             anchors.top: socketCtlGroupBoxEx.bottom
-            anchors.topMargin: 10
-            anchors.left: socketCtlGroupBoxEx.left
-            anchors.right: socketCtlGroupBoxEx.right
+            anchors.topMargin: 20
             TextAreaEx {
                 id: recvedTextArea
                 height: 200
@@ -100,11 +138,10 @@ Item {
             id: sendedGroupBoxEx
             labelText: "已发送"
             labelHeight: 40
+            iconPath: "qrc:/pic/sended2.png"
             height: sendedTextArea.height + titleHeight
             anchors.top: recvedGroupBoxEx.bottom
-            anchors.topMargin: 10
-            anchors.left: recvedGroupBoxEx.left
-            anchors.right: recvedGroupBoxEx.right
+            anchors.topMargin: 20
             TextAreaEx {
                 id: sendedTextArea
                 height: 200
@@ -118,13 +155,12 @@ Item {
 
         GroupBoxEx {
             id: toSendGroupBoxEx
-            labelText: "待发送"
+            labelText: "发文字"
             labelHeight: 40
+            iconPath: "qrc:/pic/sendtext2.png"
             height: toSendTextArea.height + titleHeight
             anchors.top: sendedGroupBoxEx.bottom
-            anchors.topMargin: 10
-            anchors.left: sendedGroupBoxEx.left
-            anchors.right: sendedGroupBoxEx.right
+            anchors.topMargin: 20
             TextAreaEx {
                 id: toSendTextArea
                 height: 200
@@ -175,29 +211,53 @@ Item {
     }
 
 
+    function getSenderStateString(){
+        switch (senderState) {
+        case QmlHandler.SenderDisconnected:
+           return "closed"
+        case QmlHandler.SenderListening:
+           return "listening"
+        case QmlHandler.SenderConnected:
+           return "connected"
+        default:
+           return "closed"
+        }
+    }
     function getSenderStateIcon(){
         switch (senderState) {
         case QmlHandler.SenderDisconnected:
-           return "qrc:/pic/disconnected.png"
+            return "qrc:/pic/disconnected.png"
         case QmlHandler.SenderListening:
-           return "qrc:/pic/connecting.png"
+            return "qrc:/pic/connecting.png"
         case QmlHandler.SenderConnected:
-           return "qrc:/pic/connected.png"
+            return "qrc:/pic/connected.png"
         default:
-           return "qrc:/pic/disconnected.png"
+            return "qrc:/pic/disconnected.png"
         }
     }
 
+    function getRecverStateString() {
+        switch (recverState) {
+        case QmlHandler.RecverDisconnected:
+           return "disconnected"
+        case QmlHandler.RecverConnecting:
+           return "connecting"
+        case QmlHandler.RecverConnected:
+           return "connected"
+        default:
+           return "disconnected"
+        }
+    }
     function getRecverStateIcon() {
         switch (recverState) {
         case QmlHandler.RecverDisconnected:
-           return "qrc:/pic/disconnected.png"
+            return "qrc:/pic/disconnected.png"
         case QmlHandler.RecverConnecting:
-           return "qrc:/pic/connecting.png"
+            return "qrc:/pic/connecting.png"
         case QmlHandler.RecverConnected:
-           return "qrc:/pic/connected.png"
+            return "qrc:/pic/connected.png"
         default:
-           return "qrc:/pic/disconnected.png"
+            return "qrc:/pic/disconnected.png"
         }
     }
 

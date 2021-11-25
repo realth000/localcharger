@@ -12,15 +12,17 @@ Rectangle {
     readonly property int titleHeight: labelHeight + gbexSeparater.height
     property string iconPath
     property string labelText
-    property color labelColor: "#4b6876"
+//    property color labelColor: "#4b6876"
+//    property color labelColor: "#336699"
+    property color labelColor: "#336666"
     property color labelBgColor: "transparent"
     property int labelWidth: 200
     property int labelHeight: 60
     property int labelTextSize: 16
     property bool labelTextBold: true
     property int labelLeftMargin: 15
-    property int separatorLeftMargin: 15
-    property int separatorRightMargin: 15
+    property int separatorLeftMargin: labelLeftMargin
+    property int separatorRightMargin: labelLeftMargin
     property color separatorColor: labelColor
     property color backgroundColor: "transparent"
     width: parent.width
@@ -34,7 +36,7 @@ Rectangle {
     }
     ButtonEx {
         id: gbexLabel
-        width: gbexBackgroundRect.width
+        width: gbexBackgroundRect.width - 2*labelLeftMargin
         height: labelHeight
         checkable: false
         iconUnchecked: iconPath
@@ -48,6 +50,7 @@ Rectangle {
         textsSize: labelTextSize
         textsBold: labelTextBold
         posToLeft:true
+        enablePressWave: false
     }
 
     SeparatorEx {
