@@ -32,6 +32,8 @@
 #define WEBSOCKET_CONFIG_CERTFILT_PATH               ":/config/localhost.cert"
 #define WEBSOCKET_CONFIG_KEYFILE_PATH                ":/config/localhost.key"
 
+#define WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID "/storage/emulated/0/Download/LocalCharger/"
+
 #define WEBSOCKET_FILEINFO_FILENAME_NAME        "fileName"
 #define WEBSOCKET_FILEINFO_FILESIZE_NAME        "fileSize"
 #define WEBSOCKET_FILEINFO_FILECHKSUM_NAME      "fileChkSum"

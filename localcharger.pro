@@ -10,7 +10,7 @@ CONFIG += c++11 no_batch
 
 INCLUDEPATH += src src/include
 
-VERSION = 1.1.0
+VERSION = 1.1.1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"
@@ -28,6 +28,10 @@ win32 {
             DEFINES += ENABLE_VID
         }
     }
+}
+
+android: {
+    QT += androidextras
 }
 
 if(contains(DEFINES, COMPILE_QML)) {
@@ -92,3 +96,15 @@ win32-msvc* {
   QMAKE_CXXFLAGS += /utf-8
 }
 android: include(C:/Programming/Android/SDK/android_openssl/openssl.pri)
+
+DISTFILES += \
+    src/android/AndroidManifest.xml \
+    src/android/build.gradle \
+    src/android/gradle.properties \
+    src/android/gradle/wrapper/gradle-wrapper.jar \
+    src/android/gradle/wrapper/gradle-wrapper.properties \
+    src/android/gradlew \
+    src/android/gradlew.bat \
+    src/android/res/values/libs.xml
+
+ANDROID_PACKAGE_SOURCE_DIR = $$PWD/src/android

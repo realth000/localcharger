@@ -81,6 +81,9 @@ private:
     void loadConfig();
     void saveConfig();
     void getLocalIp();
+#ifdef Q_OS_ANDROID
+    void requestAndroidPermissions();
+#endif
 
 private slots:
     void onRecoredRecvedMsg(const QString &msg);

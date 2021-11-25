@@ -138,7 +138,7 @@ Item {
     RowLayout {
         id: socketMsgCtlRowLayout
         width: parent.width
-        height: 40
+        height: 60
         anchors.bottom: parent.bottom
         ButtonEx {
             id: sendFileButtonEx

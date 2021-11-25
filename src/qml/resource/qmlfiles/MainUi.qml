@@ -8,8 +8,8 @@ import "widget"
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 360
-    height: 640
+    width: 540
+    height: 960
     background: Rectangle {
         color: "#333333"
     }
@@ -20,6 +20,8 @@ ApplicationWindow {
         StackLayout {
             id: mainStackLayout
             currentIndex: mainTabBar.currentIndex
+            width: parent.width
+            anchors.bottom: mainTabBar.top
             MainWorkPage {
                 id: workPage
             }

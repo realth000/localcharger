@@ -1,6 +1,11 @@
 ﻿#include "qmlhandler.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
+#ifdef Q_OS_ANDROID
+#include <QtAndroidExtras/QAndroidJniObject>
+#include <QtAndroidExtras/QtAndroid>
+#include <QtCore/QDir>
+#endif
 #include "src/utils/networkinfohelper.h"
 
 QmlHandler::QmlHandler(QObject *parent)
@@ -14,13 +19,29 @@ QmlHandler::QmlHandler(QObject *parent)
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
+#ifdef Q_OS_ANDROID
+      m_saveFileDirPath(QStringLiteral(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID))
+#else
       m_saveFileDirPath(QCoreApplication::applicationDirPath())
+#endif
 {
 
 }
 
 void QmlHandler::initHandler()
 {
+#ifdef Q_OS_ANDROID
+    requestAndroidPermissions();
+
+    QUrl fileSaveUrl(QString("file://%1").arg(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID));
+    const QString workPath = fileSaveUrl.toLocalFile();
+    QDir workDir(workPath);
+    if(!workDir.exists()){
+        emit qmlMessageInfo("mkdir1: "+QString::number(workDir.mkpath(workPath)));
+    }
+    emit qmlMessageInfo("exists?: "+QString::number(workDir.exists(workPath)));
+
+#endif
     loadDefaultConfig();
     loadConfig();
     initConnections();
@@ -247,6 +268,24 @@ void QmlHandler::getLocalIp()
     }
     emit qmlUpdateLocalUrlLists(ipStringList);
 }
+
+#ifdef Q_OS_ANDROID
+void QmlHandler::requestAndroidPermissions()
+{
+    QtAndroid::PermissionResult READ_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE");
+    if(READ_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.READ_EXTERNAL_STORAGE");
+    }
+    QtAndroid::PermissionResult MANAGE_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE");
+    if(MANAGE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.MANAGE_EXTERNAL_STORAGE");
+    }
+    QtAndroid::PermissionResult WRITE_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+    if(WRITE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.WRITE_EXTERNAL_STORAGE");
+    }
+}
+#endif
 
 void QmlHandler::onRecoredRecvedMsg(const QString &msg)
 {
