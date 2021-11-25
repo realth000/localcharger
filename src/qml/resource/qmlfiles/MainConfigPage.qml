@@ -10,6 +10,7 @@ Item {
     property int localPort: 1234
 
     readonly property QtObject root: mainConfigPageItem
+    property string fileSavePath
 
     id: mainConfigPageItem
     // background
@@ -88,7 +89,7 @@ Item {
         id: remoteGroupBoxEx
         labelText: "接收"
         labelHeight: localGroupBoxEx.labelHeight
-        height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight
+        height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
         anchors.top: localGroupBoxEx.bottom
         anchors.left: localGroupBoxEx.left
         anchors.right: localGroupBoxEx.right
@@ -158,6 +159,39 @@ Item {
             }
         }
     }
+    GroupBoxEx {
+        id: selevtSaveDirGroupBoxEx
+        labelText: "接收"
+        labelHeight: localGroupBoxEx.labelHeight
+        height:selectSaveDirButtonEx.height + titleHeight + 10
+        anchors.top: remoteGroupBoxEx.bottom
+        anchors.left: remoteGroupBoxEx.left
+        anchors.right: remoteGroupBoxEx.right
+
+        TextFieldEx {
+            id: selectSaveDirButtonEx
+            height: 40
+            anchors.top: selevtSaveDirGroupBoxEx.labelRect.bottom
+            anchors.topMargin: 10
+            anchors.left: selevtSaveDirGroupBoxEx.left
+            anchors.right: selevtSaveDirGroupBoxEx.right
+            bgColor: "transparent"
+            readOnly: true
+            text: fileSavePath
+            onReleased: {
+                setSavePathFileDialogEx.open()
+            }
+        }
+    }
+
+    FileDialogEx {
+        id: setSavePathFileDialogEx
+        onChangeSelectedDir: {
+            console.log("file dialog: new dir = ", newDir)
+            fileSavePath = newDir
+            mainQmlHandler.setFileSavePath(fileSavePath)
+        }
+    }
 
     function loadIpUrls(ipStringList) {
         localUrlComboBoxEx.resetModel(ipStringList)
@@ -171,6 +205,10 @@ Item {
         localPort = recverPort
         locatPortTextFieldEx.text = localPort
         console.log("123", senderIp, senderPort, recverPort)
+    }
+
+    function setFileSavePath(path) {
+        fileSavePath = path
     }
 
 }

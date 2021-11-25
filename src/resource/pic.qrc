@@ -16,5 +16,6 @@
         <file>pic/qmlsettings2.png</file>
         <file>pic/qmlsend2.png</file>
         <file>pic/qmlsend.png</file>
+        <file>pic/arrow_up.png</file>
     </qresource>
 </RCC>
