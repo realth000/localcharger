@@ -1,4 +1,5 @@
 ﻿import QtQuick 2.0
+import QtQml 2.10
 import QtQuick.Controls 2.10
 import QtQuick.Layouts 1.10
 import TH.QmlHandler 1.0
@@ -88,6 +89,10 @@ ApplicationWindow {
         onQmlClearToSendMsg: {
             workPage.appendSendedMessage(workPage.getToSendMessage())
             workPage.clearToSendMessage()
+        }
+
+        onQmlUpdateFileSavePath: {
+           configPage.setFileSavePath(path)
         }
     }
 
