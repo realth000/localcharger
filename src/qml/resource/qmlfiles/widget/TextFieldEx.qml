@@ -28,6 +28,7 @@ TextField {
     clip: textsClip
     leftPadding: textLeftPadding
     selectionColor: borderColor
+    selectedTextColor: textsColor
     selectByMouse: true
     background:  Rectangle {
         id: tiexInputArea
@@ -64,6 +65,8 @@ TextField {
         duration: borderColorAniDuration
     }
     onFocusChanged: {
-        borderColorAni.start();
+        if(textInputEx.activeFocus){
+            borderColorAni.start();
+        }
     }
 }
