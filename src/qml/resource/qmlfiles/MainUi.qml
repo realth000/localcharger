@@ -21,7 +21,7 @@ ApplicationWindow {
             id: mainStackLayout
             currentIndex: mainTabBar.currentIndex
             width: parent.width
-            anchors.bottom: mainTabBar.top
+            Layout.alignment: Qt.AlignBottom
             MainWorkPage {
                 id: workPage
             }
@@ -74,11 +74,9 @@ ApplicationWindow {
         }
         onQmlUpdateSenderState: {
             workPage.updateSenderState(state)
-            console.log(typeof(state), state, state == QmlHandler.SenderDisconnected)
         }
         onQmlUpdateRecverState: {
             workPage.updateRecverState(state)
-            console.log("new recver state =", state)
         }
 
         // files/messages info display

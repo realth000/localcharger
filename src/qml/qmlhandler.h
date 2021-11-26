@@ -51,6 +51,7 @@ public slots:
     void onRecverConnected();
     void onRecverDisconnected();
     void sendMessage(const QString &msg);
+    void sendFile(const QString &filePath);
     void setSenderUrl(const QString & url);
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);

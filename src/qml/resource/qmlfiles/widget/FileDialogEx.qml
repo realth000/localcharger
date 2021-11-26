@@ -1,14 +1,23 @@
-﻿import QtQuick 2.12
+﻿import QtQml 2.12
+import QtQuick 2.12
+import QtQuick.Layouts 1.12
 import Qt.labs.folderlistmodel 2.12
-import QtQml 2.12
 
 Rectangle {
     id: mainDialog
-    property bool files: false
-    property bool dirs: true
+    enum WorkMode {
+        SelectDirOnly = 0,
+        SelectFileAndDir
+    }
+
+    property int workMode: FileDialogEx.WorkMode.SelectFileAndDir
     readonly property bool dirsFirst: true
     property int fontSize: 18
-    signal changeSelectedDir(string newDir)
+    property ButtonEx selectedFileButtonEx
+    property string selectedFilePath
+
+    signal changeSelectedDir(string selectedPath)
+
     anchors.fill: parent
     visible: false
     color: "transparent"
@@ -16,8 +25,16 @@ Rectangle {
     FolderListModel {
         property alias folder: model.folder
         id: model
-        showFiles: files
-        showDirs: dirs
+        showFiles: switch (workMode) {
+                   case FileDialogEx.WorkMode.SelectDirOnly:
+                       return false
+                   case FileDialogEx.WorkMode.SelectFileAndDir:
+                       return true
+                   default:
+                       return false
+                   }
+
+        showDirs: true
         showDirsFirst: dirsFirst
         showDotAndDotDot: false
         showHidden: false
@@ -44,6 +61,7 @@ Rectangle {
                 texts: "选择目录"
                 textsSize: 18
                 textsLeftMargin: 10
+                enablePressWave: false
             }
         }
         Rectangle {
@@ -63,6 +81,7 @@ Rectangle {
                 borderBottom: true
                 textsLeftMargin: 10
                 borderBottomMargin: 0
+                enablePressWave: false
             }
         }
     }
@@ -83,15 +102,12 @@ Rectangle {
             leftMargin: 0
             iconUnchecked: "qrc:/pic/arrow_up.png"
             onClicked: {
-                console.log("parent path = ", model.parentFolder)
-                let parentPath = model.parentFolder.toString()
-
-                if(parentPath === "file:///" || model.parentFolder.toString() === "" || model.parentFolder.toString() === "file:///storage/emulated"){
+                let coparentPath = model.parentFolder.toString()
+                if(coparentPath === "file:///" || coparentPath === "" || coparentPath === "file:///storage/emulated"){
                     return;
                 }
-
                 model.folder = model.parentFolder;
-                console.log("FileDialogEx:: Move to parent folder:", model.parentFolder);
+                console.log("go to parent:", model.folder)
             }
         }
     }
@@ -118,22 +134,33 @@ Rectangle {
                     width: view.width
                     height: 40
                     ButtonEx {
+                        id: itemButtonEx
                         property int index: 0
-                        width: parent.width
-                        height: parent.height
-                        anchors.fill: parent
+                        width: item.width
+                        height: item.height
                         useIcon: false
                         checkable: false
                         posToLeft: true
                         bgSelectedColor: "transparent"
-                        bgColor: "#282828"
+                        bgColor: model.filePath === selectedFilePath ? "#40403d" : "#282828"
                         texts: model.fileName
                         textsSize: fontSize
                         textsUncheckedColor: "#f0ffff"
                         textsLeftMargin: 15
                         borderBottom: true
+                        iconUnchecked: model.fileIsDir ? "qrc:/pic/folder.png" : "qrc:/pic/file.png"
+                        iconPos: ButtonEx.IconPos.IconLeft
+                        leftMargin: borderBottomMargin
+                        enablePressWave: false
                         onClicked: {
-                            gotoFolder(model.fileName);
+                            if(model.fileIsDir) {
+                                gotoFolder(model.filePath)
+                            }
+                            else{
+                                selectedFileButtonEx = itemButtonEx
+                                selectedFilePath = model.filePath
+                                console.log("now select file", selectedFilePath,model.filePath === selectedFilePath )
+                            }
                         }
                     }
                 }
@@ -154,8 +181,18 @@ Rectangle {
         anchors.bottom: parent.bottom
         bgColor: "#282828"
         onClicked: {
-            var d = model.folder;
-            mainDialog.changeSelectedDir(d.toString().replace("file://", ""));
+            var d
+            switch (workMode) {
+            case FileDialogEx.WorkMode.SelectDirOnly:
+                d = model.folder
+                break
+            case FileDialogEx.WorkMode.SelectFileAndDir:
+                d = selectedFilePath
+                break
+            default:
+                d = selectedFilePath
+            }
+            mainDialog.changeSelectedDir(d.toString().replace("file:///", ""));
             mainDialog.close();
         }
     }
@@ -180,6 +217,8 @@ Rectangle {
     onVisibleChanged: {
         if(visible){
             console.log(model.parentFolder);
+            selectedFilePath = null
+            selectedFileButtonEx = null
         }
     }
 
@@ -205,7 +244,17 @@ Rectangle {
 //        view.model=null;
         mainDialog.uninitModel();
     }
-    function gotoFolder(name) {
-        model.folder += "/" + name
+
+    /*
+     * model.folder must start with "file:///"
+     * On Android(also linux), path starts with /storage/emulated/0(also /)
+     * On Windows, path starts with c:/ or d:/ ...
+     * So:
+     *   On Android and linux, model.folder = "file://" + folderPath
+     *   On Windows, model.folder = "file:///" + folderPath
+     */
+    function gotoFolder(folderPath) {
+        model.folder = ("file:///" + folderPath).replace("file:////", "file:///")
+        console.log("folder path =", "file:///" + folderPath);
     }
 }
