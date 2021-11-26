@@ -43,13 +43,14 @@ TabButton {
         height: iconHeight
         // 图标顶着方框上边沿中间
         anchors.horizontalCenter: assistant1.horizontalCenter
-        anchors.top: assistant1.top
-
+        anchors.verticalCenter: assistant1.verticalCenter
+        anchors.verticalCenterOffset: self.checked ? -assistant1.height/4 : 0
     }
     // NOTE: 使用contentItem: Text会导致icon无法显示
     Text {
         id: text1
         text: qsTr(texts)
+        visible: self.checked ? true : false
         opacity: enabled ? 1.0 : 0.3
         color: self.checked ? textsCheckedColor : textsUncheckedColor
         // 文字顶着方框下边沿中间，图标和文字间的padding设置在方框的高度中了
