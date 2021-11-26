@@ -104,6 +104,20 @@ void QmlHandler::sendMessage(const QString &msg)
     emit qmlClearToSendMsg();
 }
 
+void QmlHandler::sendFile(const QString &filePath)
+{
+    const QFileInfo fileInfo(filePath);
+    if(!fileInfo.exists()){
+        qDebug() << "send file failed:" << filePath << "not exists";
+        return;
+    }
+    if(!fileInfo.isFile()){
+        qDebug() << "send file failed:" << filePath << "is not a file";
+        return;
+    }
+    m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
+}
+
 void QmlHandler::setSenderUrl(const QString &url)
 {
     m_socketSenderIp = url;

@@ -50,6 +50,7 @@ Item {
                     iconPos: ButtonEx.IconPos.IconLeft
                     posToLeft: true
                     leftMargin:(parent.width - spacing)/6
+                    enablePressWave: false
                 }
 
                 ButtonEx {
@@ -92,6 +93,7 @@ Item {
                     iconPos: ButtonEx.IconPos.IconLeft
                     posToLeft: true
                     leftMargin:(parent.width - spacing)/6
+                    enablePressWave: false
                 }
 
                 ButtonEx {
@@ -189,6 +191,9 @@ Item {
             iconPos: ButtonEx.IconPos.IconLeft
             iconWidth: 30
             iconHeight: 30
+            onClicked: {
+                sendFileFileDialogEx.open()
+            }
         }
         ButtonEx {
             id: sendMessageButtonEx
@@ -207,6 +212,16 @@ Item {
                 mainQmlHandler.sendMessage(toSendTextArea.text)
             }
 
+        }
+    }
+
+    FileDialogEx {
+        id: sendFileFileDialogEx
+        fontSize: 12
+        onChangeSelectedDir: {
+            var fileSavePath = selectedPath
+            console.log("select file", fileSavePath)
+            mainQmlHandler.sendFile(fileSavePath)
         }
     }
 

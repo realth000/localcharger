@@ -26,5 +26,7 @@
         <file>pic/yes.png</file>
         <file>pic/received2.png</file>
         <file>pic/sended2.png</file>
+        <file>pic/file.png</file>
+        <file>pic/folder.png</file>
     </qresource>
 </RCC>

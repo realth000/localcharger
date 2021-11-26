@@ -21,9 +21,9 @@ Item {
 
     GroupBoxEx {
         id: localGroupBoxEx
-        labelText: "发送"
+        labelText: "接收"
         labelHeight: 40
-        iconPath: "qrc:/pic/sended2.png"
+        iconPath: "qrc:/pic/received2.png"
         height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight
         anchors.top: parent.top
         RowLayout {
@@ -77,6 +77,10 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
+                validator: IntValidator {
+                    top: 65535
+                    bottom: 0
+                }
                 onTextEdited: {
                     mainQmlHandler.setRecverPort(text)
                 }
@@ -86,8 +90,8 @@ Item {
 
     GroupBoxEx {
         id: remoteGroupBoxEx
-        labelText: "接收"
-        iconPath: "qrc:/pic/received2.png"
+        labelText: "发送"
+        iconPath: "qrc:/pic/sended2.png"
         labelHeight: localGroupBoxEx.labelHeight
         height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
         anchors.top: localGroupBoxEx.bottom
@@ -120,6 +124,9 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
+                validator: RegExpValidator {
+                    regExp: /^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|localhost$/
+                }
                 onTextEdited: {
                     mainQmlHandler.setSenderUrl(text)
                 }
@@ -155,6 +162,10 @@ Item {
                 onTextEdited: {
                     mainQmlHandler.setSenderPort(text)
                 }
+                validator: IntValidator {
+                    top: 65535
+                    bottom: 0
+                }
             }
         }
     }
@@ -186,9 +197,10 @@ Item {
     FileDialogEx {
         id: setSavePathFileDialogEx
         fontSize: 12
+        workMode: FileDialogEx.WorkMode.SelectDirOnly
         onChangeSelectedDir: {
-            console.log("file dialog: new dir = ", newDir)
-            fileSavePath = newDir
+            fileSavePath = selectedPath
+            console.log("select dir", fileSavePath)
             mainQmlHandler.setFileSavePath(fileSavePath)
         }
     }
@@ -204,7 +216,6 @@ Item {
         remotePortTextFieldEx.text = remotePort
         localPort = recverPort
         locatPortTextFieldEx.text = localPort
-        console.log("123", senderIp, senderPort, recverPort)
     }
 
     function setFileSavePath(path) {
