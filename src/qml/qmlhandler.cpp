@@ -275,6 +275,12 @@ void QmlHandler::saveConfig()
     delete configIni;
 }
 
+void QmlHandler::updateWebConfig()
+{
+    startSender();
+    startRecver();
+}
+
 void QmlHandler::getLocalIp()
 {
     // Get local ip address and netmask

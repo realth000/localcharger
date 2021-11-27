@@ -56,6 +56,7 @@ public slots:
     void setRecverPort(const QString &port);
     void setFileSavePath(const QString &filePath);
     void saveConfig();
+    void updateWebConfig();
 
 private:
     WebSender m_socketSender;
