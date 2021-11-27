@@ -1,6 +1,11 @@
 ﻿#include "qmlhandler.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
+#ifdef Q_OS_ANDROID
+#include <QtAndroidExtras/QAndroidJniObject>
+#include <QtAndroidExtras/QtAndroid>
+#include <QtCore/QDir>
+#endif
 #include "src/utils/networkinfohelper.h"
 
 QmlHandler::QmlHandler(QObject *parent)
@@ -13,14 +18,31 @@ QmlHandler::QmlHandler(QObject *parent)
       m_socketRecverState(QmlRecverState::RecverDisconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
+#ifdef Q_OS_ANDROID
+      m_configFilePath(APP_CONFIG_SAVE_PATH_ANDROID),
+      m_saveFileDirPath(QStringLiteral(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID))
+#else
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath())
+#endif
 {
 
 }
 
 void QmlHandler::initHandler()
 {
+#ifdef Q_OS_ANDROID
+    requestAndroidPermissions();
+
+    QUrl fileSaveUrl(QString("file://%1").arg(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID));
+    const QString workPath = fileSaveUrl.toLocalFile();
+    QDir workDir(workPath);
+    if(!workDir.exists()){
+        emit qmlMessageInfo("mkdir1: "+QString::number(workDir.mkpath(workPath)));
+    }
+    emit qmlMessageInfo("exists?: "+QString::number(workDir.exists(workPath)));
+
+#endif
     loadDefaultConfig();
     loadConfig();
     initConnections();
@@ -81,6 +103,20 @@ void QmlHandler::sendMessage(const QString &msg)
     }
     m_socketSender.sendMessage(msg);
     emit qmlClearToSendMsg();
+}
+
+void QmlHandler::sendFile(const QString &filePath)
+{
+    const QFileInfo fileInfo(filePath);
+    if(!fileInfo.exists()){
+        qDebug() << "send file failed:" << filePath << "not exists";
+        return;
+    }
+    if(!fileInfo.isFile()){
+        qDebug() << "send file failed:" << filePath << "is not a file";
+        return;
+    }
+    m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
 }
 
 void QmlHandler::setSenderUrl(const QString &url)
@@ -211,7 +247,6 @@ void QmlHandler::loadDefaultConfig()
 void QmlHandler::loadConfig()
 {
     if(!QFileInfo::exists(m_configFilePath)){
-        qDebug() << "config file not found, load default config";
         qDebug() << m_socketSenderIp << m_socketSenderPort << m_socketRecverPort;
         emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
         return;
@@ -233,7 +268,17 @@ void QmlHandler::saveConfig()
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+#ifdef Q_OS_ANDROID
+    configIni->sync();
+    emit qmlMessageInfo(QString::number(configIni->status()));
+#endif
     delete configIni;
+}
+
+void QmlHandler::updateWebConfig()
+{
+    startSender();
+    startRecver();
 }
 
 void QmlHandler::getLocalIp()
@@ -247,6 +292,24 @@ void QmlHandler::getLocalIp()
     }
     emit qmlUpdateLocalUrlLists(ipStringList);
 }
+
+#ifdef Q_OS_ANDROID
+void QmlHandler::requestAndroidPermissions()
+{
+    QtAndroid::PermissionResult READ_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE");
+    if(READ_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.READ_EXTERNAL_STORAGE");
+    }
+    QtAndroid::PermissionResult MANAGE_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.MANAGE_EXTERNAL_STORAGE");
+    if(MANAGE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.MANAGE_EXTERNAL_STORAGE");
+    }
+    QtAndroid::PermissionResult WRITE_EXTERNAL_STORAGE = QtAndroid::checkPermission("android.permission.WRITE_EXTERNAL_STORAGE");
+    if(WRITE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
+        QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.WRITE_EXTERNAL_STORAGE");
+    }
+}
+#endif
 
 void QmlHandler::onRecoredRecvedMsg(const QString &msg)
 {
@@ -265,7 +328,7 @@ void QmlHandler::onSendFileStart(const QString &fielPath, const qint64 &fileSize
 void QmlHandler::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
 {
     // TODO: send message here
-    emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:"
+    emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));

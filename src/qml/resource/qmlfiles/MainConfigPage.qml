@@ -21,12 +21,11 @@ Item {
 
     GroupBoxEx {
         id: localGroupBoxEx
-        labelText: "发送"
+        labelText: "接收"
         labelHeight: 40
+        iconPath: "qrc:/pic/received2.png"
         height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight
         anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.right: parent.right
         RowLayout {
             id: localUrlRowLayout
             height: 40
@@ -78,8 +77,13 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
+                validator: IntValidator {
+                    top: 65535
+                    bottom: 0
+                }
                 onTextEdited: {
                     mainQmlHandler.setRecverPort(text)
+                    mainQmlHandler.saveConfig()
                 }
             }
         }
@@ -87,12 +91,12 @@ Item {
 
     GroupBoxEx {
         id: remoteGroupBoxEx
-        labelText: "接收"
+        labelText: "发送"
+        iconPath: "qrc:/pic/sended2.png"
         labelHeight: localGroupBoxEx.labelHeight
         height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
         anchors.top: localGroupBoxEx.bottom
-        anchors.left: localGroupBoxEx.left
-        anchors.right: localGroupBoxEx.right
+        anchors.topMargin: 20
 
         RowLayout {
             id: remoteUrlRowLayout
@@ -121,8 +125,12 @@ Item {
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
                 color: remoteUrlText.color
+                validator: RegExpValidator {
+                    regExp: /^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))|localhost$/
+                }
                 onTextEdited: {
                     mainQmlHandler.setSenderUrl(text)
+                    mainQmlHandler.saveConfig()
                 }
             }
         }
@@ -132,8 +140,8 @@ Item {
             height: remoteUrlRowLayout.height
             spacing: remoteUrlRowLayout.spacing
             anchors.top: remoteUrlRowLayout.bottom
+            anchors.topMargin: 20
             anchors.left: remoteUrlRowLayout.left
-            anchors.topMargin: 10
             anchors.right: remoteUrlRowLayout.right
             Text {
                 id: remotePortText
@@ -155,41 +163,69 @@ Item {
                 color: remoteUrlText.color
                 onTextEdited: {
                     mainQmlHandler.setSenderPort(text)
+                    mainQmlHandler.saveConfig()
+                }
+                validator: IntValidator {
+                    top: 65535
+                    bottom: 0
                 }
             }
         }
     }
     GroupBoxEx {
         id: selevtSaveDirGroupBoxEx
-        labelText: "接收"
+        labelText: "保存位置"
         labelHeight: localGroupBoxEx.labelHeight
         height:selectSaveDirButtonEx.height + titleHeight + 10
         anchors.top: remoteGroupBoxEx.bottom
-        anchors.left: remoteGroupBoxEx.left
-        anchors.right: remoteGroupBoxEx.right
-
+        anchors.topMargin: 20
+        iconPath: "qrc:/pic/openfolder2.png"
         TextFieldEx {
             id: selectSaveDirButtonEx
             height: 40
+            clip: true
             anchors.top: selevtSaveDirGroupBoxEx.labelRect.bottom
             anchors.topMargin: 10
-            anchors.left: selevtSaveDirGroupBoxEx.left
-            anchors.right: selevtSaveDirGroupBoxEx.right
+            anchors.left: selevtSaveDirGroupBoxEx.separator.left
+            anchors.right: selevtSaveDirGroupBoxEx.separator.right
             bgColor: "transparent"
             readOnly: true
-            text: fileSavePath
+            text: fileSavePath.replace("/storage/emulated/0/", "")
             onReleased: {
                 setSavePathFileDialogEx.open()
             }
         }
     }
 
+    ButtonEx {
+        id: reconnectButtonEx
+        height: 40
+        anchors.top: selevtSaveDirGroupBoxEx.bottom
+        anchors.topMargin: 20
+        anchors.left: selevtSaveDirGroupBoxEx.left
+        anchors.leftMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        anchors.right: selevtSaveDirGroupBoxEx.right
+        anchors.rightMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        checkable: false
+        bgColor: "transparent"
+        texts: "刷新连接"
+        textsUncheckedColor: "#f0ffff"
+        iconUnchecked: "qrc:/pic/reload.png"
+        iconPos: ButtonEx.IconPos.IconLeft
+        onClicked: {
+            mainQmlHandler.updateWebConfig()
+        }
+    }
+
     FileDialogEx {
         id: setSavePathFileDialogEx
+        fontSize: 12
+        workMode: FileDialogEx.WorkMode.SelectDirOnly
         onChangeSelectedDir: {
-            console.log("file dialog: new dir = ", newDir)
-            fileSavePath = newDir
+            fileSavePath = selectedPath
+            console.log("select dir", fileSavePath)
             mainQmlHandler.setFileSavePath(fileSavePath)
+            mainQmlHandler.saveConfig()
         }
     }
 
@@ -204,7 +240,6 @@ Item {
         remotePortTextFieldEx.text = remotePort
         localPort = recverPort
         locatPortTextFieldEx.text = localPort
-        console.log("123", senderIp, senderPort, recverPort)
     }
 
     function setFileSavePath(path) {
