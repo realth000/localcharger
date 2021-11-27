@@ -49,7 +49,7 @@ Item {
                     iconUnchecked: getSenderStateIcon()
                     iconPos: ButtonEx.IconPos.IconLeft
                     posToLeft: true
-                    leftMargin:(parent.width - spacing)/6
+                    leftMargin:(parent.width - spacing)/10
                     enablePressWave: false
                 }
 
@@ -92,7 +92,7 @@ Item {
                     iconUnchecked: getRecverStateIcon()
                     iconPos: ButtonEx.IconPos.IconLeft
                     posToLeft: true
-                    leftMargin:(parent.width - spacing)/6
+                    leftMargin:(parent.width - spacing)/10
                     enablePressWave: false
                 }
 
@@ -133,6 +133,7 @@ Item {
                 anchors.topMargin: 10
                 anchors.left: recvedGroupBoxEx.separator.left
                 anchors.right: recvedGroupBoxEx.separator.right
+                selectByMouse: true
             }
         }
 
@@ -152,6 +153,7 @@ Item {
                 anchors.topMargin: 10
                 anchors.left: sendedGroupBoxEx.separator.left
                 anchors.right: sendedGroupBoxEx.separator.right
+                selectByMouse: true
             }
         }
 
@@ -170,6 +172,7 @@ Item {
                 anchors.topMargin: 10
                 anchors.left: toSendGroupBoxEx.separator.left
                 anchors.right: toSendGroupBoxEx.separator.right
+                selectByMouse: true
             }
         }
     }

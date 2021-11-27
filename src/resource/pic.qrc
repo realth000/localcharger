@@ -28,5 +28,6 @@
         <file>pic/sended2.png</file>
         <file>pic/file.png</file>
         <file>pic/folder.png</file>
+        <file>pic/splashscreen.png</file>
     </qresource>
 </RCC>

@@ -2,5 +2,6 @@
     <qresource prefix="/">
         <file>config/localhost.cert</file>
         <file>config/localhost.key</file>
+        <file>config/DejaVuSansMono-1.ttf</file>
     </qresource>
 </RCC>
