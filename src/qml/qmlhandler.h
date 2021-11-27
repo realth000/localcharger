@@ -7,7 +7,6 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 #include "defines.h"
-#include "src/gui/mainui.h"
 
 class QmlHandler : public QObject
 {
@@ -40,6 +39,7 @@ signals:
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
+    void qmlUpdateFileSavePath(QString path);
 
 public slots:
     void initHandler();
@@ -50,9 +50,13 @@ public slots:
     void onRecverConnected();
     void onRecverDisconnected();
     void sendMessage(const QString &msg);
+    void sendFile(const QString &filePath);
     void setSenderUrl(const QString & url);
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);
+    void setFileSavePath(const QString &filePath);
+    void saveConfig();
+    void updateWebConfig();
 
 private:
     WebSender m_socketSender;
@@ -77,8 +81,10 @@ private:
     void updateRecverState(QmlRecverState state);
     void loadDefaultConfig();
     void loadConfig();
-    void saveConfig();
     void getLocalIp();
+#ifdef Q_OS_ANDROID
+    void requestAndroidPermissions();
+#endif
 
 private slots:
     void onRecoredRecvedMsg(const QString &msg);

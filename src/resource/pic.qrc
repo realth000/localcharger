@@ -16,5 +16,18 @@
         <file>pic/qmlsettings2.png</file>
         <file>pic/qmlsend2.png</file>
         <file>pic/qmlsend.png</file>
+        <file>pic/arrow_up.png</file>
+        <file>pic/openfolder2.png</file>
+        <file>pic/sendtext2.png</file>
+        <file>pic/link2.png</file>
+        <file>pic/no2.png</file>
+        <file>pic/yes2.png</file>
+        <file>pic/no.png</file>
+        <file>pic/yes.png</file>
+        <file>pic/received2.png</file>
+        <file>pic/sended2.png</file>
+        <file>pic/file.png</file>
+        <file>pic/folder.png</file>
+        <file>pic/splashscreen.png</file>
     </qresource>
 </RCC>
