@@ -18,10 +18,11 @@ QmlHandler::QmlHandler(QObject *parent)
       m_socketRecverState(QmlRecverState::RecverDisconnected),
       m_ipTypeValidator(new QRegularExpressionValidator(QRegularExpression(QStringLiteral(VALIDATOR_TYPE_IP_EXPRESSION)))),
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
-      m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
 #ifdef Q_OS_ANDROID
+      m_configFilePath(APP_CONFIG_SAVE_PATH_ANDROID),
       m_saveFileDirPath(QStringLiteral(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID))
 #else
+      m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath())
 #endif
 {
@@ -246,7 +247,6 @@ void QmlHandler::loadDefaultConfig()
 void QmlHandler::loadConfig()
 {
     if(!QFileInfo::exists(m_configFilePath)){
-        qDebug() << "config file not found, load default config";
         qDebug() << m_socketSenderIp << m_socketSenderPort << m_socketRecverPort;
         emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
         return;
@@ -268,6 +268,10 @@ void QmlHandler::saveConfig()
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+#ifdef Q_OS_ANDROID
+    configIni->sync();
+    emit qmlMessageInfo(QString::number(configIni->status()));
+#endif
     delete configIni;
 }
 
@@ -318,7 +322,7 @@ void QmlHandler::onSendFileStart(const QString &fielPath, const qint64 &fileSize
 void QmlHandler::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
 {
     // TODO: send message here
-    emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:"
+    emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));

@@ -56,6 +56,7 @@ public slots:
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);
     void setFileSavePath(const QString &filePath);
+    void saveConfig();
 
 private:
     WebSender m_socketSender;
@@ -80,7 +81,6 @@ private:
     void updateRecverState(QmlRecverState state);
     void loadDefaultConfig();
     void loadConfig();
-    void saveConfig();
     void getLocalIp();
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();

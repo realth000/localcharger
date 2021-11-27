@@ -28,7 +28,6 @@ ApplicationWindow {
 
             MainConfigPage {
                 id: configPage
-
             }
         }
 
