@@ -83,6 +83,7 @@ Item {
                 }
                 onTextEdited: {
                     mainQmlHandler.setRecverPort(text)
+                    mainQmlHandler.saveConfig()
                 }
             }
         }
@@ -129,6 +130,7 @@ Item {
                 }
                 onTextEdited: {
                     mainQmlHandler.setSenderUrl(text)
+                    mainQmlHandler.saveConfig()
                 }
             }
         }
@@ -161,6 +163,7 @@ Item {
                 color: remoteUrlText.color
                 onTextEdited: {
                     mainQmlHandler.setSenderPort(text)
+                    mainQmlHandler.saveConfig()
                 }
                 validator: IntValidator {
                     top: 65535
@@ -202,6 +205,7 @@ Item {
             fileSavePath = selectedPath
             console.log("select dir", fileSavePath)
             mainQmlHandler.setFileSavePath(fileSavePath)
+            mainQmlHandler.saveConfig()
         }
     }
 
