@@ -176,9 +176,9 @@ Item {
         id: selevtSaveDirGroupBoxEx
         labelText: "保存位置"
         labelHeight: localGroupBoxEx.labelHeight
+        height:selectSaveDirButtonEx.height + titleHeight + 10
         anchors.top: remoteGroupBoxEx.bottom
         anchors.topMargin: 20
-        anchors.bottom: parent.bottom
         iconPath: "qrc:/pic/openfolder2.png"
         TextFieldEx {
             id: selectSaveDirButtonEx
@@ -194,6 +194,26 @@ Item {
             onReleased: {
                 setSavePathFileDialogEx.open()
             }
+        }
+    }
+
+    ButtonEx {
+        id: reconnectButtonEx
+        height: 40
+        anchors.top: selevtSaveDirGroupBoxEx.bottom
+        anchors.topMargin: 20
+        anchors.left: selevtSaveDirGroupBoxEx.left
+        anchors.leftMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        anchors.right: selevtSaveDirGroupBoxEx.right
+        anchors.rightMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        checkable: false
+        bgColor: "transparent"
+        texts: "刷新连接"
+        textsUncheckedColor: "#f0ffff"
+        iconUnchecked: "qrc:/pic/reload.png"
+        iconPos: ButtonEx.IconPos.IconLeft
+        onClicked: {
+            mainQmlHandler.updateWebConfig()
         }
     }
 
