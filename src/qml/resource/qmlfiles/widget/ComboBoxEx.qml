@@ -44,13 +44,13 @@ ComboBox {
             id: itemText
             text: modelData
             leftPadding: textLeftPadding
-            color: index === itemView.currentIndex ? textSelectedColor : textColor
+            color: itemText.index === itemView.currentIndex ? textSelectedColor : textColor
             // set font to display
             font: comboBoxEx.font
             verticalAlignment: Text.AlignVCenter
         }
         background: Rectangle {
-            color: index === itemView.currentIndex ? itemSelectedBackgroundColor : backgroundColor
+            color: itemText.index === itemView.currentIndex ? itemSelectedBackgroundColor : backgroundColor
             border.color: borderColor
             //item底部的线
             Rectangle {

@@ -13,7 +13,9 @@
 #define APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH "/WebSocket/RecverPort"
 #define APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH "/WebSocket/RecverSaveFilePath"
 
-#define TITLEBAR_TITLETEXT "LocalCharger" " " APP_VERSION
+#define APP_CONFIG_SAVE_PATH_ANDROID "/data/data/com.th000.localcharger/files/config.ini"
+
+#define TITLEBAR_TITLETEXT "LocalCharger"
 #define TITLEBAR_TITLEICON ":/pic/LocalCharger.ico"
 #define TITLEBAR_CLOSEICON ":/pic/close.png"
 
@@ -31,6 +33,8 @@
 #define WEBSOCKET_CONFIG_SENDER_SOCKET_NAME APP_NAME "Server"
 #define WEBSOCKET_CONFIG_CERTFILT_PATH               ":/config/localhost.cert"
 #define WEBSOCKET_CONFIG_KEYFILE_PATH                ":/config/localhost.key"
+
+#define WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID "/storage/emulated/0/Download/LocalCharger/"
 
 #define WEBSOCKET_FILEINFO_FILENAME_NAME        "fileName"
 #define WEBSOCKET_FILEINFO_FILESIZE_NAME        "fileSize"
