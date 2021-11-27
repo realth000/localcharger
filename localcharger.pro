@@ -32,6 +32,7 @@ win32 {
 
 android: {
     QT += androidextras
+    greaterThan(QT_MAJOR_VERSION, 4): QT -= widgets
 }
 
 if(contains(DEFINES, COMPILE_QML)) {

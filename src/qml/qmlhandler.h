@@ -7,7 +7,6 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 #include "defines.h"
-#include "src/gui/mainui.h"
 
 class QmlHandler : public QObject
 {
