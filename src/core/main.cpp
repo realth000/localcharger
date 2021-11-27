@@ -12,25 +12,39 @@
 #include <QtWidgets/QApplication>
 #endif
 
+#ifdef Q_OS_ANDROID
+#include <QtGui/QFontDatabase>
+#endif
+
 #ifdef ENABLE_VID
 #include "vld.h"
 #endif
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
+#ifdef ENABLE_QML
+    QGuiApplication app(argc, argv);
+#endif
+
+#ifdef Q_OS_ANDROID
+    QFontDatabase appFontDatabase;
+    appFontDatabase.addApplicationFont(":/config/DejaVuSansMono-1.ttf");
+#endif
+
     QFont appFont;
 #if defined(Q_OS_WINDOWS) || defined(Q_OS_WIN)
     appFont.setFamily("Microsoft YaHei");
 #elif defined(Q_OS_LINUX) && !defined(Q_OS_ANDROID)
     appFont.setFamily("Dejavu Sans Mono");
 #elif defined(Q_OS_ANDROID)
-    appFont.setFamily("Noto Sans");
+    appFont.setFamily("DejaVu Sans Mono");
+    appFont.setWeight(QFont::Bold);
 #endif
-    appFont.setStyleStrategy(QFont::PreferAntialias);
+    appFont.setStyleStrategy(static_cast<QFont::StyleStrategy>(QFont::PreferAntialias | QFont::PreferQuality));
 
 #ifdef ENABLE_QML
-    QCoreApplication::setAttribute(Qt::AA_EnableHighDpiScaling);
-    QGuiApplication app(argc, argv);
+    QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
     app.setFont(appFont);
     qmlRegisterType<QmlHandler>("TH.QmlHandler", 1, 0, "QmlHandler");
     QQmlApplicationEngine engine;

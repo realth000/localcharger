@@ -190,7 +190,7 @@ Item {
             anchors.right: selevtSaveDirGroupBoxEx.separator.right
             bgColor: "transparent"
             readOnly: true
-            text: fileSavePath
+            text: fileSavePath.replace("/storage/emulated/0/", "")
             onReleased: {
                 setSavePathFileDialogEx.open()
             }
