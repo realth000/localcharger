@@ -70,6 +70,7 @@ SOURCES += \
     src/core/jsonparser.cpp \
     src/core/main.cpp \
     src/core/threadworker.cpp \
+    src/core/webidentifier.cpp \
     src/core/webrecver.cpp \
     src/core/websender.cpp \
     src/utils/networkinfohelper.cpp \
@@ -78,6 +79,7 @@ SOURCES += \
 HEADERS += \
     src/core/jsonparser.h \
     src/core/threadworker.h \
+    src/core/webidentifier.h \
     src/core/webrecver.h \
     src/core/websender.h \
     src/include/defines.h \
