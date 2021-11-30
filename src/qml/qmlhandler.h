@@ -7,6 +7,7 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 #include "defines.h"
+#include "src/core/webidentifier.h"
 
 class QmlHandler : public QObject
 {
@@ -61,6 +62,7 @@ public slots:
 private:
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    WebIdentifier m_identifier;
     QString m_socketSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;

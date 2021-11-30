@@ -51,7 +51,7 @@ void QmlHandler::initHandler()
 
     updateSenderState(QmlSenderState::SenderDisconnected);
     updateRecverState(QmlRecverState::RecverDisconnected);
-
+    m_identifier.boardcastIdentityMessage();
     qDebug() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
 }
 
