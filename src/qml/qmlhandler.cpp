@@ -259,6 +259,7 @@ void QmlHandler::loadConfig()
     delete configIni;
     emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
     emit qmlUpdateFileSavePath(m_saveFileDirPath);
+    m_socketRecver.setFileSavePath(m_saveFileDirPath);
 }
 
 void QmlHandler::saveConfig()
