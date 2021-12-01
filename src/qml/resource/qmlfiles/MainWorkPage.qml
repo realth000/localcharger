@@ -41,7 +41,7 @@ Item {
 
                 Rectangle {
                     id: clientViewRectangle
-                    Layout.preferredWidth: mainWorkScrollView.width/3
+                    Layout.preferredWidth: mainWorkScrollView.width/2
                     Layout.fillHeight: true
                     color: "transparent"
                     border.color: "#f0ffff"
