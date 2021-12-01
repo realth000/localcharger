@@ -1,4 +1,5 @@
-﻿import QtQuick 2.0
+﻿import QtQuick 2.15
+import QtQml.Models 2.15
 import QtQuick.Controls 2.10
 import QtQuick.Layouts 1.10
 import TH.QmlHandler 1.0
@@ -19,102 +20,156 @@ Item {
             anchors.fill: parent
         }
 
-        contentWidth:parent.width
-        contentHeight: socketCtlGroupBoxEx.height + recvedGroupBoxEx.height + sendedGroupBoxEx.height + toSendGroupBoxEx.height + 60
+        contentWidth: parent.width
+        contentHeight: socketCtlGroupBoxEx.height + recvedGroupBoxEx.height + sendedGroupBoxEx.height + toSendGroupBoxEx.height + 100
 
         GroupBoxEx {
             id: socketCtlGroupBoxEx
             labelText: "连接端"
             labelHeight: 40
             iconPath: "qrc:/pic/link2.png"
-            height: socketSendCtlRowLayout.height + socketRecvCtlRowLayout.height + titleHeight
+            height: connectionRowLayout.height + titleHeight
             anchors.top: parent.top
+
             RowLayout {
-                id: socketSendCtlRowLayout
-                height: 40
-                spacing: 0
+                id: connectionRowLayout
+                height: 300
                 anchors.top: socketCtlGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: socketCtlGroupBoxEx.separator.left
                 anchors.right: socketCtlGroupBoxEx.separator.right
 
-                ButtonEx {
-                    id:  senderStateButtonEx
-                    Layout.preferredWidth: (parent.width - spacing)/2
-                    Layout.preferredHeight: parent.height
-                    bgColor: "transparent"
-                    checkable: false
-                    texts: getSenderStateString()
-                    textsUncheckedColor: "#336666"
-                    iconUnchecked: getSenderStateIcon()
-                    iconPos: ButtonEx.IconPos.IconLeft
-                    posToLeft: true
-                    leftMargin:(parent.width - spacing)/10
-                    enablePressWave: false
-                }
+                Rectangle {
+                    id: clientViewRectangle
+                    Layout.preferredWidth: mainWorkScrollView.width/3
+                    Layout.fillHeight: true
+                    color: "transparent"
+                    border.color: "#f0ffff"
+                    ListView {
+                        id: clientView
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        clip: true
+                        Component {
+                            id: clientDelegate
+                            Item {
+                                id: clientItem
+                                width: clientView.width
+                                height: 70 + clientItemColumn.topPadding + clientItemColumn.bottomPadding
+                                Column {
+                                    id: clientItemColumn
+                                    leftPadding: 5
+                                    rightPadding: 5
+                                    topPadding: 5
+                                    bottomPadding: 5
+                                    Text { color: "#f0ffff"; text: '<b>Name:</b> ' + name }
+                                    Text { color: "#f0ffff"; text: '<b>ID:</b> ' + id }
+                                    Text { color: "#f0ffff"; text: '<b>IP:</b> ' + ip }
+                                    Text { color: "#f0ffff"; text: '<b>Port:</b> ' + port }
+                                }
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: clientView.currentIndex = index
+                                }
+                            }
 
-                ButtonEx {
-                    id: startSenderButtonEx
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: parent.height
-                    bgColor: "transparent"
-                    checkable: false
-                    texts: "启动发送端"
-                    textsUncheckedColor: "#f0ffff"
-                    textsBold: true
-                    iconUnchecked: "qrc:/pic/start_connect.png"
-                    iconPos: ButtonEx.IconPos.IconLeft
-                    iconWidth: 30
-                    iconHeight: 30
-                    onClicked: {
-                        mainQmlHandler.startSender()
+                        }
+                        model: clientMode
+                        delegate: clientDelegate
+                        focus: true
+                        highlight: RectangleEx {
+                            commonBorderColor: false
+                            color: "#555555"
+                            leftBorderColor: "#f0ffff"
+                            rightBorderColor: "#f0ffff"
+                            radius: 10
+                        }
                     }
                 }
 
-            }
-            RowLayout {
-                id: socketRecvCtlRowLayout
-                height: 40
-                spacing: 0
-                anchors.top: socketSendCtlRowLayout.bottom
-                anchors.topMargin: 10
-                anchors.left: socketCtlGroupBoxEx.separator.left
-                anchors.right: socketCtlGroupBoxEx.separator.right
-
-                ButtonEx {
-                    id:  recverStateButtonEx
-                    Layout.preferredWidth: (parent.width - spacing)/2
-                    Layout.preferredHeight: parent.height
-                    bgColor: "transparent"
-                    checkable: false
-                    texts: getRecverStateString()
-                    textsUncheckedColor: "#336666"
-                    iconUnchecked: getRecverStateIcon()
-                    iconPos: ButtonEx.IconPos.IconLeft
-                    posToLeft: true
-                    leftMargin:(parent.width - spacing)/10
-                    enablePressWave: false
-                }
-
-                ButtonEx {
-                    id: startRecverButtonEx
+                ColumnLayout {
+                    id: netStatusColumnLayout
                     Layout.fillWidth: true
-                    Layout.preferredHeight: parent.height
-                    bgColor: "transparent"
-                    checkable: false
-                    texts: "启动接收端"
-                    textsUncheckedColor: "#f0ffff"
-                    textsBold: true
-                    iconUnchecked: "qrc:/pic/start_connect.png"
-                    iconPos: ButtonEx.IconPos.IconLeft
-                    iconWidth: 30
-                    iconHeight: 30
-                    onClicked: {
-                        mainQmlHandler.startRecver()
+                    Layout.preferredHeight: socketSendCtlRowLayout.height + socketRecvCtlRowLayout.height + 60
+                    RowLayout {
+                        id: socketSendCtlRowLayout
+                        height: 40
+                        spacing: 0
+
+                        ButtonEx {
+                            id:  senderStateButtonEx
+                            Layout.preferredWidth: (parent.width - spacing)/2
+                            Layout.preferredHeight: parent.height
+                            bgColor: "transparent"
+                            checkable: false
+                            texts: getSenderStateString()
+                            textsUncheckedColor: "#336666"
+                            iconUnchecked: getSenderStateIcon()
+                            iconPos: ButtonEx.IconPos.IconLeft
+                            posToLeft: true
+                            leftMargin:(parent.width - spacing)/10
+                            enablePressWave: false
+                        }
+
+                        ButtonEx {
+                            id: startSenderButtonEx
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: parent.height
+                            bgColor: "transparent"
+                            checkable: false
+                            texts: "启动发送端"
+                            textsUncheckedColor: "#f0ffff"
+                            textsBold: true
+                            iconUnchecked: "qrc:/pic/start_connect.png"
+                            iconPos: ButtonEx.IconPos.IconLeft
+                            iconWidth: 30
+                            iconHeight: 30
+                            onClicked: {
+                                mainQmlHandler.startSender()
+                            }
+                        }
+                    }
+                    RowLayout {
+                        id: socketRecvCtlRowLayout
+                        height: 40
+                        spacing: 0
+
+                        ButtonEx {
+                            id:  recverStateButtonEx
+                            Layout.preferredWidth: (parent.width - spacing)/2
+                            Layout.preferredHeight: parent.height
+                            bgColor: "transparent"
+                            checkable: false
+                            texts: getRecverStateString()
+                            textsUncheckedColor: "#336666"
+                            iconUnchecked: getRecverStateIcon()
+                            iconPos: ButtonEx.IconPos.IconLeft
+                            posToLeft: true
+                            leftMargin:(parent.width - spacing)/10
+                            enablePressWave: false
+                        }
+
+                        ButtonEx {
+                            id: startRecverButtonEx
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: parent.height
+                            bgColor: "transparent"
+                            checkable: false
+                            texts: "启动接收端"
+                            textsUncheckedColor: "#f0ffff"
+                            textsBold: true
+                            iconUnchecked: "qrc:/pic/start_connect.png"
+                            iconPos: ButtonEx.IconPos.IconLeft
+                            iconWidth: 30
+                            iconHeight: 30
+                            onClicked: {
+                                mainQmlHandler.startRecver()
+                            }
+                        }
                     }
                 }
             }
-
         }
 
         GroupBoxEx {
@@ -229,6 +284,12 @@ Item {
     }
 
 
+    ListModel {
+        id: clientMode
+    }
+
+
+
     function getSenderStateString(){
         switch (senderState) {
         case QmlHandler.SenderDisconnected:
@@ -301,5 +362,9 @@ Item {
 
     function appendRecvedMessage(msg) {
         recvedTextArea.append(msg)
+    }
+
+    function addClient(ip, port, readableName, id) {
+        clientMode.append({name: readableName, id: id, ip: ip, port: port })
     }
 }

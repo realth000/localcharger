@@ -93,6 +93,11 @@ ApplicationWindow {
         onQmlUpdateFileSavePath: {
            configPage.setFileSavePath(path)
         }
+
+        // WebIdentifier
+        onQmlAddClient: {
+            workPage.addClient(ip, port, readableName, id)
+        }
     }
 
     Component.onCompleted: {

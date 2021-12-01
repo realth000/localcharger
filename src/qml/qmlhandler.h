@@ -41,6 +41,7 @@ signals:
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
     void qmlUpdateFileSavePath(QString path);
+    void qmlAddClient(QString ip, QString port, QString readableName, QString id);
 
 public slots:
     void initHandler();
@@ -73,6 +74,7 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+    QMap<QString, QString> m_clientsMap;
 
     void initConnections();
     void startSender(const port_t &port);
@@ -84,6 +86,7 @@ private:
     void loadDefaultConfig();
     void loadConfig();
     void getLocalIp();
+    void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
 #endif
@@ -94,6 +97,7 @@ private slots:
     void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
     void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
+    void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 };
 
 #endif // QMLHANDLER_H

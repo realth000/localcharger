@@ -163,6 +163,9 @@ void QmlHandler::initConnections()
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
+
+    // WebIdentifier
+    connect(&m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -294,6 +297,11 @@ void QmlHandler::getLocalIp()
     emit qmlUpdateLocalUrlLists(ipStringList);
 }
 
+void QmlHandler::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
+{
+    emit qmlAddClient(ip, port, readableName, id);
+}
+
 #ifdef Q_OS_ANDROID
 void QmlHandler::requestAndroidPermissions()
 {
@@ -350,4 +358,17 @@ void QmlHandler::onRecvFileFinish(const QString &fielPath, const qint64 &recvByt
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
+}
+
+void QmlHandler::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
+{
+    if(!m_clientsMap.contains(id)){
+        addDetectedClients(ip, port, readableName, id);
+        return;
+    }
+    if(m_clientsMap[id] == readableName){
+        // TODO: update
+        return;
+    }
+    addDetectedClients(ip, port, readableName, id);
 }
