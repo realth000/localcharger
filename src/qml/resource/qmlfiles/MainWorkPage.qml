@@ -28,7 +28,7 @@ Item {
             labelText: "连接端"
             labelHeight: 40
             iconPath: "qrc:/pic/link2.png"
-            height: connectionRowLayout.height + titleHeight
+            height: connectionRowLayout.height + titleHeight + 10 + 10
             anchors.top: parent.top
 
             RowLayout {
@@ -80,7 +80,7 @@ Item {
                         focus: true
                         highlight: RectangleEx {
                             commonBorderColor: false
-                            color: "#555555"
+                            color: "#393939"
                             leftBorderColor: "#f0ffff"
                             rightBorderColor: "#f0ffff"
                             radius: 10
@@ -177,7 +177,7 @@ Item {
             labelText: "已接收"
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
-            height: recvedTextArea.height + titleHeight
+            height: recvedTextArea.height + titleHeight + 10 + 10
             anchors.top: socketCtlGroupBoxEx.bottom
             anchors.topMargin: 20
             TextAreaEx {
@@ -197,7 +197,7 @@ Item {
             labelText: "已发送"
             labelHeight: 40
             iconPath: "qrc:/pic/sended2.png"
-            height: sendedTextArea.height + titleHeight
+            height: sendedTextArea.height + titleHeight + 10 + 10
             anchors.top: recvedGroupBoxEx.bottom
             anchors.topMargin: 20
             TextAreaEx {
@@ -217,7 +217,7 @@ Item {
             labelText: "发文字"
             labelHeight: 40
             iconPath: "qrc:/pic/sendtext2.png"
-            height: toSendTextArea.height + titleHeight
+            height: toSendTextArea.height + titleHeight + 10 + 10
             anchors.top: sendedGroupBoxEx.bottom
             anchors.topMargin: 20
             TextAreaEx {
