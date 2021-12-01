@@ -4,7 +4,8 @@ import QtQuick.Controls 2.5
 TextArea {
     property color backgroundColor: "transparent"
     property int borderWidth: 1
-    property color borderColor: "#336666"
+//    property color borderColor: "#336666"
+    property color borderColor: readOnly ? "#336666" : "#f0ffff"
     property color textColor: "#f0ffff"
     property int fontSize: 16
     id: textAreaEx

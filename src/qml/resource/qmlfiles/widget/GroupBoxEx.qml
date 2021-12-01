@@ -15,6 +15,7 @@ Rectangle {
 //    property color labelColor: "#4b6876"
 //    property color labelColor: "#336699"
     property color labelColor: "#336666"
+//    property color labelColor: "#f0ffff"
     property color labelBgColor: "transparent"
     property int labelWidth: 200
     property int labelHeight: 60
@@ -24,7 +25,8 @@ Rectangle {
     property int separatorLeftMargin: labelLeftMargin
     property int separatorRightMargin: labelLeftMargin
     property color separatorColor: labelColor
-    property color backgroundColor: "transparent"
+//    property color backgroundColor: "transparent"
+    property color backgroundColor: "#272727"
     width: parent.width
     height: 200
     color: "transparent"

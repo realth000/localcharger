@@ -24,7 +24,7 @@ Item {
         labelText: "接收"
         labelHeight: 40
         iconPath: "qrc:/pic/received2.png"
-        height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight
+        height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight + 20 + 10
         anchors.top: parent.top
         RowLayout {
             id: localUrlRowLayout
@@ -94,7 +94,7 @@ Item {
         labelText: "发送"
         iconPath: "qrc:/pic/sended2.png"
         labelHeight: localGroupBoxEx.labelHeight
-        height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 20
+        height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 30 + 10
         anchors.top: localGroupBoxEx.bottom
         anchors.topMargin: 20
 
@@ -176,7 +176,7 @@ Item {
         id: selevtSaveDirGroupBoxEx
         labelText: "保存位置"
         labelHeight: localGroupBoxEx.labelHeight
-        height:selectSaveDirButtonEx.height + titleHeight + 10
+        height:selectSaveDirButtonEx.height + titleHeight + 10 + 10
         anchors.top: remoteGroupBoxEx.bottom
         anchors.topMargin: 20
         iconPath: "qrc:/pic/openfolder2.png"
