@@ -35,8 +35,8 @@ MainUi::MainUi(QWidget *parent)
     ui->setupUi(this);
     loadDefaultConfig();
     loadConfig();
-    initUi();
     m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
+    initUi();
     initConnections();
     getLocalIp();
     updateWebSocketConfig();
@@ -124,6 +124,8 @@ void MainUi::initUi()
 
     ui->clientsListWidget->horizontalScrollBar()->setStyle(m_hScrollStyle);
     ui->clientsListWidget->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->clientNameLineEdit->setText(m_localClientReadableName);
+    ui->clientNameLineEdit->setFocusPolicy(Qt::ClickFocus);
 }
 
 void MainUi::initConnections()
@@ -518,7 +520,8 @@ void MainUi::on_saveFilePathLineEdit_textChanged(const QString &arg1)
 
 void MainUi::on_connectSelectedClientPushButton_clicked()
 {
-    if(ui->clientsListWidget->selectedItems().length() < 0){
+    if(ui->clientsListWidget->selectedItems().length() <= 0){
+        qDebug() << "client not selected";
         return;
     }
     const QStringList configList = ui->clientsListWidget->selectedItems()[0]->text().split("\n");
@@ -531,5 +534,12 @@ void MainUi::on_connectSelectedClientPushButton_clicked()
 void MainUi::on_broadcastPushButton_clicked()
 {
     m_identifier->boardcastIdentityMessage();
+}
+
+
+void MainUi::on_clientNameLineEdit_textChanged(const QString &arg1)
+{
+    m_localClientReadableName = arg1;
+    m_identifier->setIdentityReadableName(m_localClientReadableName);
 }
 

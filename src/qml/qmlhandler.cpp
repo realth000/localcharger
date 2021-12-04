@@ -135,6 +135,13 @@ void QmlHandler::setRecverPort(const QString &port)
     m_socketRecverPort = port.toInt();
 }
 
+void QmlHandler::setClientReadableName(const QString &name)
+{
+    m_localClientReadableName = name;
+    qDebug() << "set name" << name;
+    m_identifier->setIdentityReadableName(m_localClientReadableName);
+}
+
 void QmlHandler::setFileSavePath(const QString &filePath)
 {
     m_saveFileDirPath = filePath;
@@ -264,6 +271,7 @@ void QmlHandler::loadConfig()
     delete configIni;
     emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
     emit qmlUpdateFileSavePath(m_saveFileDirPath);
+    emit qmlUpdateClientName(m_localClientReadableName);
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
 
     m_localWorkingPort = m_socketRecverPort;

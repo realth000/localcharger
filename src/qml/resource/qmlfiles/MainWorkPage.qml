@@ -28,197 +28,235 @@ Item {
             labelText: "连接端"
             labelHeight: 40
             iconPath: "qrc:/pic/link2.png"
-            height: connectionRowLayout.height + titleHeight + 10 + 10
+            height: clientNameColumnLayout.height + titleHeight + 10 + 10
             anchors.top: parent.top
-
-            RowLayout {
-                id: connectionRowLayout
-                height: 300
+            ColumnLayout {
+                id: clientNameColumnLayout
+                width: parent.width
+                height: 340
                 anchors.top: socketCtlGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: socketCtlGroupBoxEx.separator.left
                 anchors.right: socketCtlGroupBoxEx.separator.right
-
                 Rectangle {
-                    id: clientViewRectangle
-                    Layout.preferredWidth: mainWorkScrollView.width/2
-                    Layout.fillHeight: true
+                    id: clientNameRectangle
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
                     color: "transparent"
-                    border.color: "#f0ffff"
-                    ListView {
-                        id: clientView
-                        anchors.fill: parent
-                        anchors.topMargin: 5
-                        anchors.bottomMargin: 5
-                        clip: true
-                        Component {
-                            id: clientDelegate
-                            Item {
-                                id: clientItem
-                                width: clientView.width
-                                height: 70 + clientItemColumn.topPadding + clientItemColumn.bottomPadding
-                                property string clientName: name
-                                property string clientId: id
-                                property string clientIp: ip
-                                property string clientPort: port
-                                Column {
-                                    id: clientItemColumn
-                                    leftPadding: 5
-                                    rightPadding: 5
-                                    topPadding: 5
-                                    bottomPadding: 5
-                                    Text { color: "#f0ffff"; text: '<b>Name:</b> ' + name }
-                                    Text { color: "#f0ffff"; text: '<b>ID:</b> ' + id }
-                                    Text { color: "#f0ffff"; text: '<b>IP:</b> ' + ip }
-                                    Text { color: "#f0ffff"; text: '<b>Port:</b> ' + port }
-                                }
-                                MouseArea {
-                                    anchors.fill: parent
-                                    onClicked: clientView.currentIndex = index
-                                }
-                            }
-
+                    RowLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 10
+                        Text {
+                            id: clientNameText
+                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: parent.height
+                            text: "本地名称"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: "#f0ffff"
                         }
-                        model: clientMode
-                        delegate: clientDelegate
-                        focus: true
-                        highlight: RectangleEx {
-                            commonBorderColor: false
-                            color: "#393939"
-                            leftBorderColor: "#f0ffff"
-                            rightBorderColor: "#f0ffff"
-                            radius: 10
+                        TextFieldEx {
+                            id: clientNameTextFieldEx
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: parent.height
+                            horizontalAlignment: Text.AlignLeft
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: clientNameText.color
+                            onTextEdited: {
+                                mainQmlHandler.setClientReadableName(text)
+                                mainQmlHandler.saveConfig()
+                            }
                         }
                     }
                 }
+                RowLayout {
+                    id: connectionRowLayout
+                    height: 300
+                    anchors.topMargin: 10
+                    Rectangle {
+                        id: clientViewRectangle
+                        Layout.preferredWidth: mainWorkScrollView.width/2
+                        Layout.fillHeight: true
+                        color: "transparent"
+                        border.color: "#f0ffff"
+                        ListView {
+                            id: clientView
+                            anchors.fill: parent
+                            anchors.topMargin: 5
+                            anchors.bottomMargin: 5
+                            clip: true
 
-                ColumnLayout {
-                    id: netStatusColumnLayout
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: socketSendCtlRowLayout.height + socketRecvCtlRowLayout.height + 60
-                    RowLayout {
-                        id: clientsLayOut
-                        height: 60
-                        spacing: 0
-                        ButtonEx {
-                            id: broadcastButtonEx
-                            Layout.preferredWidth: (parent.width - spacing)/2
-                            Layout.preferredHeight: 60
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: "广播"
-                            textsUncheckedColor: "#f0ffff"
-                            iconUnchecked: "qrc:/pic/broadcast.png"
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            onClicked: {
-                                mainQmlHandler.boardcastIdentityMessage()
-                            }
-                        }
-                        ButtonEx {
-                            id: connectClientButtonEx
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: 60
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: "连接"
-                            textsUncheckedColor: "#f0ffff"
-                            iconUnchecked: "qrc:/pic/start_connect.png"
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            onClicked: {
-                                var sName = clientView.currentItem.clientName
-                                var sId = clientView.currentItem.clientId
-                                var sIp = clientView.currentItem.clientIp
-                                var sPort = clientView.currentItem.clientPort
-                                console.log("start connect to", clientView.currentItem.clientName, clientView.currentItem.clientId, clientView.currentItem.clientIp, clientView.currentItem.clientPort)
-                                if(sIp === "" || sPort === "") {
-                                    console.log("empty client")
-                                    return
+                            Component {
+                                id: clientDelegate
+                                Item {
+                                    id: clientItem
+                                    width: clientView.width
+                                    height: 70 + clientItemColumn.topPadding + clientItemColumn.bottomPadding
+                                    property string clientName: name
+                                    property string clientId: id
+                                    property string clientIp: ip
+                                    property string clientPort: port
+                                    Column {
+                                        id: clientItemColumn
+                                        width: parent.width
+                                        leftPadding: 5
+                                        rightPadding: 5
+                                        topPadding: 5
+                                        bottomPadding: 5
+                                        Text { color: "#f0ffff"; text: '<b>Name:</b> ' + name }
+                                        Text { color: "#f0ffff"; text: '<b>ID:</b> ' + id }
+                                        Text { color: "#f0ffff"; text: '<b>IP:</b> ' + ip }
+                                        Text { color: "#f0ffff"; text: '<b>Port:</b> ' + port }
+                                    }
+                                    MouseArea {
+                                        anchors.fill: parent
+                                        onClicked: clientView.currentIndex = index
+                                    }
                                 }
-                                mainQmlHandler.setSenderUrl(sIp)
-                                mainQmlHandler.setSenderPort(sPort)
-                                configPage.updateRemoteConfig(sIp, sPort)
-                                mainQmlHandler.connectSelectedClient(sName, sId, sIp, sPort)
+
+                            }
+                            model: clientMode
+                            delegate: clientDelegate
+                            focus: true
+                            highlight: RectangleEx {
+                                commonBorderColor: false
+                                color: "#393939"
+                                leftBorderColor: "#f0ffff"
+                                rightBorderColor: "#f0ffff"
+                                radius: 10
                             }
                         }
                     }
 
                     ColumnLayout {
-                        id: socketSendCtlRowLayout
-                        width: parent.width
-                        spacing: 0
-
-                        ButtonEx {
-                            id:  senderStateButtonEx
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: (parent.height - spacing)/2
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: getSenderStateString()
-                            textsUncheckedColor: "#336666"
-                            iconUnchecked: getSenderStateIcon()
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            posToLeft: true
-                            leftMargin:(parent.width - spacing)/5
-                            enablePressWave: false
-                        }
-
-                        ButtonEx {
-                            id: startSenderButtonEx
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: "启动发送端"
-                            textsUncheckedColor: "#f0ffff"
-                            textsBold: true
-                            iconUnchecked: "qrc:/pic/start_connect.png"
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            iconWidth: 30
-                            iconHeight: 30
-                            posToLeft: true
-                            leftMargin:(parent.width - spacing)/5
-                            onClicked: {
-                                mainQmlHandler.startSender()
+                        id: netStatusColumnLayout
+                        Layout.fillWidth: true
+                        Layout.preferredHeight: socketSendCtlRowLayout.height + socketRecvCtlRowLayout.height + 60
+                        RowLayout {
+                            id: clientsLayOut
+                            height: 60
+                            spacing: 0
+                            ButtonEx {
+                                id: broadcastButtonEx
+                                Layout.preferredWidth: (parent.width - spacing)/2
+                                Layout.preferredHeight: 60
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: "广播"
+                                textsUncheckedColor: "#f0ffff"
+                                iconUnchecked: "qrc:/pic/broadcast.png"
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                onClicked: {
+                                    mainQmlHandler.boardcastIdentityMessage()
+                                }
+                            }
+                            ButtonEx {
+                                id: connectClientButtonEx
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: 60
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: "连接"
+                                textsUncheckedColor: "#f0ffff"
+                                iconUnchecked: "qrc:/pic/start_connect.png"
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                onClicked: {
+                                    var sName = clientView.currentItem.clientName
+                                    var sId = clientView.currentItem.clientId
+                                    var sIp = clientView.currentItem.clientIp
+                                    var sPort = clientView.currentItem.clientPort
+                                    console.log("start connect to", clientView.currentItem.clientName, clientView.currentItem.clientId, clientView.currentItem.clientIp, clientView.currentItem.clientPort)
+                                    if(sIp === "" || sPort === "") {
+                                        console.log("empty client")
+                                        return
+                                    }
+                                    mainQmlHandler.setSenderUrl(sIp)
+                                    mainQmlHandler.setSenderPort(sPort)
+                                    configPage.updateRemoteConfig(sIp, sPort)
+                                    mainQmlHandler.connectSelectedClient(sName, sId, sIp, sPort)
+                                }
                             }
                         }
-                    }
-                    ColumnLayout {
-                        id: socketRecvCtlRowLayout
-                        width: parent.width
-                        spacing: 0
 
-                        ButtonEx {
-                            id:  recverStateButtonEx
-                            Layout.fillWidth: true
-                            Layout.preferredHeight: (parent.height - spacing)/2
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: getRecverStateString()
-                            textsUncheckedColor: "#336666"
-                            iconUnchecked: getRecverStateIcon()
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            posToLeft: true
-                            leftMargin:(parent.width - spacing)/5
-                            enablePressWave: false
+                        ColumnLayout {
+                            id: socketSendCtlRowLayout
+                            width: parent.width
+                            spacing: 0
+
+                            ButtonEx {
+                                id:  senderStateButtonEx
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: (parent.height - spacing)/2
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: getSenderStateString()
+                                textsUncheckedColor: "#336666"
+                                iconUnchecked: getSenderStateIcon()
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                posToLeft: true
+                                leftMargin:(parent.width - spacing)/5
+                                enablePressWave: false
+                            }
+                            ButtonEx {
+                                id: startSenderButtonEx
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: "启动发送端"
+                                textsUncheckedColor: "#f0ffff"
+                                textsBold: true
+                                iconUnchecked: "qrc:/pic/start_connect.png"
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                iconWidth: 30
+                                iconHeight: 30
+                                posToLeft: true
+                                leftMargin:(parent.width - spacing)/5
+                                onClicked: {
+                                    mainQmlHandler.startSender()
+                                }
+                            }
                         }
+                        ColumnLayout {
+                            id: socketRecvCtlRowLayout
+                            width: parent.width
+                            spacing: 0
 
-                        ButtonEx {
-                            id: startRecverButtonEx
-                            Layout.fillWidth: true
-                            Layout.fillHeight: true
-                            bgColor: "transparent"
-                            checkable: false
-                            texts: "启动接收端"
-                            textsUncheckedColor: "#f0ffff"
-                            textsBold: true
-                            iconUnchecked: "qrc:/pic/start_connect.png"
-                            iconPos: ButtonEx.IconPos.IconLeft
-                            iconWidth: 30
-                            iconHeight: 30
-                            posToLeft: true
-                            leftMargin:(parent.width - spacing)/5
-                            onClicked: {
-                                mainQmlHandler.startRecver()
+                            ButtonEx {
+                                id:  recverStateButtonEx
+                                Layout.fillWidth: true
+                                Layout.preferredHeight: (parent.height - spacing)/2
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: getRecverStateString()
+                                textsUncheckedColor: "#336666"
+                                iconUnchecked: getRecverStateIcon()
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                posToLeft: true
+                                leftMargin:(parent.width - spacing)/5
+                                enablePressWave: false
+                            }
+                            ButtonEx {
+                                id: startRecverButtonEx
+                                Layout.fillWidth: true
+                                Layout.fillHeight: true
+                                bgColor: "transparent"
+                                checkable: false
+                                texts: "启动接收端"
+                                textsUncheckedColor: "#f0ffff"
+                                textsBold: true
+                                iconUnchecked: "qrc:/pic/start_connect.png"
+                                iconPos: ButtonEx.IconPos.IconLeft
+                                iconWidth: 30
+                                iconHeight: 30
+                                posToLeft: true
+                                leftMargin:(parent.width - spacing)/5
+                                onClicked: {
+                                    mainQmlHandler.startRecver()
+                                }
                             }
                         }
                     }
@@ -400,6 +438,10 @@ Item {
 
     function updateRecverState(state) {
         recverState = state
+    }
+
+    function updateClientName(name) {
+        clientNameTextFieldEx.text = name
     }
 
     function getToSendMessage() {

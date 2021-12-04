@@ -42,8 +42,8 @@ private slots:
     void on_selectSaveFilePathPushButton_clicked();
     void on_saveFilePathLineEdit_textChanged(const QString &arg1);
     void on_connectSelectedClientPushButton_clicked();
-
     void on_broadcastPushButton_clicked();
+    void on_clientNameLineEdit_textChanged(const QString &arg1);
 
 private:
     Ui::MainUi *ui;

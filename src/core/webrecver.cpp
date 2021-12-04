@@ -147,7 +147,7 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
 {
 #if 1
     int messageOffset = WEBSOCKET_MESSAGETYPE_LENGTH;
-    const int fileInfoArrayLength = message.mid(messageOffset, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH).toInt();
+    const int fileInfoArrayLength = QString::fromUtf8(message.mid(messageOffset, WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH)).toInt();
     messageOffset += WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH;
     const QByteArray fileInfoArray = message.mid(messageOffset, fileInfoArrayLength);
     messageOffset += fileInfoArrayLength;
