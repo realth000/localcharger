@@ -3,6 +3,7 @@
 
 #include <QtWidgets/QWidget>
 #include <QtGui/QRegularExpressionValidator>
+#include "src/core/webidentifier.h"
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
 #include "proxystyle.h"
@@ -40,11 +41,15 @@ private slots:
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
     void on_selectSaveFilePathPushButton_clicked();
     void on_saveFilePathLineEdit_textChanged(const QString &arg1);
+    void on_connectSelectedClientPushButton_clicked();
+
+    void on_broadcastPushButton_clicked();
 
 private:
     Ui::MainUi *ui;
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    WebIdentifier *m_identifier;
     QString m_sockerSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
@@ -55,6 +60,12 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+
+    // for WebIdentifier
+    QMap<QString, QString> m_clientsMap;
+    QString m_localClientReadableName;
+    port_t m_localWorkingPort;
+    QString m_localIp;
 
     // styles
     PushButtonStyle *m_pushButtonStyle;
@@ -72,5 +83,7 @@ private:
     void loadConfig();
     void saveConfig();
     void getLocalIp();
+    void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 };
 #endif // MAINUI_H

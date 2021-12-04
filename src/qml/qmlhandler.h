@@ -63,7 +63,7 @@ public slots:
 private:
     WebSender m_socketSender;
     WebRecver m_socketRecver;
-    WebIdentifier m_identifier;
+    WebIdentifier *m_identifier;
     QString m_socketSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
@@ -74,7 +74,12 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+
+    // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
+    QString m_localClientReadableName;
+    port_t m_localWorkingPort;
+    QString m_localIp;
 
     void initConnections();
     void startSender(const port_t &port);
