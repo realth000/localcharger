@@ -61,11 +61,11 @@ void WebIdentifier::onIdenReadReady()
             continue;
         }
         qint64 offset = IDENTITY_HEADER_LENGTH;
-        QString senderId = datagram.mid(offset, IDENTITY_ID_LENGTH);
+        QString senderId = QString::fromUtf8(datagram.mid(offset, IDENTITY_ID_LENGTH));
         offset += IDENTITY_ID_LENGTH;
-        QString senderIp = datagram.mid(offset, IDENTITY_IP_LENGTH);
+        QString senderIp = QString::fromUtf8(datagram.mid(offset, IDENTITY_IP_LENGTH));
         offset += IDENTITY_IP_LENGTH;
-        QString senderWorkingPort = datagram.mid(offset, IDENTITY_WORKINGPORT_LENGTH);
+        QString senderWorkingPort = QString::fromUtf8(datagram.mid(offset, IDENTITY_WORKINGPORT_LENGTH));
         offset += IDENTITY_WORKINGPORT_LENGTH;
         QString senderReadableName = QString::fromUtf8(datagram.mid(offset));
         // filt datagram from itself
@@ -73,7 +73,7 @@ void WebIdentifier::onIdenReadReady()
             continue;
         }
         emit identityMessageParsed(senderIp, senderWorkingPort, senderReadableName, senderId);
-        qDebug() << QString("get another client, ip=%1, workingPort=%2, name=%3, id=%4")
+        qDebug() << QString("ientify client: ip=%1, workingPort=%2, name=%3, id=%4")
                     .arg(senderIp, senderWorkingPort, senderReadableName, senderId);
     }
 }
@@ -82,9 +82,9 @@ QByteArray WebIdentifier::generateIdentidyData(const QString &identityReadableNa
 {
     QByteArray identityByteArray;
     identityByteArray.append(QString::number(IDENTITY_HEADER).toUtf8(), IDENTITY_HEADER_LENGTH);
-    identityByteArray.append(QString::number(m_identityId).toStdString().c_str(), IDENTITY_ID_LENGTH);
+    identityByteArray.append(QString::number(m_identityId).toUtf8(), IDENTITY_ID_LENGTH);
     identityByteArray.append(m_identityIp.toUtf8(), IDENTITY_IP_LENGTH);
     identityByteArray.append(QString::number(socketWorkingPort).toUtf8(), IDENTITY_WORKINGPORT_LENGTH);
-    identityByteArray.append(identityReadableName.toUtf8(), IDENTITY_READABLENAME_LENGTH);
+    identityByteArray.append(identityReadableName.toUtf8());
     return identityByteArray;
 }

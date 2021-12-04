@@ -77,6 +77,9 @@ ApplicationWindow {
         onQmlUpdateRecverState: {
             workPage.updateRecverState(state)
         }
+        onQmlUpdateClientName: {
+            workPage.updateClientName(name)
+        }
 
         // files/messages info display
         onQmlAppendSendedMessage: {

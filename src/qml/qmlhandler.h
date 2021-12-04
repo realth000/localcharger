@@ -37,6 +37,7 @@ signals:
     void qmlUpdateSenderIp(QString senderIp);
     void qmlUpdateSenderPort(int senderPort);
     void qmlUpdateRecverPort(int recverPort);
+    void qmlUpdateClientName(QString name);
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
@@ -56,6 +57,7 @@ public slots:
     void setSenderUrl(const QString & url);
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);
+    void setClientReadableName(const QString &name);
     void setFileSavePath(const QString &filePath);
     void saveConfig();
     void updateWebConfig();
