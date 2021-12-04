@@ -150,3 +150,19 @@ QComboBox QAbstractItemView::item{
 QComboBox QAbstractItemView::item:selected{
     background-color:rgb(30,59,82);
 }
+
+QListWidget {
+    outline:none;
+    border: 1px solid rgb(55,85,100);
+    background-color:transparent;
+}
+
+QListWidget::item {
+    color:#f0ffff;
+    height:90px;
+}
+
+QListWidget::item:selected {
+    border-radius: 5px;
+    background-color: #393939;
+}

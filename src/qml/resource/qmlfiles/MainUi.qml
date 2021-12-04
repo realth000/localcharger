@@ -11,7 +11,7 @@ ApplicationWindow {
     width: 540
     height: 960
     background: Rectangle {
-        color: "#333333"
+        color: "#272727"
     }
     ColumnLayout {
         id: mainColumnLayout
@@ -77,6 +77,9 @@ ApplicationWindow {
         onQmlUpdateRecverState: {
             workPage.updateRecverState(state)
         }
+        onQmlUpdateClientName: {
+            workPage.updateClientName(name)
+        }
 
         // files/messages info display
         onQmlAppendSendedMessage: {
@@ -92,6 +95,11 @@ ApplicationWindow {
 
         onQmlUpdateFileSavePath: {
            configPage.setFileSavePath(path)
+        }
+
+        // WebIdentifier
+        onQmlAddClient: {
+            workPage.addClient(ip, port, readableName, id)
         }
     }
 
