@@ -290,6 +290,20 @@ void QmlHandler::updateWebConfig()
     startRecver();
 }
 
+void QmlHandler::boardcastIdentityMessage()
+{
+    m_identifier->boardcastIdentityMessage();
+}
+
+void QmlHandler::connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port)
+{
+    if(id.isEmpty() || ip.isEmpty() || port.isEmpty()){
+        qDebug() << "empty client";
+        return;
+    }
+    updateWebConfig();
+}
+
 void QmlHandler::getLocalIp()
 {
     // Get local ip address and netmask

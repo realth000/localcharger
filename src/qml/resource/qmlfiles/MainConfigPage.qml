@@ -233,6 +233,13 @@ Item {
         localUrlComboBoxEx.resetModel(ipStringList)
     }
 
+    function updateRemoteConfig(ip, port) {
+        remoteUrl = ip
+        remoteUrlTextFieldEx.text = remoteUrl
+        remotePort = port
+        remotePortTextFieldEx.text = remotePort
+    }
+
     function updateSocketConfig(senderIp, senderPort, recverPort) {
         remoteUrl = senderIp
         remoteUrlTextFieldEx.text = remoteUrl
