@@ -10,14 +10,14 @@ CONFIG += c++11 no_batch
 
 INCLUDEPATH += src src/include
 
-VERSION = 1.2.0
+VERSION = 1.3.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"
 RC_ICONS = "src/resource/pic/LocalCharger.ico"
 
 #DEFINES += COMPILE_VID
-DEFINES += COMPILE_QML
+#DEFINES += COMPILE_QML
 
 win32 {
     CONFIG(debug,debug|release){
@@ -70,6 +70,7 @@ SOURCES += \
     src/core/jsonparser.cpp \
     src/core/main.cpp \
     src/core/threadworker.cpp \
+    src/core/webidentifier.cpp \
     src/core/webrecver.cpp \
     src/core/websender.cpp \
     src/utils/networkinfohelper.cpp \
@@ -78,6 +79,7 @@ SOURCES += \
 HEADERS += \
     src/core/jsonparser.h \
     src/core/threadworker.h \
+    src/core/webidentifier.h \
     src/core/webrecver.h \
     src/core/websender.h \
     src/include/defines.h \

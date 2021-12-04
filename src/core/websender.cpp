@@ -118,9 +118,9 @@ bool WebSender::sendFile(const QString &filePath)
         // length = 10 bytes
         QCoreApplication::processEvents();
         messageArray.append(QString::number(WebSocketBinaryMessageType::SingleFile).toUtf8());
-        messageArray.append(QString::number(qint64(fileInfoArray.length())).toStdString().c_str(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
+        messageArray.append(QString::number(qint64(fileInfoArray.length())).toUtf8(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
         messageArray.append(fileInfoArray);
-        messageArray.append(QString::number(fileFrameID).toStdString().c_str(), WEBSOCKET_FILEFRAME_ID_LENGTH);
+        messageArray.append(QString::number(fileFrameID).toUtf8(), WEBSOCKET_FILEFRAME_ID_LENGTH);
         messageArray.append(fileDataArray);
         m_currentSocket->sendBinaryMessage(messageArray);
         messageArray.clear();

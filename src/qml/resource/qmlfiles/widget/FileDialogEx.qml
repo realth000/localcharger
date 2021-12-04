@@ -192,7 +192,12 @@ Rectangle {
             default:
                 d = selectedFilePath
             }
-            mainDialog.changeSelectedDir(d.toString().replace("file:///", ""));
+            if(Qt.platform.os == "windows") {
+                mainDialog.changeSelectedDir(d.toString().replace("file:///", ""));
+            }
+            else{
+                mainDialog.changeSelectedDir(d.toString().replace("file:///", "/"));
+            }
             mainDialog.close();
         }
     }
@@ -255,6 +260,6 @@ Rectangle {
      */
     function gotoFolder(folderPath) {
         model.folder = ("file:///" + folderPath).replace("file:////", "file:///")
-        console.log("folder path =", "file:///" + folderPath);
+        console.log("folder path =", folderPath);
     }
 }

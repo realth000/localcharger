@@ -25,6 +25,8 @@ MainUi::MainUi(QWidget *parent)
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
+      m_localClientReadableName("default"),
+      m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
       m_vScrollStyle(new VerticalScrollBarStyle),
@@ -33,14 +35,15 @@ MainUi::MainUi(QWidget *parent)
     ui->setupUi(this);
     loadDefaultConfig();
     loadConfig();
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
     initUi();
     initConnections();
-
     getLocalIp();
-
     updateWebSocketConfig();
     updateSenderState(SenderState::Disconnected);
     updateRecverState(RecverState::Disconnected);
+    m_identifier->boardcastIdentityMessage();
+    qDebug() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
 }
 
 void MainUi::initUi()
@@ -51,13 +54,18 @@ void MainUi::initUi()
 
     IconInstaller::installPushButtonIcon(ui->startSenderPushButton, ":/pic/start_connect.png");
     IconInstaller::installPushButtonIcon(ui->startRecverPushButton, ":/pic/start_connect.png");
+    IconInstaller::installPushButtonIcon(ui->connectSelectedClientPushButton, ":/pic/start_connect.png");
+    IconInstaller::installPushButtonIcon(ui->broadcastPushButton, ":/pic/broadcast.png");
     IconInstaller::installPushButtonIcon(ui->updateWebConfigPushButton, ":/pic/reload.png");
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
     IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder.png");
+
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
+    ui->connectSelectedClientPushButton->setStyle(m_pushButtonStyle);
+    ui->broadcastPushButton->setStyle(m_pushButtonStyle);
     ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
@@ -65,6 +73,8 @@ void MainUi::initUi()
     ui->selectSaveFilePathPushButton->setStyle(m_pushButtonStyle);
     ui->startSenderPushButton->setFocusPolicy(Qt::NoFocus);
     ui->startRecverPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->connectSelectedClientPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->broadcastPushButton->setFocusPolicy(Qt::NoFocus);
     ui->updateWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
@@ -111,6 +121,11 @@ void MainUi::initUi()
 
     ui->recverUrlHintComboBox->setView(new QListView(ui->recverUrlHintComboBox));
     ui->recverUrlHintComboBox->setStyle(m_comboBoxStyle);
+
+    ui->clientsListWidget->horizontalScrollBar()->setStyle(m_hScrollStyle);
+    ui->clientsListWidget->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->clientNameLineEdit->setText(m_localClientReadableName);
+    ui->clientNameLineEdit->setFocusPolicy(Qt::ClickFocus);
 }
 
 void MainUi::initConnections()
@@ -132,6 +147,9 @@ void MainUi::initConnections()
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
+
+    // WebIdentifier
+    connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
 }
 
 MainUi::~MainUi()
@@ -266,7 +284,9 @@ void MainUi::loadConfig()
     m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
     m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
     m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
+    m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
     delete configIni;
+    m_localWorkingPort = m_socketRecverPort;
 }
 
 void MainUi::saveConfig()
@@ -276,6 +296,7 @@ void MainUi::saveConfig()
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
     configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+    configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
     delete configIni;
 }
 
@@ -283,12 +304,49 @@ void MainUi::getLocalIp()
 {
     // Get local ip address and netmask
     // TODO: Support more than one ip and IPV6
+#if defined(Q_OS_WINDOWS) || defined(Q_OS_WIN)
+    const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddressEx();
+#else
     const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
+#endif
     QStringList ipStringList;
     foreach(IpInfo ip, ipList){
         ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
     }
     ui->recverUrlHintComboBox->insertItems(0, ipStringList);
+    // TODO: when have more than one ip
+    if(ipList.length() > 0){
+        m_identifier->setIdentityIp(ipList[0].ipV4Address);
+        m_localIp = ipList[0].ipV4Address;
+    }
+}
+
+void MainUi::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
+{
+    // FIXME: UI + clients
+    ui->clientsListWidget->addItem(QString("Name: %1\n"
+                                           "ID: %2\n"
+                                           "IP: %3\n"
+                                           "Port: %4").arg(readableName, id, ip, port));
+}
+
+void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
+{
+    qDebug() << ip << m_localIp << port << m_socketRecverPort;
+    if(ip == m_localIp && port.toInt() == m_socketRecverPort){
+        return;
+    }
+    if(!m_clientsMap.contains(id)){
+        addDetectedClients(ip, port, readableName, id);
+        m_clientsMap.insert(id, port);
+        return;
+    }
+    if(m_clientsMap[id] == readableName){
+        // TODO: update
+        return;
+    }
+    addDetectedClients(ip, port, readableName, id);
+    m_clientsMap.insert(id, port);
 }
 
 void MainUi::on_startSenderPushButton_clicked()
@@ -459,3 +517,29 @@ void MainUi::on_saveFilePathLineEdit_textChanged(const QString &arg1)
     m_socketRecver.setFileSavePath(arg1);
     m_saveFileDirPath = arg1;
 }
+
+void MainUi::on_connectSelectedClientPushButton_clicked()
+{
+    if(ui->clientsListWidget->selectedItems().length() <= 0){
+        qDebug() << "client not selected";
+        return;
+    }
+    const QStringList configList = ui->clientsListWidget->selectedItems()[0]->text().split("\n");
+    ui->senderUrlLineEdit->setText(configList[2].split(" ")[1]);
+    ui->senderPortLineEdit->setText(configList[3].split(" ")[1]);
+    on_updateWebConfigPushButton_clicked();
+}
+
+
+void MainUi::on_broadcastPushButton_clicked()
+{
+    m_identifier->boardcastIdentityMessage();
+}
+
+
+void MainUi::on_clientNameLineEdit_textChanged(const QString &arg1)
+{
+    m_localClientReadableName = arg1;
+    m_identifier->setIdentityReadableName(m_localClientReadableName);
+}
+

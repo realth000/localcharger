@@ -7,6 +7,7 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 #include "defines.h"
+#include "src/core/webidentifier.h"
 
 class QmlHandler : public QObject
 {
@@ -36,10 +37,12 @@ signals:
     void qmlUpdateSenderIp(QString senderIp);
     void qmlUpdateSenderPort(int senderPort);
     void qmlUpdateRecverPort(int recverPort);
+    void qmlUpdateClientName(QString name);
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
     void qmlUpdateFileSavePath(QString path);
+    void qmlAddClient(QString ip, QString port, QString readableName, QString id);
 
 public slots:
     void initHandler();
@@ -54,13 +57,17 @@ public slots:
     void setSenderUrl(const QString & url);
     void setSenderPort(const QString &port);
     void setRecverPort(const QString &port);
+    void setClientReadableName(const QString &name);
     void setFileSavePath(const QString &filePath);
     void saveConfig();
     void updateWebConfig();
+    void boardcastIdentityMessage();
+    void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
 
 private:
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    WebIdentifier *m_identifier;
     QString m_socketSenderIp;
     port_t m_socketSenderPort;
     url_t m_socketRecverUrl;
@@ -72,6 +79,12 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
 
+    // for WebIdentifier
+    QMap<QString, QString> m_clientsMap;
+    QString m_localClientReadableName;
+    port_t m_localWorkingPort;
+    QString m_localIp;
+
     void initConnections();
     void startSender(const port_t &port);
     void stopSender();
@@ -82,6 +95,7 @@ private:
     void loadDefaultConfig();
     void loadConfig();
     void getLocalIp();
+    void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
 #endif
@@ -92,6 +106,7 @@ private slots:
     void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
     void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
+    void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 };
 
 #endif // QMLHANDLER_H
