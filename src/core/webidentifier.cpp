@@ -44,7 +44,7 @@ void WebIdentifier::setWorkingPort(const port_t &port)
 void WebIdentifier::boardcastIdentityMessage()
 {
     QByteArray datagram = generateIdentidyData(m_identityReadableName, m_socketWorkingPort);
-    qDebug() << "boardcast: name " << m_identityReadableName << m_socketWorkingPort;
+    qDebug() << "boardcast: name" << m_identityReadableName << "port" << m_socketWorkingPort;
     m_identifierSocket.writeDatagram(datagram, QHostAddress::Broadcast, IDENTIFIER_UDP_PORT);
 }
 

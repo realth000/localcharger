@@ -59,6 +59,8 @@ public slots:
     void setFileSavePath(const QString &filePath);
     void saveConfig();
     void updateWebConfig();
+    void boardcastIdentityMessage();
+    void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
 
 private:
     WebSender m_socketSender;
