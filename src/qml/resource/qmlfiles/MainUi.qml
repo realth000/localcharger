@@ -8,8 +8,8 @@ import "widget"
 ApplicationWindow {
     id: mainWindow
     visible: true
-    width: 810
-    height: 1440
+    width: 540
+    height: 960
     background: Rectangle {
         color: "#272727"
     }

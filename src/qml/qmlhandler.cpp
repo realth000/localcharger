@@ -20,11 +20,13 @@ QmlHandler::QmlHandler(QObject *parent)
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
 #ifdef Q_OS_ANDROID
       m_configFilePath(APP_CONFIG_SAVE_PATH_ANDROID),
-      m_saveFileDirPath(QStringLiteral(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID))
+      m_saveFileDirPath(QStringLiteral(WEBSOCKET_RECVER_FILE_SAVE_PATH_ANDROID)),
 #else
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
-      m_saveFileDirPath(QCoreApplication::applicationDirPath())
+      m_saveFileDirPath(QCoreApplication::applicationDirPath()),
 #endif
+      m_localClientReadableName("default"),
+      m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
 
 }
@@ -45,13 +47,12 @@ void QmlHandler::initHandler()
 #endif
     loadDefaultConfig();
     loadConfig();
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
     initConnections();
-
     getLocalIp();
-
     updateSenderState(QmlSenderState::SenderDisconnected);
     updateRecverState(QmlRecverState::RecverDisconnected);
-    m_identifier.boardcastIdentityMessage();
+    m_identifier->boardcastIdentityMessage();
     qDebug() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
 }
 
@@ -165,7 +166,7 @@ void QmlHandler::initConnections()
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
 
     // WebIdentifier
-    connect(&m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
+    connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -255,23 +256,27 @@ void QmlHandler::loadConfig()
         return;
     }
     const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    m_socketSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
-    m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
-    m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
-    m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
+    m_socketSenderIp = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH).toString();
+    m_socketSenderPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH).toInt();
+    m_socketRecverPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH).toInt();
+    m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
+    m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
     delete configIni;
     emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
     emit qmlUpdateFileSavePath(m_saveFileDirPath);
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
+
+    m_localWorkingPort = m_socketRecverPort;
 }
 
 void QmlHandler::saveConfig()
 {
     QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_socketSenderIp);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH, m_socketSenderIp);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH, m_socketSenderPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH, m_socketRecverPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH, m_saveFileDirPath);
+    configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
 #ifdef Q_OS_ANDROID
     configIni->sync();
     emit qmlMessageInfo(QString::number(configIni->status()));
@@ -289,12 +294,21 @@ void QmlHandler::getLocalIp()
 {
     // Get local ip address and netmask
     // TODO: Support more than one ip and IPV6
+#if defined(Q_OS_WINDOWS) || defined(Q_OS_WIN)
+    const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddressEx();
+#else
     const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
+#endif
     QStringList ipStringList;
     foreach(IpInfo ip, ipList){
         ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
     }
     emit qmlUpdateLocalUrlLists(ipStringList);
+    // TODO: when have more than one ip
+    if(ipList.length() > 0){
+        m_identifier->setIdentityIp(ipList[0].ipV4Address);
+        m_localIp = ipList[0].ipV4Address;
+    }
 }
 
 void QmlHandler::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
@@ -362,8 +376,13 @@ void QmlHandler::onRecvFileFinish(const QString &fielPath, const qint64 &recvByt
 
 void QmlHandler::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
 {
+    qDebug() << ip << m_localIp << port << m_socketRecverPort;
+    if(ip == m_localIp && port.toInt() == m_socketRecverPort){
+        return;
+    }
     if(!m_clientsMap.contains(id)){
         addDetectedClients(ip, port, readableName, id);
+        m_clientsMap.insert(id, port);
         return;
     }
     if(m_clientsMap[id] == readableName){
@@ -371,4 +390,5 @@ void QmlHandler::onIdentityMessageParsed(const QString &ip, const QString &port,
         return;
     }
     addDetectedClients(ip, port, readableName, id);
+    m_clientsMap.insert(id, port);
 }

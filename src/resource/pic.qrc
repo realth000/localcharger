@@ -29,5 +29,6 @@
         <file>pic/file.png</file>
         <file>pic/folder.png</file>
         <file>pic/splashscreen.png</file>
+        <file>pic/broadcast.png</file>
     </qresource>
 </RCC>

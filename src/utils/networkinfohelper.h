@@ -15,7 +15,9 @@ class NetworkInfoHelper
 {
 public:
     NetworkInfoHelper();
+    static int netmaskToPrefixLength(const QString &netmask);
     static QList<IpInfo> getLocalIpAddress();
+    static QList<IpInfo> getLocalIpAddressEx();
 };
 
 #endif // NETWORKINFOHELPER_H
