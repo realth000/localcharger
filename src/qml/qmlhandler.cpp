@@ -138,7 +138,6 @@ void QmlHandler::setRecverPort(const QString &port)
 void QmlHandler::setClientReadableName(const QString &name)
 {
     m_localClientReadableName = name;
-    qDebug() << "set name" << name;
     m_identifier->setIdentityReadableName(m_localClientReadableName);
 }
 
