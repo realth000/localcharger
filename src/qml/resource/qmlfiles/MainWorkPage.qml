@@ -303,7 +303,7 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: { recvedTextListView.currentIndex = index }
-                                onPressed: { mainQmlHandler.setClipBoardText(msg) }
+                                onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
                             }
                             function getTextLines(text){
                                 var length = text.length
@@ -373,7 +373,7 @@ Item {
                             MouseArea {
                                 anchors.fill: parent
                                 onClicked: { sendedTextListView.currentIndex = index }
-                                onPressed: { mainQmlHandler.setClipBoardText(msg) }
+                                onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
                             }
                             function getTextLines(text){
                                 var length = text.length
