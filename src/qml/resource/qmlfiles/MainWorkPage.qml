@@ -121,6 +121,7 @@ Item {
                             model: clientMode
                             delegate: clientDelegate
                             focus: true
+                            highlightMoveDuration: 200
                             highlight: RectangleEx {
                                 commonBorderColor: false
                                 color: "#393939"
@@ -269,18 +270,67 @@ Item {
             labelText: "已接收"
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
-            height: recvedTextArea.height + titleHeight + 10 + 10
+            height: recvedTextRectangle.height + titleHeight + 10 + 10
             anchors.top: socketCtlGroupBoxEx.bottom
             anchors.topMargin: 20
-            TextAreaEx {
-                id: recvedTextArea
+            Rectangle {
+                id: recvedTextRectangle
                 height: 200
-                readOnly: true
                 anchors.top: recvedGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: recvedGroupBoxEx.separator.left
                 anchors.right: recvedGroupBoxEx.separator.right
-                selectByMouse: true
+                color: "transparent"
+                border.color: "#f0ffff"
+                ListView {
+                    id: recvedTextListView
+                    anchors.fill: parent
+                    anchors.topMargin: 5
+                    anchors.bottomMargin: 5
+                    clip: true
+                    Component {
+                        id: recvedTextDelegate
+                        Text {
+                            height: font.pixelSize*getTextLines
+                            width: parent.width
+                            leftPadding: 5
+                            rightPadding: 5
+                            topPadding: 10
+                            bottomPadding: 10
+                            color: "#f0ffff"
+                            text: msg
+                            font.pixelSize: 14
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { recvedTextListView.currentIndex = index }
+                            }
+                            function getTextLines(text){
+                                var length = text.length
+                                var lineCount = 1
+                                for(let i=0; i<length; i++) {
+                                    if(text[i] === "\n") {
+                                        lineCount++
+                                    }
+                                }
+                                console.log("count =", lineCount)
+                            }
+                        }
+                    }
+                    ListModel {
+                        id: recvedTextModel
+                    }
+                    model: recvedTextModel
+                    delegate: recvedTextDelegate
+                    focus: true
+                    highlightMoveDuration: 200
+                    highlight: RectangleEx {
+                        commonBorderColor: false
+                        color: "#393939"
+                        leftBorderColor: "#f0ffff"
+                        rightBorderColor: "#f0ffff"
+                        radius: 10
+                    }
+                }
             }
         }
 
@@ -289,18 +339,67 @@ Item {
             labelText: "已发送"
             labelHeight: 40
             iconPath: "qrc:/pic/sended2.png"
-            height: sendedTextArea.height + titleHeight + 10 + 10
+            height: sendedTextRectangle.height + titleHeight + 10 + 10
             anchors.top: recvedGroupBoxEx.bottom
             anchors.topMargin: 20
-            TextAreaEx {
-                id: sendedTextArea
+            Rectangle {
+                id: sendedTextRectangle
                 height: 200
-                readOnly: true
                 anchors.top: sendedGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: sendedGroupBoxEx.separator.left
                 anchors.right: sendedGroupBoxEx.separator.right
-                selectByMouse: true
+                color: "transparent"
+                border.color: "#f0ffff"
+                ListView {
+                    id: sendedTextListView
+                    anchors.fill: parent
+                    anchors.topMargin: 5
+                    anchors.bottomMargin: 5
+                    clip: true
+                    Component {
+                        id: sendedTextDelegate
+                        Text {
+                            height: font.pixelSize*getTextLines
+                            width: parent.width
+                            leftPadding: 5
+                            rightPadding: 5
+                            topPadding: 10
+                            bottomPadding: 10
+                            color: "#f0ffff"
+                            text: msg
+                            font.pixelSize: 14
+                            MouseArea {
+                                anchors.fill: parent
+                                onClicked: { sendedTextListView.currentIndex = index }
+                            }
+                            function getTextLines(text){
+                                var length = text.length
+                                var lineCount = 1
+                                for(let i=0; i<length; i++) {
+                                    if(text[i] === "\n") {
+                                        lineCount++
+                                    }
+                                }
+                                console.log("count =", lineCount)
+                            }
+                        }
+                    }
+                    ListModel {
+                        id: sendedTextModel
+                    }
+                    model: sendedTextModel
+                    delegate: sendedTextDelegate
+                    focus: true
+                    highlightMoveDuration: 200
+                    highlight: RectangleEx {
+                        commonBorderColor: false
+                        color: "#393939"
+                        leftBorderColor: "#f0ffff"
+                        rightBorderColor: "#f0ffff"
+                        radius: 10
+                    }
+                }
             }
         }
 
@@ -453,11 +552,11 @@ Item {
     }
 
     function appendSendedMessage(msg) {
-        sendedTextArea.append(msg)
+        sendedTextModel.append({msg: msg})
     }
 
     function appendRecvedMessage(msg) {
-        recvedTextArea.append(msg)
+        recvedTextModel.append({msg: msg})
     }
 
     function addClient(ip, port, readableName, id) {
