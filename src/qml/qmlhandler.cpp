@@ -1,6 +1,7 @@
 ﻿#include "qmlhandler.h"
 #include <QtCore/QFileInfo>
 #include <QtCore/QSettings>
+#include <QtGui/QGuiApplication>
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QtAndroidExtras/QtAndroid>
@@ -25,6 +26,7 @@ QmlHandler::QmlHandler(QObject *parent)
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
 #endif
+      m_clipBoard(QGuiApplication::clipboard()),
       m_localClientReadableName("default"),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
@@ -304,11 +306,21 @@ void QmlHandler::boardcastIdentityMessage()
 
 void QmlHandler::connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port)
 {
+    Q_UNUSED(name)
     if(id.isEmpty() || ip.isEmpty() || port.isEmpty()){
         qDebug() << "empty client";
         return;
     }
     updateWebConfig();
+}
+
+void QmlHandler::setClipBoardText(const QString text)
+{
+    qDebug() << "clip board test" << text;
+#ifdef Q_OS_ANDROID
+    callAndroidToast("已复制到剪切板");
+#endif
+    m_clipBoard->setText(text);
 }
 
 void QmlHandler::getLocalIp()
@@ -352,6 +364,19 @@ void QmlHandler::requestAndroidPermissions()
     if(WRITE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
         QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.WRITE_EXTERNAL_STORAGE");
     }
+}
+
+void QmlHandler::callAndroidToast(const QString &message) {
+    // all the magic must happen on Android UI thread
+    QtAndroid::runOnAndroidThread([message] {
+        QAndroidJniObject javaString = QAndroidJniObject::fromString(message);
+        QAndroidJniObject toast = QAndroidJniObject::callStaticObjectMethod("android/widget/Toast", "makeText",
+                                                                            "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;",
+                                                                            QtAndroid::androidActivity().object(),
+                                                                            javaString.object(),
+                                                                            jint(0));
+        toast.callMethod<void>("show");
+    });
 }
 #endif
 

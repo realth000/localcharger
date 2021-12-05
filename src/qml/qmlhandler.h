@@ -3,6 +3,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QObject>
+#include <QtGui/QClipboard>
 #include <QtGui/QRegularExpressionValidator>
 #include "core/webrecver.h"
 #include "core/websender.h"
@@ -63,6 +64,7 @@ public slots:
     void updateWebConfig();
     void boardcastIdentityMessage();
     void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
+    void setClipBoardText(const QString text);
 
 private:
     WebSender m_socketSender;
@@ -78,6 +80,7 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+    QClipboard *m_clipBoard;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
@@ -98,6 +101,7 @@ private:
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
+    void callAndroidToast(const QString &message);
 #endif
 
 private slots:
