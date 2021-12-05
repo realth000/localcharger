@@ -13,7 +13,8 @@ Button{
     property color borderBottomColor: "#4b6876"
     property int borderBottomMargin: 15
     property bool thisIsButtonEx: true
-    property color bgSelectedColor: "#40403d"
+//    property color bgSelectedColor: "#40403d"
+    property color bgSelectedColor: "#353535"
     property color bgColor: "#232323"
     property int borderWidth: 0
     property color borderColor: "#375564"
@@ -50,6 +51,7 @@ Button{
     property real pressWaveRightArea: 0
     property int pressWaveDuration: 300
     property int pressWaveStartPosX: 0
+    property bool pressWaveFinish: false
 
     checkable: true
     clip: true
@@ -236,9 +238,26 @@ Button{
         duration: self.pressWaveDuration
         running: false
         onStopped: {
-            self.pressWaveLeftArea=0;
-            pressWaveGradient.visible=false;
+            pressWaveFinish = true
         }
+    }
+
+    onPressWaveFinishChanged: {
+        if(pressed){
+            return
+        }
+        self.pressWaveLeftArea=0
+        pressWaveGradient.visible=false
+        pressWaveFinish = false
+    }
+
+    onReleased: {
+        if(!pressWaveFinish){
+           return
+        }
+        self.pressWaveLeftArea=0
+        pressWaveGradient.visible=false
+        pressWaveFinish = false
     }
 
     onPressed: {

@@ -281,7 +281,7 @@ Item {
                 anchors.left: recvedGroupBoxEx.separator.left
                 anchors.right: recvedGroupBoxEx.separator.right
                 color: "transparent"
-                border.color: "#f0ffff"
+                border.color: "#336666"
                 ListView {
                     id: recvedTextListView
                     anchors.fill: parent
@@ -327,8 +327,8 @@ Item {
                     highlight: RectangleEx {
                         commonBorderColor: false
                         color: "#393939"
-                        leftBorderColor: "#f0ffff"
-                        rightBorderColor: "#f0ffff"
+                        leftBorderColor: "#336666"
+                        rightBorderColor: "#336666"
                         radius: 10
                     }
                 }
@@ -351,7 +351,7 @@ Item {
                 anchors.left: sendedGroupBoxEx.separator.left
                 anchors.right: sendedGroupBoxEx.separator.right
                 color: "transparent"
-                border.color: "#f0ffff"
+                border.color: "#336666"
                 ListView {
                     id: sendedTextListView
                     anchors.fill: parent
@@ -397,8 +397,8 @@ Item {
                     highlight: RectangleEx {
                         commonBorderColor: false
                         color: "#393939"
-                        leftBorderColor: "#f0ffff"
-                        rightBorderColor: "#f0ffff"
+                        leftBorderColor: "#336666"
+                        rightBorderColor: "#336666"
                         radius: 10
                     }
                 }
