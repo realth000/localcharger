@@ -33,11 +33,41 @@ Item {
             ColumnLayout {
                 id: clientNameColumnLayout
                 width: parent.width
-                height: 340
+                height: 380
                 anchors.top: socketCtlGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: socketCtlGroupBoxEx.separator.left
                 anchors.right: socketCtlGroupBoxEx.separator.right
+                Rectangle {
+                    id: clientIdRectangle
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    color: "transparent"
+                    RowLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 10
+                        Text {
+                            id: clientIdText
+                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: parent.height
+                            text: "ID"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: "#f0ffff"
+                        }
+                        Text {
+                            id: clientIdTextFieldEx
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: parent.height
+                            horizontalAlignment: Text.AlignLeft
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: clientIdText.color
+                        }
+                    }
+                }
                 Rectangle {
                     id: clientNameRectangle
                     Layout.fillWidth: true
@@ -583,6 +613,10 @@ Item {
 
     function updateClientName(name) {
         clientNameTextFieldEx.text = name
+    }
+
+    function updateClientId(id) {
+        clientIdTextFieldEx.text = id
     }
 
     function getToSendMessage() {

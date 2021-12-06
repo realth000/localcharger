@@ -9,7 +9,7 @@ class WebIdentifier : public QObject
 {
     Q_OBJECT
 public:
-    explicit WebIdentifier(const QString &identityReadableName = "default", const port_t &socketWorkingPort = WEBSOCKET_PORT_DEFAULT, QObject *parent = nullptr);
+    explicit WebIdentifier(const QString &identityReadableName = "default", const int &identityId = 0000, const port_t &socketWorkingPort = WEBSOCKET_PORT_DEFAULT, QObject *parent = nullptr);
     void setIdentityReadableName(const QString &readableName);
     void setIdentityId(const int &id);
     void setIdentityIp(QString ip);

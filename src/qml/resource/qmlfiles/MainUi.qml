@@ -81,6 +81,10 @@ ApplicationWindow {
             workPage.updateClientName(name)
         }
 
+        onQmlUpdateClientId: {
+            workPage.updateClientId(id)
+        }
+
         // files/messages info display
         onQmlAppendSendedMessage: {
             workPage.appendSendedMessage(msg)
