@@ -282,54 +282,74 @@ Item {
                 anchors.right: recvedGroupBoxEx.separator.right
                 color: "transparent"
                 border.color: "#336666"
-                ListView {
-                    id: recvedTextListView
+                Flickable {
+                    id: recvedTextFlickable
                     anchors.fill: parent
-                    anchors.topMargin: 5
-                    anchors.bottomMargin: 5
+                    boundsBehavior: Flickable.StopAtBounds
+                    contentWidth: Math.max(recvedTextRectangle.width, maxWidth)
+                    contentHeight: parent.height
                     clip: true
-                    Component {
-                        id: recvedTextDelegate
-                        Text {
-                            height: font.pixelSize*getTextLines
-                            width: parent.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            topPadding: 10
-                            bottomPadding: 10
-                            color: "#f0ffff"
-                            text: msg
-                            font.pixelSize: 14
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: { recvedTextListView.currentIndex = index }
-                                onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
-                            }
-                            function getTextLines(text){
-                                var length = text.length
-                                var lineCount = 1
-                                for(let i=0; i<length; i++) {
-                                    if(text[i] === "\n") {
-                                        lineCount++
+                    property int maxWidth: 0
+                    ListView {
+                        id: recvedTextListView
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        clip: true
+                        Component {
+                            id: recvedTextDelegate
+                            Text {
+                                id: recvedTextText
+                                height: font.pixelSize*getTextLines
+                                width: Math.max(recvedTextRectangle.width, recvedTextFlickable.maxWidth)
+                                leftPadding: 5
+                                rightPadding: 5
+                                topPadding: 10
+                                bottomPadding: 10
+                                color: "#f0ffff"
+                                text: msg
+                                font.pixelSize: 14
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { recvedTextListView.currentIndex = index }
+                                    onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
+                                }
+                                function getTextLines(text){
+                                    var length = text.length
+                                    var lineCount = 1
+                                    for(let i=0; i<length; i++) {
+                                        if(text[i] === "\n") {
+                                            lineCount++
+                                        }
                                     }
                                 }
-                                console.log("count =", lineCount)
+                                Component.onCompleted: {
+                                    if(recvedTextFlickable.maxWidth < recvedTextText.contentWidth + 10) {
+                                        recvedTextFlickable.maxWidth = recvedTextText.contentWidth + 10
+                                    }
+                                }
                             }
                         }
-                    }
-                    ListModel {
-                        id: recvedTextModel
-                    }
-                    model: recvedTextModel
-                    delegate: recvedTextDelegate
-                    focus: true
-                    highlightMoveDuration: 200
-                    highlight: RectangleEx {
-                        commonBorderColor: false
-                        color: "#393939"
-                        leftBorderColor: "#336666"
-                        rightBorderColor: "#336666"
-                        radius: 10
+                        ListModel {
+                            id: recvedTextModel
+                        }
+                        model: recvedTextModel
+                        delegate: recvedTextDelegate
+                        focus: true
+                        highlightMoveDuration: 200
+                        highlightResizeVelocity: -1
+                        highlightFollowsCurrentItem: false
+                        highlight: RectangleEx {
+                            width: recvedTextRectangle.width
+                            height: recvedTextListView.currentItem.height
+                            x: recvedTextFlickable.visibleArea.xPosition * recvedTextFlickable.contentWidth
+                            y: recvedTextListView.currentItem.y
+                            commonBorderColor: false
+                            color: "#393939"
+                            leftBorderColor: "#336666"
+                            rightBorderColor: "#336666"
+                            radius: 10
+                        }
                     }
                 }
             }
@@ -352,54 +372,74 @@ Item {
                 anchors.right: sendedGroupBoxEx.separator.right
                 color: "transparent"
                 border.color: "#336666"
-                ListView {
-                    id: sendedTextListView
+                Flickable {
+                    id: sendedTextFlickable
                     anchors.fill: parent
-                    anchors.topMargin: 5
-                    anchors.bottomMargin: 5
+                    boundsBehavior: Flickable.StopAtBounds
+                    contentWidth: Math.max(sendedTextRectangle.width, maxWidth)
+                    contentHeight: parent.height
                     clip: true
-                    Component {
-                        id: sendedTextDelegate
-                        Text {
-                            height: font.pixelSize*getTextLines
-                            width: parent.width
-                            leftPadding: 5
-                            rightPadding: 5
-                            topPadding: 10
-                            bottomPadding: 10
-                            color: "#f0ffff"
-                            text: msg
-                            font.pixelSize: 14
-                            MouseArea {
-                                anchors.fill: parent
-                                onClicked: { sendedTextListView.currentIndex = index }
-                                onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
-                            }
-                            function getTextLines(text){
-                                var length = text.length
-                                var lineCount = 1
-                                for(let i=0; i<length; i++) {
-                                    if(text[i] === "\n") {
-                                        lineCount++
+                    property int maxWidth: 0
+                    ListView {
+                        id: sendedTextListView
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        clip: true
+                        Component {
+                            id: sendedTextDelegate
+                            Text {
+                                id: sendedTextText
+                                height: font.pixelSize*getTextLines
+                                width: Math.max(sendedTextRectangle.width, sendedTextFlickable.maxWidth)
+                                leftPadding: 5
+                                rightPadding: 5
+                                topPadding: 10
+                                bottomPadding: 10
+                                color: "#f0ffff"
+                                text: msg
+                                font.pixelSize: 14
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { sendedTextListView.currentIndex = index }
+                                    onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
+                                }
+                                function getTextLines(text){
+                                    var length = text.length
+                                    var lineCount = 1
+                                    for(let i=0; i<length; i++) {
+                                        if(text[i] === "\n") {
+                                            lineCount++
+                                        }
                                     }
                                 }
-                                console.log("count =", lineCount)
+                                Component.onCompleted: {
+                                    if(sendedTextFlickable.maxWidth < sendedTextText.contentWidth + 10) {
+                                        sendedTextFlickable.maxWidth = sendedTextText.contentWidth + 10
+                                    }
+                                }
                             }
                         }
-                    }
-                    ListModel {
-                        id: sendedTextModel
-                    }
-                    model: sendedTextModel
-                    delegate: sendedTextDelegate
-                    focus: true
-                    highlightMoveDuration: 200
-                    highlight: RectangleEx {
-                        commonBorderColor: false
-                        color: "#393939"
-                        leftBorderColor: "#336666"
-                        rightBorderColor: "#336666"
-                        radius: 10
+                        ListModel {
+                            id: sendedTextModel
+                        }
+                        model: sendedTextModel
+                        delegate: sendedTextDelegate
+                        focus: true
+                        highlightMoveDuration: 200
+                        highlightResizeVelocity: -1
+                        highlightFollowsCurrentItem: false
+                        highlight: RectangleEx {
+                            width: sendedTextRectangle.width
+                            height: sendedTextListView.currentItem.height
+                            x: sendedTextFlickable.visibleArea.xPosition * sendedTextFlickable.contentWidth
+                            y: sendedTextListView.currentItem.y
+                            commonBorderColor: false
+                            color: "#393939"
+                            leftBorderColor: "#336666"
+                            rightBorderColor: "#336666"
+                            radius: 10
+                        }
                     }
                 }
             }
