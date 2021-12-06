@@ -39,6 +39,7 @@ signals:
     void qmlUpdateSenderPort(int senderPort);
     void qmlUpdateRecverPort(int recverPort);
     void qmlUpdateClientName(QString name);
+    void qmlUpdateClientId(int id);
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
@@ -85,6 +86,7 @@ private:
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
     QString m_localClientReadableName;
+    int m_localClientId;
     port_t m_localWorkingPort;
     QString m_localIp;
 

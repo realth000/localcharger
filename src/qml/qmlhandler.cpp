@@ -1,5 +1,6 @@
 ﻿#include "qmlhandler.h"
 #include <QtCore/QFileInfo>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtGui/QGuiApplication>
 #ifdef Q_OS_ANDROID
@@ -28,6 +29,7 @@ QmlHandler::QmlHandler(QObject *parent)
 #endif
       m_clipBoard(QGuiApplication::clipboard()),
       m_localClientReadableName("default"),
+      m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
 
@@ -49,7 +51,11 @@ void QmlHandler::initHandler()
 #endif
     loadDefaultConfig();
     loadConfig();
-    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
+    emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
+    emit qmlUpdateFileSavePath(m_saveFileDirPath);
+    emit qmlUpdateClientName(m_localClientReadableName);
+    emit qmlUpdateClientId(m_localClientId);
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     initConnections();
     getLocalIp();
     updateSenderState(QmlSenderState::SenderDisconnected);
@@ -253,7 +259,6 @@ void QmlHandler::updateRecverState(QmlRecverState state)
 void QmlHandler::loadDefaultConfig()
 {
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
-    emit qmlUpdateFileSavePath(m_saveFileDirPath);
 }
 
 void QmlHandler::loadConfig()
@@ -270,11 +275,7 @@ void QmlHandler::loadConfig()
     m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
     m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
     delete configIni;
-    emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
-    emit qmlUpdateFileSavePath(m_saveFileDirPath);
-    emit qmlUpdateClientName(m_localClientReadableName);
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
-
     m_localWorkingPort = m_socketRecverPort;
 }
 

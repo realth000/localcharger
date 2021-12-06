@@ -11,10 +11,10 @@
 #define IDENTITY_WORKINGPORT_LENGTH 5
 #define IDENTITY_READABLENAME_LENGTH 16
 
-WebIdentifier::WebIdentifier(const QString &identityReadableName, const port_t &socketWorkingPort, QObject *parent) :
+WebIdentifier::WebIdentifier(const QString &identityReadableName, const int &identityId, const port_t &socketWorkingPort, QObject *parent) :
     QObject(parent),
     m_identityReadableName(identityReadableName),
-    m_identityId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
+    m_identityId(identityId),
     m_socketWorkingPort(socketWorkingPort)
 {
     m_identifierSocket.bind(IDENTIFIER_UDP_PORT, QUdpSocket::ShareAddress);
