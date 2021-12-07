@@ -17,7 +17,7 @@ TARGET = "LocalCharger"
 RC_ICONS = "src/resource/pic/LocalCharger.ico"
 
 #DEFINES += COMPILE_VID
-DEFINES += COMPILE_QML
+#DEFINES += COMPILE_QML
 
 win32 {
     CONFIG(debug,debug|release){
