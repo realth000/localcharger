@@ -1,5 +1,6 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtNetwork/QNetworkInterface>
@@ -26,6 +27,7 @@ MainUi::MainUi(QWidget *parent)
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
       m_localClientReadableName("default"),
+      m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
@@ -35,7 +37,7 @@ MainUi::MainUi(QWidget *parent)
     ui->setupUi(this);
     loadDefaultConfig();
     loadConfig();
-    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     initUi();
     initConnections();
     getLocalIp();
@@ -126,6 +128,8 @@ void MainUi::initUi()
     ui->clientsListWidget->verticalScrollBar()->setStyle(m_vScrollStyle);
     ui->clientNameLineEdit->setText(m_localClientReadableName);
     ui->clientNameLineEdit->setFocusPolicy(Qt::ClickFocus);
+
+    ui->clientIdLabel->setText(QString::number(m_localClientId));
 }
 
 void MainUi::initConnections()
@@ -280,10 +284,10 @@ void MainUi::loadConfig()
         return;
     }
     const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    m_sockerSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
-    m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
-    m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
-    m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
+    m_sockerSenderIp = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH).toString();
+    m_socketSenderPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH).toInt();
+    m_socketRecverPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH).toInt();
+    m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
     m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
     delete configIni;
     m_localWorkingPort = m_socketRecverPort;
@@ -292,10 +296,10 @@ void MainUi::loadConfig()
 void MainUi::saveConfig()
 {
     QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_sockerSenderIp);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH, m_sockerSenderIp);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH, m_socketSenderPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH, m_socketRecverPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH, m_saveFileDirPath);
     configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
     delete configIni;
 }
@@ -542,4 +546,3 @@ void MainUi::on_clientNameLineEdit_textChanged(const QString &arg1)
     m_localClientReadableName = arg1;
     m_identifier->setIdentityReadableName(m_localClientReadableName);
 }
-

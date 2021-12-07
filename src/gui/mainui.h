@@ -64,6 +64,7 @@ private:
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
     QString m_localClientReadableName;
+    int m_localClientId;
     port_t m_localWorkingPort;
     QString m_localIp;
 
