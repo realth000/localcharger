@@ -45,8 +45,8 @@ private slots:
     void on_broadcastPushButton_clicked();
     void on_clientNameLineEdit_textChanged(const QString &arg1);
     void autoConnectToClinet(const QString &ip, const QString &port);
-
     void on_autoConnectComboBox_stateChanged(int arg1);
+    void onGetAutoConnectReply();
 
 private:
     Ui::MainUi *ui;
