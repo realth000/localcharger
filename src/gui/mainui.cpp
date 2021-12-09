@@ -26,13 +26,15 @@ MainUi::MainUi(QWidget *parent)
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
+      m_enableAutoConnect(false),
       m_localClientReadableName("default"),
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
       m_vScrollStyle(new VerticalScrollBarStyle),
-      m_comboBoxStyle(new ComboBoxStyle)
+      m_comboBoxStyle(new ComboBoxStyle),
+      m_checkBoxStyle(new CheckBoxStyle)
 {
     ui->setupUi(this);
     loadDefaultConfig();
@@ -130,6 +132,8 @@ void MainUi::initUi()
     ui->clientNameLineEdit->setFocusPolicy(Qt::ClickFocus);
 
     ui->clientIdLabel->setText(QString::number(m_localClientId));
+    ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
+    ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 }
 
 void MainUi::initConnections()
@@ -154,6 +158,7 @@ void MainUi::initConnections()
 
     // WebIdentifier
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
+    connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
 }
 
 MainUi::~MainUi()
@@ -167,6 +172,7 @@ MainUi::~MainUi()
     delete m_hScrollStyle;
     delete m_vScrollStyle;
     delete m_comboBoxStyle;
+    delete m_checkBoxStyle;
 }
 
 
@@ -289,6 +295,7 @@ void MainUi::loadConfig()
     m_socketRecverPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH).toInt();
     m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
     m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
+    m_enableAutoConnect = configIni->value(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH).toBool();
     delete configIni;
     m_localWorkingPort = m_socketRecverPort;
 }
@@ -301,6 +308,7 @@ void MainUi::saveConfig()
     configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH, m_socketRecverPort);
     configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH, m_saveFileDirPath);
     configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
+    configIni->setValue(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH, m_enableAutoConnect);
     delete configIni;
 }
 
@@ -532,6 +540,12 @@ void MainUi::on_connectSelectedClientPushButton_clicked()
     ui->senderUrlLineEdit->setText(configList[2].split(" ")[1]);
     ui->senderPortLineEdit->setText(configList[3].split(" ")[1]);
     on_updateWebConfigPushButton_clicked();
+//    QDebug
+    const url_t t(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), QString::number(12336)));
+    if(!t.isValid()){
+        qDebug() << "invalid url to identifier:" << t;
+    }
+    m_identifier->startAutoConnect(t);
 }
 
 
@@ -545,4 +559,25 @@ void MainUi::on_clientNameLineEdit_textChanged(const QString &arg1)
 {
     m_localClientReadableName = arg1;
     m_identifier->setIdentityReadableName(m_localClientReadableName);
+}
+
+void MainUi::autoConnectToClinet(const QString &ip, const QString &port)
+{
+    // TODO: autoconnect config check
+    if(!m_enableAutoConnect){
+        qDebug() << "auto connect isdisabled";
+        return;
+    }
+    if(ip.isEmpty() || port.isEmpty()){
+        qDebug() << "empty cient to auto connect, ip =" << ip << "port =" << port;
+        return;
+    }
+    ui->senderUrlLineEdit->setText(ip);
+    ui->senderPortLineEdit->setText(port);
+    on_updateWebConfigPushButton_clicked();
+}
+
+void MainUi::on_autoConnectComboBox_stateChanged(int arg1)
+{
+    arg1 > 0 ? m_enableAutoConnect = true : m_enableAutoConnect = false;
 }
