@@ -11,16 +11,23 @@ class WebIdentifier : public QObject
 {
     Q_OBJECT
 public:
+    enum class AutoConnectMessageType{
+        RequestToConnect = 0,
+        AcknowledgeToConnect = 1,
+    };
+    Q_ENUM(AutoConnectMessageType)
     explicit WebIdentifier(const QString &identityReadableName = "default", const int &identityId = 0000, const port_t &socketWorkingPort = WEBSOCKET_PORT_DEFAULT, QObject *parent = nullptr);
     ~WebIdentifier();
     void setIdentityReadableName(const QString &readableName);
     void setIdentityId(const int &id);
     void setIdentityIp(QString ip);
     void setWorkingPort(const port_t &port);
+    void sendAutoConnectReply();
 
 signals:
     void identityMessageParsed(QString ip, QString port, QString readableName, QString id);
     void getClientToConnect(QString ip, QString port);
+    void getAutoConnectReply();
 
 public slots:
     void boardcastIdentityMessage();

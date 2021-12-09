@@ -159,6 +159,7 @@ void MainUi::initConnections()
     // WebIdentifier
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
+    connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
 }
 
 MainUi::~MainUi()
@@ -387,7 +388,7 @@ void MainUi::onSenderConnected()
 
 void MainUi::onSenderDisconnected()
 {
-    updateSenderState(SenderState::Disconnected);
+     m_socketSender.isSenderListening() ? updateSenderState(SenderState::Listening) : updateSenderState(SenderState::Disconnected);
 }
 
 void MainUi::onRecverConnected()
@@ -575,9 +576,15 @@ void MainUi::autoConnectToClinet(const QString &ip, const QString &port)
     ui->senderUrlLineEdit->setText(ip);
     ui->senderPortLineEdit->setText(port);
     on_updateWebConfigPushButton_clicked();
+    m_identifier->sendAutoConnectReply();
 }
 
 void MainUi::on_autoConnectComboBox_stateChanged(int arg1)
 {
     arg1 > 0 ? m_enableAutoConnect = true : m_enableAutoConnect = false;
+}
+
+void MainUi::onGetAutoConnectReply()
+{
+    on_startRecverPushButton_clicked();
 }

@@ -8,6 +8,7 @@
 #define IDENTIFIER_UDP_PORT 12335
 #define IDENTITY_HEADER 0x4B9ACA00
 #define IDENTITY_AUTOCONNECT_HEADER 0x6A027C31
+#define IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH 1
 #define IDENTITY_HEADER_LENGTH 10
 #define IDENTITY_ID_LENGTH 4
 #define IDENTITY_IP_LENGTH 16
@@ -48,6 +49,7 @@ WebIdentifier::WebIdentifier(const QString &identityReadableName, const int &ide
     connect(&m_outSocket, &QWebSocket::connected, this, &WebIdentifier::onOutSocketConnected, Qt::UniqueConnection);
     connect(&m_outSocket, &QWebSocket::disconnected, this, &WebIdentifier::onOutSocketDisconnected, Qt::UniqueConnection);
     connect(&m_outSocket, &QWebSocket::sslErrors, this, &WebIdentifier::onOutSocketSslErrors, Qt::UniqueConnection);
+    connect(&m_outSocket, &QWebSocket::binaryMessageReceived, this, &WebIdentifier::onOutSocketBinaryMessageReceived, Qt::UniqueConnection);
 }
 
 WebIdentifier::~WebIdentifier()
@@ -74,6 +76,14 @@ void WebIdentifier::setIdentityIp(QString ip)
 void WebIdentifier::setWorkingPort(const port_t &port)
 {
     m_socketWorkingPort = port;
+}
+
+void WebIdentifier::sendAutoConnectReply()
+{
+    QByteArray message;
+    message.append(QString(IDENTITY_AUTOCONNECT_HEADER).toUtf8(), IDENTITY_HEADER_LENGTH);
+    message.append(QString::number(static_cast<int>(AutoConnectMessageType::AcknowledgeToConnect)).toUtf8(), IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH);
+    m_inSocket->sendBinaryMessage(message);
 }
 
 void WebIdentifier::boardcastIdentityMessage()
@@ -177,6 +187,12 @@ void WebIdentifier::onInSocketBinaryMessageReceived(const QByteArray &message)
         return;
     }
     offset += IDENTITY_HEADER_LENGTH;
+    const AutoConnectMessageType messageType = static_cast<AutoConnectMessageType>(QString::fromUtf8(message.mid(offset, IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH)).toInt());
+    if(messageType != AutoConnectMessageType::RequestToConnect){
+        qDebug() << "WebIdentifier: in socket: message type incorret value =" << messageType;
+        return;
+    }
+    offset += IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH;
     QString ip = QString::fromUtf8(message.mid(offset, IDENTITY_IP_LENGTH));
     offset += IDENTITY_IP_LENGTH;
     QString port = QString::fromUtf8(message.mid(offset, IDENTITY_WORKINGPORT_LENGTH));
@@ -200,6 +216,7 @@ void WebIdentifier::onOutSocketConnected()
     qDebug() << "identifier out socket connected" << m_outSocket.localAddress() << m_outSocket.localPort();
     QByteArray message;
     message.append(QString(IDENTITY_AUTOCONNECT_HEADER).toUtf8(), IDENTITY_HEADER_LENGTH);
+    message.append(QString::number(static_cast<int>(AutoConnectMessageType::RequestToConnect)).toUtf8(), IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH);
     message.append(m_identityIp.toUtf8(), IDENTITY_IP_LENGTH);
     message.append(QString::number(m_socketWorkingPort).toUtf8(), IDENTITY_WORKINGPORT_LENGTH);
     m_outSocket.sendBinaryMessage(message);
@@ -212,7 +229,23 @@ void WebIdentifier::onOutSocketDisconnected()
 
 void WebIdentifier::onOutSocketBinaryMessageReceived(const QByteArray &message)
 {
-    qDebug() << "identifier received message:" << message;
+    qDebug() << "1222222222222";
+    int offset = 0;
+    QString autoConnectHeader = QString::fromUtf8(message.mid(0, IDENTITY_HEADER_LENGTH));
+    if(autoConnectHeader != IDENTITY_AUTOCONNECT_HEADER){
+        qDebug() << "WebIdentifier in socket: not a autoconnect header:" << autoConnectHeader;
+        return;
+    }
+    offset += IDENTITY_HEADER_LENGTH;
+    const AutoConnectMessageType messageType = static_cast<AutoConnectMessageType>(QString::fromUtf8(message.mid(offset, IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH)).toInt());
+    if(messageType == AutoConnectMessageType::AcknowledgeToConnect){
+        emit getAutoConnectReply();
+        return;
+    }
+    else{
+        qDebug() << "WebIdentifier: out socket: unknown message type when pharsing auto-connect-reply" << messageType;
+        return;
+    }
 }
 
 void WebIdentifier::onOutSocketSslErrors(const QList<QSslError> &errors)
