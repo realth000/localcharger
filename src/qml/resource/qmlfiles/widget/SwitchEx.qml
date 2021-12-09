@@ -1,7 +1,7 @@
 ﻿import QtQuick 2.0
 import QtQuick.Controls 2.5
 
-Switch {
+Rectangle {
     id: switchItem
     property string texts
     property color backgroundColor: "transparent"
@@ -9,24 +9,24 @@ Switch {
     property color indicatorCheckedColor: "#336666"
     property color indicatorUncheckedColor: "transparent"
     property color borderColor: indicatorBackgroundColor
-    property int indicatorWidth: 70
+    property int indicatorWidth: 75
     property int indicatorHeight: 25
     property bool borderBottom: false
     property color borderBottomColor: "#f0ffff"
     property int switchHeadPosAniDuration: 100
-
+    property bool checked: false
+    property bool checkable: true
     width: parent.width
     height: 50
-    background: Rectangle{
-        color: backgroundColor
-    }
-    indicator: Rectangle{
+    color: backgroundColor
+
+    Rectangle{
         id: indiRect
         width: indicatorWidth
         height: indicatorHeight
         anchors.right: parent.right
         radius: 10
-        x: switchItem.leftPadding
+        x: 0
         y: indiRect.height / 2 - height / 2
         color: switchItem.checked ? indicatorCheckedColor : indicatorUncheckedColor
         border.color: borderColor
@@ -36,6 +36,12 @@ Switch {
             height: width
             radius: width/2
             color: checkable ? indicatorBackgroundColor : "#c1c7d0";
+        }
+        MouseArea {
+            anchors.fill: parent
+            onClicked: {
+                switchItem.checked = !switchItem.checked
+            }
         }
     }
     Text{
