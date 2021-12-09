@@ -45,6 +45,7 @@ signals:
     void qmlClearToSendMsg();
     void qmlUpdateFileSavePath(QString path);
     void qmlAddClient(QString ip, QString port, QString readableName, QString id);
+    void qmlUpdateClientAutoConnect(bool isEnabled);
 
 public slots:
     void initHandler();
@@ -66,6 +67,7 @@ public slots:
     void boardcastIdentityMessage();
     void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
     void setClipBoardText(const QString text);
+    void setAutoConnect(const bool &isEnabled);
 
 private:
     WebSender m_socketSender;
@@ -81,6 +83,7 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+    bool m_enableAutoConnect;
     QClipboard *m_clipBoard;
 
     // for WebIdentifier
@@ -113,6 +116,8 @@ private slots:
     void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void autoConnectToClinet(const QString &ip, const QString &port);
+    void onGetAutoConnectReply();
 };
 
 #endif // QMLHANDLER_H

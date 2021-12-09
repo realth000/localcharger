@@ -71,6 +71,10 @@ ApplicationWindow {
         onQmlUpdateSocketConfig: {
             configPage.updateSocketConfig(senderIp, senderPort, recverPort)
         }
+        onQmlUpdateClientAutoConnect: {
+            configPage.updateClientAutoConnect(isEnabled)
+        }
+
         onQmlUpdateSenderState: {
             workPage.updateSenderState(state)
         }
