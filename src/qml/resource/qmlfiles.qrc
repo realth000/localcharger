@@ -12,5 +12,6 @@
         <file>qmlfiles/widget/TextAreaEx.qml</file>
         <file>qmlfiles/widget/FileDialogEx.qml</file>
         <file>qmlfiles/widget/RectangleEx.qml</file>
+        <file>qmlfiles/widget/SwitchEx.qml</file>
     </qresource>
 </RCC>

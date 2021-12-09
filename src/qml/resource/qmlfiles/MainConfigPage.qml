@@ -216,6 +216,27 @@ Item {
             mainQmlHandler.updateWebConfig()
         }
     }
+    Rectangle {
+        id: autoConnectRectangle
+        height: 40
+        anchors.top: reconnectButtonEx.bottom
+        anchors.topMargin: 20
+        anchors.left: selevtSaveDirGroupBoxEx.left
+        anchors.leftMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        anchors.right: selevtSaveDirGroupBoxEx.right
+        anchors.rightMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
+        color: "transparent"
+        SwitchEx {
+            id: autoConnectSwitchEx
+            texts: "收到其他客户端连接请求时自动连接"
+            Layout.fillHeight: true
+            anchors.left: autoConnectRectangle.left
+            width: parent.width
+            onCheckedChanged: {
+                mainQmlHandler.setAutoConnect(checked)
+            }
+        }
+    }
 
     FileDialogEx {
         id: setSavePathFileDialogEx
@@ -251,6 +272,10 @@ Item {
 
     function setFileSavePath(path) {
         fileSavePath = path
+    }
+
+    function updateClientAutoConnect(isEnabled) {
+        autoConnectSwitchEx.checked = isEnabled
     }
 
 }
