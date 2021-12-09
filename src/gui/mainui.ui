@@ -490,6 +490,19 @@
     <string/>
    </property>
   </widget>
+  <widget class="QCheckBox" name="autoConnectComboBox">
+   <property name="geometry">
+    <rect>
+     <x>970</x>
+     <y>60</y>
+     <width>101</width>
+     <height>20</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>自动连接</string>
+   </property>
+  </widget>
  </widget>
  <customwidgets>
   <customwidget>
