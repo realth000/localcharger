@@ -33,11 +33,41 @@ Item {
             ColumnLayout {
                 id: clientNameColumnLayout
                 width: parent.width
-                height: 340
+                height: 380
                 anchors.top: socketCtlGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: socketCtlGroupBoxEx.separator.left
                 anchors.right: socketCtlGroupBoxEx.separator.right
+                Rectangle {
+                    id: clientIdRectangle
+                    Layout.fillWidth: true
+                    Layout.preferredHeight: 40
+                    color: "transparent"
+                    RowLayout {
+                        width: parent.width
+                        height: parent.height
+                        spacing: 10
+                        Text {
+                            id: clientIdText
+                            Layout.preferredWidth: 100
+                            Layout.preferredHeight: parent.height
+                            text: "ID"
+                            horizontalAlignment: Text.AlignHCenter
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: "#f0ffff"
+                        }
+                        Text {
+                            id: clientIdTextFieldEx
+                            Layout.fillWidth: true
+                            Layout.preferredHeight: parent.height
+                            horizontalAlignment: Text.AlignLeft
+                            verticalAlignment: Text.AlignVCenter
+                            font.pixelSize: 16
+                            color: clientIdText.color
+                        }
+                    }
+                }
                 Rectangle {
                     id: clientNameRectangle
                     Layout.fillWidth: true
@@ -121,6 +151,7 @@ Item {
                             model: clientMode
                             delegate: clientDelegate
                             focus: true
+                            highlightMoveDuration: 200
                             highlight: RectangleEx {
                                 commonBorderColor: false
                                 color: "#393939"
@@ -269,18 +300,88 @@ Item {
             labelText: "已接收"
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
-            height: recvedTextArea.height + titleHeight + 10 + 10
+            height: recvedTextRectangle.height + titleHeight + 10 + 10
             anchors.top: socketCtlGroupBoxEx.bottom
             anchors.topMargin: 20
-            TextAreaEx {
-                id: recvedTextArea
+            Rectangle {
+                id: recvedTextRectangle
                 height: 200
-                readOnly: true
                 anchors.top: recvedGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: recvedGroupBoxEx.separator.left
                 anchors.right: recvedGroupBoxEx.separator.right
-                selectByMouse: true
+                color: "transparent"
+                border.color: "#336666"
+                Flickable {
+                    id: recvedTextFlickable
+                    anchors.fill: parent
+                    boundsBehavior: Flickable.StopAtBounds
+                    contentWidth: Math.max(recvedTextRectangle.width, maxWidth)
+                    contentHeight: parent.height
+                    clip: true
+                    property int maxWidth: 0
+                    ListView {
+                        id: recvedTextListView
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        clip: true
+                        Component {
+                            id: recvedTextDelegate
+                            Text {
+                                id: recvedTextText
+                                height: font.pixelSize*getTextLines
+                                width: Math.max(recvedTextRectangle.width, recvedTextFlickable.maxWidth)
+                                leftPadding: 5
+                                rightPadding: 5
+                                topPadding: 10
+                                bottomPadding: 10
+                                color: "#f0ffff"
+                                text: msg
+                                font.pixelSize: 14
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { recvedTextListView.currentIndex = index }
+                                    onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
+                                }
+                                function getTextLines(text){
+                                    var length = text.length
+                                    var lineCount = 1
+                                    for(let i=0; i<length; i++) {
+                                        if(text[i] === "\n") {
+                                            lineCount++
+                                        }
+                                    }
+                                }
+                                Component.onCompleted: {
+                                    if(recvedTextFlickable.maxWidth < recvedTextText.contentWidth + 10) {
+                                        recvedTextFlickable.maxWidth = recvedTextText.contentWidth + 10
+                                    }
+                                }
+                            }
+                        }
+                        ListModel {
+                            id: recvedTextModel
+                        }
+                        model: recvedTextModel
+                        delegate: recvedTextDelegate
+                        focus: true
+                        highlightMoveDuration: 200
+                        highlightResizeVelocity: -1
+                        highlightFollowsCurrentItem: false
+                        highlight: RectangleEx {
+                            width: recvedTextRectangle.width
+                            height: recvedTextListView.currentItem.height
+                            x: recvedTextFlickable.visibleArea.xPosition * recvedTextFlickable.contentWidth
+                            y: recvedTextListView.currentItem.y
+                            commonBorderColor: false
+                            color: "#393939"
+                            leftBorderColor: "#336666"
+                            rightBorderColor: "#336666"
+                            radius: 10
+                        }
+                    }
+                }
             }
         }
 
@@ -289,18 +390,88 @@ Item {
             labelText: "已发送"
             labelHeight: 40
             iconPath: "qrc:/pic/sended2.png"
-            height: sendedTextArea.height + titleHeight + 10 + 10
+            height: sendedTextRectangle.height + titleHeight + 10 + 10
             anchors.top: recvedGroupBoxEx.bottom
             anchors.topMargin: 20
-            TextAreaEx {
-                id: sendedTextArea
+            Rectangle {
+                id: sendedTextRectangle
                 height: 200
-                readOnly: true
                 anchors.top: sendedGroupBoxEx.labelRect.bottom
                 anchors.topMargin: 10
                 anchors.left: sendedGroupBoxEx.separator.left
                 anchors.right: sendedGroupBoxEx.separator.right
-                selectByMouse: true
+                color: "transparent"
+                border.color: "#336666"
+                Flickable {
+                    id: sendedTextFlickable
+                    anchors.fill: parent
+                    boundsBehavior: Flickable.StopAtBounds
+                    contentWidth: Math.max(sendedTextRectangle.width, maxWidth)
+                    contentHeight: parent.height
+                    clip: true
+                    property int maxWidth: 0
+                    ListView {
+                        id: sendedTextListView
+                        anchors.fill: parent
+                        anchors.topMargin: 5
+                        anchors.bottomMargin: 5
+                        clip: true
+                        Component {
+                            id: sendedTextDelegate
+                            Text {
+                                id: sendedTextText
+                                height: font.pixelSize*getTextLines
+                                width: Math.max(sendedTextRectangle.width, sendedTextFlickable.maxWidth)
+                                leftPadding: 5
+                                rightPadding: 5
+                                topPadding: 10
+                                bottomPadding: 10
+                                color: "#f0ffff"
+                                text: msg
+                                font.pixelSize: 14
+                                MouseArea {
+                                    anchors.fill: parent
+                                    onClicked: { sendedTextListView.currentIndex = index }
+                                    onPressAndHold: { mainQmlHandler.setClipBoardText(msg) }
+                                }
+                                function getTextLines(text){
+                                    var length = text.length
+                                    var lineCount = 1
+                                    for(let i=0; i<length; i++) {
+                                        if(text[i] === "\n") {
+                                            lineCount++
+                                        }
+                                    }
+                                }
+                                Component.onCompleted: {
+                                    if(sendedTextFlickable.maxWidth < sendedTextText.contentWidth + 10) {
+                                        sendedTextFlickable.maxWidth = sendedTextText.contentWidth + 10
+                                    }
+                                }
+                            }
+                        }
+                        ListModel {
+                            id: sendedTextModel
+                        }
+                        model: sendedTextModel
+                        delegate: sendedTextDelegate
+                        focus: true
+                        highlightMoveDuration: 200
+                        highlightResizeVelocity: -1
+                        highlightFollowsCurrentItem: false
+                        highlight: RectangleEx {
+                            width: sendedTextRectangle.width
+                            height: sendedTextListView.currentItem.height
+                            x: sendedTextFlickable.visibleArea.xPosition * sendedTextFlickable.contentWidth
+                            y: sendedTextListView.currentItem.y
+                            commonBorderColor: false
+                            color: "#393939"
+                            leftBorderColor: "#336666"
+                            rightBorderColor: "#336666"
+                            radius: 10
+                        }
+                    }
+                }
             }
         }
 
@@ -444,6 +615,10 @@ Item {
         clientNameTextFieldEx.text = name
     }
 
+    function updateClientId(id) {
+        clientIdTextFieldEx.text = id
+    }
+
     function getToSendMessage() {
         return toSendTextArea.text
     }
@@ -453,11 +628,11 @@ Item {
     }
 
     function appendSendedMessage(msg) {
-        sendedTextArea.append(msg)
+        sendedTextModel.append({msg: msg})
     }
 
     function appendRecvedMessage(msg) {
-        recvedTextArea.append(msg)
+        recvedTextModel.append({msg: msg})
     }
 
     function addClient(ip, port, readableName, id) {

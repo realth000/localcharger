@@ -3,6 +3,7 @@
 
 #include <QtCore/QCoreApplication>
 #include <QtCore/QObject>
+#include <QtGui/QClipboard>
 #include <QtGui/QRegularExpressionValidator>
 #include "core/webrecver.h"
 #include "core/websender.h"
@@ -38,11 +39,13 @@ signals:
     void qmlUpdateSenderPort(int senderPort);
     void qmlUpdateRecverPort(int recverPort);
     void qmlUpdateClientName(QString name);
+    void qmlUpdateClientId(int id);
     void qmlAppendSendedMessage(QString msg);
     void qmlAppendRecvedMessage(QString msg);
     void qmlClearToSendMsg();
     void qmlUpdateFileSavePath(QString path);
     void qmlAddClient(QString ip, QString port, QString readableName, QString id);
+    void qmlUpdateClientAutoConnect(bool isEnabled);
 
 public slots:
     void initHandler();
@@ -63,6 +66,8 @@ public slots:
     void updateWebConfig();
     void boardcastIdentityMessage();
     void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
+    void setClipBoardText(const QString text);
+    void setAutoConnect(const bool &isEnabled);
 
 private:
     WebSender m_socketSender;
@@ -78,10 +83,13 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+    bool m_enableAutoConnect;
+    QClipboard *m_clipBoard;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
     QString m_localClientReadableName;
+    int m_localClientId;
     port_t m_localWorkingPort;
     QString m_localIp;
 
@@ -98,6 +106,7 @@ private:
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
+    void callAndroidToast(const QString &message);
 #endif
 
 private slots:
@@ -107,6 +116,8 @@ private slots:
     void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void autoConnectToClinet(const QString &ip, const QString &port);
+    void onGetAutoConnectReply();
 };
 
 #endif // QMLHANDLER_H

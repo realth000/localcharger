@@ -10,14 +10,14 @@ CONFIG += c++11 no_batch
 
 INCLUDEPATH += src src/include
 
-VERSION = 1.3.0
+VERSION = 1.4.0
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"
 RC_ICONS = "src/resource/pic/LocalCharger.ico"
 
 #DEFINES += COMPILE_VID
-#DEFINES += COMPILE_QML
+DEFINES += COMPILE_QML
 
 win32 {
     CONFIG(debug,debug|release){

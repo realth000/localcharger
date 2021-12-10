@@ -71,6 +71,10 @@ ApplicationWindow {
         onQmlUpdateSocketConfig: {
             configPage.updateSocketConfig(senderIp, senderPort, recverPort)
         }
+        onQmlUpdateClientAutoConnect: {
+            configPage.updateClientAutoConnect(isEnabled)
+        }
+
         onQmlUpdateSenderState: {
             workPage.updateSenderState(state)
         }
@@ -79,6 +83,10 @@ ApplicationWindow {
         }
         onQmlUpdateClientName: {
             workPage.updateClientName(name)
+        }
+
+        onQmlUpdateClientId: {
+            workPage.updateClientId(id)
         }
 
         // files/messages info display
