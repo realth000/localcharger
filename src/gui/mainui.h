@@ -44,6 +44,9 @@ private slots:
     void on_connectSelectedClientPushButton_clicked();
     void on_broadcastPushButton_clicked();
     void on_clientNameLineEdit_textChanged(const QString &arg1);
+    void autoConnectToClinet(const QString &ip, const QString &port);
+    void on_autoConnectComboBox_stateChanged(int arg1);
+    void onGetAutoConnectReply();
 
 private:
     Ui::MainUi *ui;
@@ -60,10 +63,12 @@ private:
     QIntValidator *m_portTypeValidator;
     const QString m_configFilePath;
     QString m_saveFileDirPath;
+    bool m_enableAutoConnect;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
     QString m_localClientReadableName;
+    int m_localClientId;
     port_t m_localWorkingPort;
     QString m_localIp;
 
@@ -72,6 +77,7 @@ private:
     HorizontalScrollBarStyle *m_hScrollStyle;
     VerticalScrollBarStyle *m_vScrollStyle;
     ComboBoxStyle *m_comboBoxStyle;
+    CheckBoxStyle *m_checkBoxStyle;
 
     void startSender(const port_t &port);
     void stopSender();

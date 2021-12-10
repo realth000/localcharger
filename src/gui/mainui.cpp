@@ -1,5 +1,6 @@
 ﻿#include "mainui.h"
 #include "ui_mainui.h"
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtNetwork/QNetworkInterface>
@@ -25,17 +26,20 @@ MainUi::MainUi(QWidget *parent)
       m_portTypeValidator(new QIntValidator(VALIDATOR_TYPE_PORT_MIN, VALIDATOR_TYPE_PORT_MAX)),
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
+      m_enableAutoConnect(false),
       m_localClientReadableName("default"),
+      m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
       m_vScrollStyle(new VerticalScrollBarStyle),
-      m_comboBoxStyle(new ComboBoxStyle)
+      m_comboBoxStyle(new ComboBoxStyle),
+      m_checkBoxStyle(new CheckBoxStyle)
 {
     ui->setupUi(this);
     loadDefaultConfig();
     loadConfig();
-    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     initUi();
     initConnections();
     getLocalIp();
@@ -126,6 +130,10 @@ void MainUi::initUi()
     ui->clientsListWidget->verticalScrollBar()->setStyle(m_vScrollStyle);
     ui->clientNameLineEdit->setText(m_localClientReadableName);
     ui->clientNameLineEdit->setFocusPolicy(Qt::ClickFocus);
+
+    ui->clientIdLabel->setText(QString::number(m_localClientId));
+    ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
+    ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 }
 
 void MainUi::initConnections()
@@ -150,6 +158,8 @@ void MainUi::initConnections()
 
     // WebIdentifier
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
+    connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
+    connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
 }
 
 MainUi::~MainUi()
@@ -163,6 +173,7 @@ MainUi::~MainUi()
     delete m_hScrollStyle;
     delete m_vScrollStyle;
     delete m_comboBoxStyle;
+    delete m_checkBoxStyle;
 }
 
 
@@ -280,11 +291,12 @@ void MainUi::loadConfig()
         return;
     }
     const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    m_sockerSenderIp = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH)).toString();
-    m_socketSenderPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH)).toInt();
-    m_socketRecverPort = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH)).toInt();
-    m_saveFileDirPath = configIni->value(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH)).toString();
+    m_sockerSenderIp = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH).toString();
+    m_socketSenderPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH).toInt();
+    m_socketRecverPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH).toInt();
+    m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
     m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
+    m_enableAutoConnect = configIni->value(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH).toBool();
     delete configIni;
     m_localWorkingPort = m_socketRecverPort;
 }
@@ -292,11 +304,12 @@ void MainUi::loadConfig()
 void MainUi::saveConfig()
 {
     QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH), m_sockerSenderIp);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH), m_socketSenderPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH), m_socketRecverPort);
-    configIni->setValue(QStringLiteral(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH), m_saveFileDirPath);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_IP_PATH, m_sockerSenderIp);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_SENDER_PORT_PATH, m_socketSenderPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH, m_socketRecverPort);
+    configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH, m_saveFileDirPath);
     configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
+    configIni->setValue(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH, m_enableAutoConnect);
     delete configIni;
 }
 
@@ -375,7 +388,7 @@ void MainUi::onSenderConnected()
 
 void MainUi::onSenderDisconnected()
 {
-    updateSenderState(SenderState::Disconnected);
+     m_socketSender.isSenderListening() ? updateSenderState(SenderState::Listening) : updateSenderState(SenderState::Disconnected);
 }
 
 void MainUi::onRecverConnected()
@@ -528,6 +541,12 @@ void MainUi::on_connectSelectedClientPushButton_clicked()
     ui->senderUrlLineEdit->setText(configList[2].split(" ")[1]);
     ui->senderPortLineEdit->setText(configList[3].split(" ")[1]);
     on_updateWebConfigPushButton_clicked();
+//    QDebug
+    const url_t t(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), QString::number(12336)));
+    if(!t.isValid()){
+        qDebug() << "invalid url to identifier:" << t;
+    }
+    m_identifier->startAutoConnect(t);
 }
 
 
@@ -543,3 +562,29 @@ void MainUi::on_clientNameLineEdit_textChanged(const QString &arg1)
     m_identifier->setIdentityReadableName(m_localClientReadableName);
 }
 
+void MainUi::autoConnectToClinet(const QString &ip, const QString &port)
+{
+    // TODO: autoconnect config check
+    if(!m_enableAutoConnect){
+        qDebug() << "auto connect isdisabled";
+        return;
+    }
+    if(ip.isEmpty() || port.isEmpty()){
+        qDebug() << "empty cient to auto connect, ip =" << ip << "port =" << port;
+        return;
+    }
+    ui->senderUrlLineEdit->setText(ip);
+    ui->senderPortLineEdit->setText(port);
+    on_updateWebConfigPushButton_clicked();
+    m_identifier->sendAutoConnectReply();
+}
+
+void MainUi::on_autoConnectComboBox_stateChanged(int arg1)
+{
+    arg1 > 0 ? m_enableAutoConnect = true : m_enableAutoConnect = false;
+}
+
+void MainUi::onGetAutoConnectReply()
+{
+    on_startRecverPushButton_clicked();
+}

@@ -1,6 +1,8 @@
 ﻿#include "qmlhandler.h"
 #include <QtCore/QFileInfo>
+#include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
+#include <QtGui/QGuiApplication>
 #ifdef Q_OS_ANDROID
 #include <QtAndroidExtras/QAndroidJniObject>
 #include <QtAndroidExtras/QtAndroid>
@@ -24,8 +26,11 @@ QmlHandler::QmlHandler(QObject *parent)
 #else
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
+      m_enableAutoConnect(false),
 #endif
+      m_clipBoard(QGuiApplication::clipboard()),
       m_localClientReadableName("default"),
+      m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
 
@@ -47,7 +52,12 @@ void QmlHandler::initHandler()
 #endif
     loadDefaultConfig();
     loadConfig();
-    m_identifier = new WebIdentifier(m_localClientReadableName, m_localWorkingPort, this);
+    emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
+    emit qmlUpdateFileSavePath(m_saveFileDirPath);
+    emit qmlUpdateClientName(m_localClientReadableName);
+    emit qmlUpdateClientId(m_localClientId);
+    emit qmlUpdateClientAutoConnect(m_enableAutoConnect);
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     initConnections();
     getLocalIp();
     updateSenderState(QmlSenderState::SenderDisconnected);
@@ -138,7 +148,6 @@ void QmlHandler::setRecverPort(const QString &port)
 void QmlHandler::setClientReadableName(const QString &name)
 {
     m_localClientReadableName = name;
-    qDebug() << "set name" << name;
     m_identifier->setIdentityReadableName(m_localClientReadableName);
 }
 
@@ -174,6 +183,8 @@ void QmlHandler::initConnections()
 
     // WebIdentifier
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
+    connect(m_identifier, &WebIdentifier::getClientToConnect, this, &QmlHandler::autoConnectToClinet);
+    connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &QmlHandler::onGetAutoConnectReply);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -252,7 +263,6 @@ void QmlHandler::updateRecverState(QmlRecverState state)
 void QmlHandler::loadDefaultConfig()
 {
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
-    emit qmlUpdateFileSavePath(m_saveFileDirPath);
 }
 
 void QmlHandler::loadConfig()
@@ -268,12 +278,9 @@ void QmlHandler::loadConfig()
     m_socketRecverPort = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH).toInt();
     m_saveFileDirPath = configIni->value(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH).toString();
     m_localClientReadableName = configIni->value(APP_CONFIGFILE_CLIENT_READABLENAME_PATH).toString();
+    m_enableAutoConnect = configIni->value(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH).toBool();
     delete configIni;
-    emit qmlUpdateSocketConfig(m_socketSenderIp, m_socketSenderPort, m_socketRecverPort);
-    emit qmlUpdateFileSavePath(m_saveFileDirPath);
-    emit qmlUpdateClientName(m_localClientReadableName);
     m_socketRecver.setFileSavePath(m_saveFileDirPath);
-
     m_localWorkingPort = m_socketRecverPort;
 }
 
@@ -285,6 +292,7 @@ void QmlHandler::saveConfig()
     configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_PORT_PATH, m_socketRecverPort);
     configIni->setValue(APP_CONFIGFILE_WEBSOCKET_RECVER_FILE_SAVE_PATH, m_saveFileDirPath);
     configIni->setValue(APP_CONFIGFILE_CLIENT_READABLENAME_PATH, m_localClientReadableName);
+    configIni->setValue(APP_CONFIGFILE_CLINET_AUTOCONNECT_PATH, m_enableAutoConnect);
 #ifdef Q_OS_ANDROID
     configIni->sync();
     emit qmlMessageInfo(QString::number(configIni->status()));
@@ -305,11 +313,32 @@ void QmlHandler::boardcastIdentityMessage()
 
 void QmlHandler::connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port)
 {
+    Q_UNUSED(name)
     if(id.isEmpty() || ip.isEmpty() || port.isEmpty()){
         qDebug() << "empty client";
         return;
     }
     updateWebConfig();
+    const url_t t(QString("wss://%1:%2").arg(ip, QString::number(12336)));
+    if(!t.isValid()){
+        qDebug() << "invalid url to identifier:" << t;
+    }
+    m_identifier->startAutoConnect(t);
+}
+
+void QmlHandler::setClipBoardText(const QString text)
+{
+    qDebug() << "clip board test" << text;
+#ifdef Q_OS_ANDROID
+    callAndroidToast("已复制到剪切板");
+#endif
+    m_clipBoard->setText(text);
+}
+
+void QmlHandler::setAutoConnect(const bool &isEnabled)
+{
+    m_enableAutoConnect = isEnabled;
+    saveConfig();
 }
 
 void QmlHandler::getLocalIp()
@@ -353,6 +382,19 @@ void QmlHandler::requestAndroidPermissions()
     if(WRITE_EXTERNAL_STORAGE == QtAndroid::PermissionResult::Denied) {
         QtAndroid::requestPermissionsSync(QStringList()<<"android.permission.WRITE_EXTERNAL_STORAGE");
     }
+}
+
+void QmlHandler::callAndroidToast(const QString &message) {
+    // all the magic must happen on Android UI thread
+    QtAndroid::runOnAndroidThread([message] {
+        QAndroidJniObject javaString = QAndroidJniObject::fromString(message);
+        QAndroidJniObject toast = QAndroidJniObject::callStaticObjectMethod("android/widget/Toast", "makeText",
+                                                                            "(Landroid/content/Context;Ljava/lang/CharSequence;I)Landroid/widget/Toast;",
+                                                                            QtAndroid::androidActivity().object(),
+                                                                            javaString.object(),
+                                                                            jint(0));
+        toast.callMethod<void>("show");
+    });
 }
 #endif
 
@@ -413,4 +455,26 @@ void QmlHandler::onIdentityMessageParsed(const QString &ip, const QString &port,
     }
     addDetectedClients(ip, port, readableName, id);
     m_clientsMap.insert(id, port);
+}
+
+void QmlHandler::autoConnectToClinet(const QString &ip, const QString &port)
+{
+    // TODO: autoconnect config check
+    if(!m_enableAutoConnect){
+        qDebug() << "auto connect isdisabled";
+        return;
+    }
+    if(ip.isEmpty() || port.isEmpty()){
+        qDebug() << "empty cient to auto connect, ip =" << ip << "port =" << port;
+        return;
+    }
+    emit qmlUpdateSenderIp(ip);
+    emit qmlUpdateSenderPort(port.toInt());
+    updateWebConfig();
+    m_identifier->sendAutoConnectReply();
+}
+
+void QmlHandler::onGetAutoConnectReply()
+{
+    startRecver();
 }
