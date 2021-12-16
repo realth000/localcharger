@@ -1,0 +1,6 @@
+target_sources(LocalCharger PRIVATE randomgenerator.cpp networkinfohelper.cpp)
+if(NOT COMPILE_QML)
+    add_subdirectory(widget)
+    target_sources(LocalCharger PRIVATE iconinstaller.cpp qssinstaller.cpp style/proxystyle.cpp)
+    #target_sources(LocalCharger PRIVATE iconinstaller.cpp qssinstaller.cpp style/proxystyle.cpp widget/messageboxexx.ui widget/messageboxexx.cpp widget/texteditex.cpp widget/titlebar.cpp)
+endif()
