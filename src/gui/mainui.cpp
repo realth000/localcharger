@@ -3,6 +3,7 @@
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
+#include <QtGui/QDesktopServices>
 #include <QtNetwork/QNetworkInterface>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QListView>
@@ -64,7 +65,8 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
-    IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder.png");
+    IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder3.png");
+    IconInstaller::installPushButtonIcon(ui->openDownloadDirPushButton, ":/pic/openfolder.png");
 
     ui->startSenderPushButton->setStyle(m_pushButtonStyle);
     ui->startRecverPushButton->setStyle(m_pushButtonStyle);
@@ -75,6 +77,7 @@ void MainUi::initUi()
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
     ui->saveConfigPushButton->setStyle(m_pushButtonStyle);
     ui->selectSaveFilePathPushButton->setStyle(m_pushButtonStyle);
+    ui->openDownloadDirPushButton->setStyle(m_pushButtonStyle);
     ui->startSenderPushButton->setFocusPolicy(Qt::NoFocus);
     ui->startRecverPushButton->setFocusPolicy(Qt::NoFocus);
     ui->connectSelectedClientPushButton->setFocusPolicy(Qt::NoFocus);
@@ -84,6 +87,7 @@ void MainUi::initUi()
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
     ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->selectSaveFilePathPushButton->setFocusPolicy(Qt::NoFocus);
+    ui->openDownloadDirPushButton->setFocusPolicy(Qt::NoFocus);
 
     // Title bar style
     ui->titleBar->setFixedWidth(this->width());
@@ -588,3 +592,9 @@ void MainUi::onGetAutoConnectReply()
 {
     on_startRecverPushButton_clicked();
 }
+
+void MainUi::on_openDownloadDirPushButton_clicked()
+{
+    QDesktopServices::openUrl(QUrl("file:///" + m_saveFileDirPath, QUrl::TolerantMode));
+}
+

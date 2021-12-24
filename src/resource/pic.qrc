@@ -30,5 +30,6 @@
         <file>pic/folder.png</file>
         <file>pic/splashscreen.png</file>
         <file>pic/broadcast.png</file>
+        <file>pic/openfolder3.png</file>
     </qresource>
 </RCC>
