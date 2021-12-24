@@ -47,6 +47,7 @@ private slots:
     void autoConnectToClinet(const QString &ip, const QString &port);
     void on_autoConnectComboBox_stateChanged(int arg1);
     void onGetAutoConnectReply();
+    void on_openDownloadDirPushButton_clicked();
 
 private:
     Ui::MainUi *ui;
