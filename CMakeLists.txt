@@ -65,7 +65,11 @@ include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
 
-add_executable(LocalCharger)
+if(WIN32)
+    add_executable(LocalCharger WIN32)
+else()
+    add_executable(LocalCharger)
+endif()
 
 if(COMPILE_QML)
     add_subdirectory(src/qml)
