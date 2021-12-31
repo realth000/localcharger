@@ -108,8 +108,8 @@ void MainUi::initUi()
 
     ui->msgSendTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
     ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
-    ui->msgSendTextEdit->setFocusPolicy(Qt::NoFocus);
-    ui->msgRecvTextEdit->setFocusPolicy(Qt::NoFocus);
+    ui->msgSendTextEdit->setFocusPolicy(Qt::ClickFocus);
+    ui->msgRecvTextEdit->setFocusPolicy(Qt::ClickFocus);
     ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::ClickFocus);
     ui->msgSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
     ui->msgSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
