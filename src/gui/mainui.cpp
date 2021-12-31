@@ -5,8 +5,10 @@
 #include <QtCore/QThread>
 #include <QtGui/QDesktopServices>
 #include <QtNetwork/QNetworkInterface>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QListView>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
@@ -117,6 +119,9 @@ void MainUi::initUi()
     ui->msgRecvTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
     ui->msgReadyToSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
     ui->msgReadyToSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgSendTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->msgRecvTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->msgReadyToSendTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
 
     ui->senderUrlLineEdit->setText(m_sockerSenderIp);
     ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
@@ -138,6 +143,7 @@ void MainUi::initUi()
     ui->clientIdLabel->setText(QString::number(m_localClientId));
     ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
+
 }
 
 void MainUi::initConnections()
@@ -164,6 +170,10 @@ void MainUi::initConnections()
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
+
+    connect(ui->msgSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
+    connect(ui->msgRecvTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
+    connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
 }
 
 MainUi::~MainUi()
@@ -596,5 +606,32 @@ void MainUi::onGetAutoConnectReply()
 void MainUi::on_openDownloadDirPushButton_clicked()
 {
     QDesktopServices::openUrl(QUrl("file:///" + m_saveFileDirPath, QUrl::TolerantMode));
+}
+
+void MainUi::textEditContextMenu(const QPoint &pos)
+{
+    QTextEdit *textEdit = reinterpret_cast<QTextEdit *>(sender());
+    if(textEdit == nullptr){
+        return;
+    }
+    QMenu *menu = new QMenu(textEdit);
+    QAction *cutAction = new QAction("剪切", textEdit);
+    QAction *copyAction = new QAction("复制", textEdit);
+    QAction *pasteAction = new QAction("粘贴", textEdit);
+    QAction *selectAllAction = new QAction("全选", textEdit);
+    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+    connect(cutAction, &QAction::triggered, textEdit, &QTextEdit::cut);
+    connect(copyAction, &QAction::triggered, textEdit, &QTextEdit::copy);
+    connect(pasteAction, &QAction::triggered, textEdit, &QTextEdit::paste);
+    connect(selectAllAction, &QAction::triggered, textEdit, &QTextEdit::selectAll);
+    if(textEdit->isReadOnly()){
+        pasteAction->setEnabled(false);
+    }
+    menu->addAction(cutAction);
+    menu->addAction(copyAction);
+    menu->addAction(pasteAction);
+    menu->addAction(selectAllAction);
+    menu->move(cursor().pos());
+    menu->show();
 }
 
