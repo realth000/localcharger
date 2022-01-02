@@ -1,0 +1,8 @@
+<RCC>
+    <qresource prefix="/">
+        <file>translation/localcharger_zh_CN.ts</file>
+        <file>translation/localcharger_en.qm</file>
+        <file>translation/localcharger_en.ts</file>
+        <file>translation/localcharger_zh_CN.qm</file>
+    </qresource>
+</RCC>
