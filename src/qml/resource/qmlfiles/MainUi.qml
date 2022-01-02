@@ -40,7 +40,7 @@ ApplicationWindow {
                 id: mainWorkPAgeTabButtonEx
                 width: mainTabBar.width/2
                 height: mainTabBar.height
-                texts: "传送"
+                texts: qsTr("Transmission")
                 iconChecked: "qrc:/pic/qmlsend2.png"
                 iconUnchecked: "qrc:/pic/qmlsend.png"
             }
@@ -48,7 +48,7 @@ ApplicationWindow {
                 id: mainConigPageTabButtonEx
                 width: mainTabBar.width/2
                 height: mainTabBar.height
-                texts: "设置"
+                texts: qsTr("Settings")
                 iconChecked: "qrc:/pic/qmlsettings2.png"
                 iconUnchecked: "qrc:/pic/qmlsettings.png"
             }

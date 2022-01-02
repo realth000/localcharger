@@ -42,7 +42,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>确定</string>
+    <string>OK</string>
    </property>
   </widget>
   <widget class="QTextEdit" name="infoTE">
@@ -78,7 +78,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>取消</string>
+    <string>Cancel</string>
    </property>
   </widget>
  </widget>

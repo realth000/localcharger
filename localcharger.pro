@@ -88,7 +88,30 @@ HEADERS += \
 
 RESOURCES += \
     src/resource/pic.qrc \
-    src/resource/config.qrc
+    src/resource/config.qrc \
+    src/resource/translation.qrc
+
+isEmpty(QMAKE_LRELEASE) {
+    win32: QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease.exe
+    else: QMAKE_LRELEASE = $$[QT_INSTALL_BINS]/lrelease
+    unix {
+        equals(QT_MAJOR_VERSION, 5) {
+            !exists($$QMAKE_LRELEASE): QMAKE_LRELEASE = lrelease-qt5
+        }
+    }
+    else {
+        !exists($$QMAKE_LRELEASE): QMAKE_LRELEASE = lrelease
+    }
+}
+
+lrelease.input = TS_SOURCES
+lrelease.output = ${QMAKE_FILE_PATH}/${QMAKE_FILE_BASE}.qm
+lrelease.commands = @echo "lrelease ${QMAKE_FILE_NAME}" && $$QMAKE_LRELEASE -silent ${QMAKE_FILE_NAME} -qm ${QMAKE_FILE_OUT}
+lrelease.CONFIG += no_link target_predeps
+QMAKE_EXTRA_COMPILERS += lrelease
+
+TRANSLATIONS += $$files($$PWD/src/resource/translation/localcharger_*.ts)
+TS_SOURCES += $$TRANSLATIONS
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
