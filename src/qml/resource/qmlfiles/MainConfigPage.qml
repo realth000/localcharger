@@ -21,7 +21,7 @@ Item {
 
     GroupBoxEx {
         id: localGroupBoxEx
-        labelText: "接收"
+        labelText: qsTr("Receive")
         labelHeight: 40
         iconPath: "qrc:/pic/received2.png"
         height:localUrlRowLayout.height + localPortRowLayout.height + titleHeight + 20 + 10
@@ -38,7 +38,7 @@ Item {
                 id: localUrlText
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: parent.height
-                text: "查看本地IP"
+                text: qsTr("Local IP")
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
@@ -63,7 +63,7 @@ Item {
                 id: localPortText
                 Layout.preferredWidth: localUrlText.width
                 Layout.preferredHeight: localUrlText.height
-                text: "本地端口"
+                text: qsTr("Local port")
                 horizontalAlignment: localUrlText.horizontalAlignment
                 verticalAlignment: localUrlText.verticalAlignment
                 font.pixelSize: localUrlText.font.pixelSize
@@ -91,7 +91,7 @@ Item {
 
     GroupBoxEx {
         id: remoteGroupBoxEx
-        labelText: "发送"
+        labelText: qsTr("Send")
         iconPath: "qrc:/pic/sended2.png"
         labelHeight: localGroupBoxEx.labelHeight
         height:remoteUrlRowLayout.height + remotePortRowLayout.height + titleHeight + 30 + 10
@@ -111,7 +111,7 @@ Item {
                 id: remoteUrlText
                 Layout.preferredWidth: 100
                 Layout.preferredHeight: parent.height
-                text: "远端IP"
+                text: qsTr("Remote IP")
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 font.pixelSize: 16
@@ -147,7 +147,7 @@ Item {
                 id: remotePortText
                 Layout.preferredWidth: localUrlText.width
                 Layout.preferredHeight: localUrlText.height
-                text: "远端端口"
+                text: qsTr("Remote port")
                 horizontalAlignment: localUrlText.horizontalAlignment
                 verticalAlignment: localUrlText.verticalAlignment
                 font.pixelSize: localUrlText.font.pixelSize
@@ -174,7 +174,7 @@ Item {
     }
     GroupBoxEx {
         id: selevtSaveDirGroupBoxEx
-        labelText: "保存位置"
+        labelText: qsTr("Save path")
         labelHeight: localGroupBoxEx.labelHeight
         height:selectSaveDirButtonEx.height + titleHeight + 10 + 10
         anchors.top: remoteGroupBoxEx.bottom
@@ -208,7 +208,7 @@ Item {
         anchors.rightMargin: selevtSaveDirGroupBoxEx.labelLeftMargin
         checkable: false
         bgColor: "transparent"
-        texts: "刷新连接"
+        texts: qsTr("Refresh connections")
         textsUncheckedColor: "#f0ffff"
         iconUnchecked: "qrc:/pic/reload.png"
         iconPos: ButtonEx.IconPos.IconLeft
@@ -228,7 +228,7 @@ Item {
         color: "transparent"
         SwitchEx {
             id: autoConnectSwitchEx
-            texts: "收到其他客户端连接请求时自动连接"
+            texts: qsTr("Auto connect when receive connection")
             Layout.fillHeight: true
             anchors.left: autoConnectRectangle.left
             width: parent.width

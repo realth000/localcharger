@@ -61,7 +61,7 @@
     <rect>
      <x>150</x>
      <y>60</y>
-     <width>71</width>
+     <width>65</width>
      <height>30</height>
     </rect>
    </property>
@@ -85,7 +85,7 @@
   <widget class="QPushButton" name="startSenderPushButton">
    <property name="geometry">
     <rect>
-     <x>225</x>
+     <x>220</x>
      <y>55</y>
      <width>40</width>
      <height>40</height>
@@ -98,7 +98,7 @@
   <widget class="QPushButton" name="startRecverPushButton">
    <property name="geometry">
     <rect>
-     <x>225</x>
+     <x>220</x>
      <y>105</y>
      <width>40</width>
      <height>40</height>
@@ -118,19 +118,19 @@
     </rect>
    </property>
    <property name="title">
-    <string>接收</string>
+    <string>Receive</string>
    </property>
    <widget class="QLabel" name="label_4">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>19</x>
       <y>60</y>
-      <width>70</width>
+      <width>81</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>远端端口</string>
+     <string>Remote port</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="senderUrlLineEdit">
@@ -146,14 +146,14 @@
    <widget class="QLabel" name="label_3">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>19</x>
       <y>20</y>
-      <width>70</width>
+      <width>81</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>远端IP</string>
+     <string>Remote IP</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="senderPortLineEdit">
@@ -216,7 +216,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>发送</string>
+    <string>Sended</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_6">
@@ -229,7 +229,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>接收</string>
+    <string>Received</string>
    </property>
   </widget>
   <widget class="QGroupBox" name="senderConfigGroupBox">
@@ -242,19 +242,19 @@
     </rect>
    </property>
    <property name="title">
-    <string>发送</string>
+    <string>Send</string>
    </property>
    <widget class="QLabel" name="label_10">
     <property name="geometry">
      <rect>
-      <x>30</x>
+      <x>19</x>
       <y>60</y>
-      <width>70</width>
+      <width>81</width>
       <height>30</height>
      </rect>
     </property>
     <property name="text">
-     <string>本地端口</string>
+     <string>Local port</string>
     </property>
    </widget>
    <widget class="QLineEdit" name="recverPortLineEdit">
@@ -277,7 +277,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>查看本地IP</string>
+     <string>Local IP</string>
     </property>
    </widget>
    <widget class="QComboBox" name="recverUrlHintComboBox">
@@ -309,7 +309,7 @@
     <rect>
      <x>150</x>
      <y>110</y>
-     <width>71</width>
+     <width>65</width>
      <height>30</height>
     </rect>
    </property>
@@ -352,7 +352,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>发文字</string>
+     <string>Send text</string>
     </property>
    </widget>
    <widget class="QPushButton" name="sendFilePushButton">
@@ -365,7 +365,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>发文件</string>
+     <string>Send file</string>
     </property>
    </widget>
   </widget>
@@ -389,7 +389,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>保存路径</string>
+    <string>Save path</string>
    </property>
   </widget>
   <widget class="QPushButton" name="selectSaveFilePathPushButton">
@@ -402,7 +402,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>选择目录</string>
+    <string>select dir</string>
    </property>
   </widget>
   <widget class="QListWidget" name="clientsListWidget">
@@ -418,48 +418,48 @@
   <widget class="QPushButton" name="connectSelectedClientPushButton">
    <property name="geometry">
     <rect>
-     <x>80</x>
+     <x>10</x>
      <y>210</y>
-     <width>71</width>
+     <width>111</width>
      <height>42</height>
     </rect>
    </property>
    <property name="text">
-    <string>连接</string>
+    <string>Connect</string>
    </property>
   </widget>
   <widget class="QPushButton" name="broadcastPushButton">
    <property name="geometry">
     <rect>
      <x>10</x>
-     <y>210</y>
-     <width>71</width>
+     <y>170</y>
+     <width>111</width>
      <height>42</height>
     </rect>
    </property>
    <property name="text">
-    <string>广播</string>
+    <string>Broadcast</string>
    </property>
   </widget>
   <widget class="QLabel" name="label_9">
    <property name="geometry">
     <rect>
      <x>170</x>
-     <y>170</y>
+     <y>200</y>
      <width>51</width>
      <height>30</height>
     </rect>
    </property>
    <property name="text">
-    <string>名称</string>
+    <string>Name</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="clientNameLineEdit">
    <property name="geometry">
     <rect>
-     <x>230</x>
-     <y>170</y>
-     <width>191</width>
+     <x>220</x>
+     <y>200</y>
+     <width>201</width>
      <height>30</height>
     </rect>
    </property>
@@ -467,8 +467,8 @@
   <widget class="QLabel" name="label_11">
    <property name="geometry">
     <rect>
-     <x>10</x>
-     <y>170</y>
+     <x>170</x>
+     <y>160</y>
      <width>51</width>
      <height>30</height>
     </rect>
@@ -480,9 +480,9 @@
   <widget class="QLabel" name="clientIdLabel">
    <property name="geometry">
     <rect>
-     <x>80</x>
-     <y>170</y>
-     <width>72</width>
+     <x>220</x>
+     <y>160</y>
+     <width>31</width>
      <height>30</height>
     </rect>
    </property>
@@ -495,12 +495,12 @@
     <rect>
      <x>970</x>
      <y>60</y>
-     <width>101</width>
+     <width>105</width>
      <height>20</height>
     </rect>
    </property>
    <property name="text">
-    <string>自动连接</string>
+    <string>Auto connect</string>
    </property>
   </widget>
   <widget class="QPushButton" name="openDownloadDirPushButton">
@@ -508,12 +508,12 @@
     <rect>
      <x>830</x>
      <y>50</y>
-     <width>100</width>
+     <width>111</width>
      <height>42</height>
     </rect>
    </property>
    <property name="text">
-    <string>打开目录</string>
+    <string>open dir</string>
    </property>
   </widget>
  </widget>

@@ -1,4 +1,5 @@
-﻿#include <QtGui/QFont>
+﻿#include <QtCore/QTranslator>
+#include <QtGui/QFont>
 
 #ifdef ENABLE_QML
 #include <QtCore/QCoreApplication>
@@ -43,6 +44,18 @@ int main(int argc, char *argv[])
 #endif
     appFont.setStyleStrategy(static_cast<QFont::StyleStrategy>(QFont::PreferAntialias | QFont::PreferQuality));
 
+    // Setup translation
+    QLocale locale = QLocale::system();
+    QTranslator appTranslator;
+
+    switch (locale.script()) {
+    case QLocale::SimplifiedChineseScript:
+        appTranslator.load(QLatin1String(":/translation/localcharger_zh_CN.qm"));
+        break;
+    default:
+        appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
+    }
+
 #ifdef ENABLE_QML
     QCoreApplication::setApplicationName(TITLEBAR_TITLETEXT);
     app.setFont(appFont);
@@ -54,10 +67,13 @@ int main(int argc, char *argv[])
             if (!obj && url == objUrl)
                 QCoreApplication::exit(-1);
         }, Qt::QueuedConnection);
+    app.installTranslator(&appTranslator);
     engine.load(url);
     return app.exec();
 #else
     QApplication a(argc, argv);
+
+    a.installTranslator(&appTranslator);
     a.setFont(appFont);
     MainUi w;
     w.show();

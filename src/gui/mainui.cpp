@@ -5,8 +5,10 @@
 #include <QtCore/QThread>
 #include <QtGui/QDesktopServices>
 #include <QtNetwork/QNetworkInterface>
+#include <QtWidgets/QAction>
 #include <QtWidgets/QFileDialog>
 #include <QtWidgets/QListView>
+#include <QtWidgets/QMenu>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
 #include "iconinstaller.h"
@@ -53,7 +55,7 @@ MainUi::MainUi(QWidget *parent)
 
 void MainUi::initUi()
 {
-    this->setWindowFlags(Qt::FramelessWindowHint);
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::WindowMinimizeButtonHint);
     this->setFixedSize(this->width(), this->height());
     this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet.css").arg(this->objectName(), "rgb(55,85,100)", "rgb(51,51,51)"));
 
@@ -108,8 +110,8 @@ void MainUi::initUi()
 
     ui->msgSendTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
     ui->msgRecvTextEdit->setWordWrapMode(QTextOption::WrapAnywhere);
-    ui->msgSendTextEdit->setFocusPolicy(Qt::NoFocus);
-    ui->msgRecvTextEdit->setFocusPolicy(Qt::NoFocus);
+    ui->msgSendTextEdit->setFocusPolicy(Qt::ClickFocus);
+    ui->msgRecvTextEdit->setFocusPolicy(Qt::ClickFocus);
     ui->msgReadyToSendTextEdit->setFocusPolicy(Qt::ClickFocus);
     ui->msgSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
     ui->msgSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
@@ -117,6 +119,9 @@ void MainUi::initUi()
     ui->msgRecvTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
     ui->msgReadyToSendTextEdit->horizontalScrollBar()->setStyle(m_hScrollStyle);
     ui->msgReadyToSendTextEdit->verticalScrollBar()->setStyle(m_vScrollStyle);
+    ui->msgSendTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->msgRecvTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
+    ui->msgReadyToSendTextEdit->setContextMenuPolicy(Qt::CustomContextMenu);
 
     ui->senderUrlLineEdit->setText(m_sockerSenderIp);
     ui->senderPortLineEdit->setText(QString::number(m_socketSenderPort));
@@ -138,6 +143,7 @@ void MainUi::initUi()
     ui->clientIdLabel->setText(QString::number(m_localClientId));
     ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
+
 }
 
 void MainUi::initConnections()
@@ -164,6 +170,10 @@ void MainUi::initConnections()
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
+
+    connect(ui->msgSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
+    connect(ui->msgRecvTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
+    connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
 }
 
 MainUi::~MainUi()
@@ -244,17 +254,17 @@ void MainUi::updateSenderState(SenderState state)
 {
     switch (state) {
     case SenderState::Disconnected:
-        ui->senderStateHintLabel->setText("closed");
+        ui->senderStateHintLabel->setText(tr("closed"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Disconnected;
         break;
     case SenderState::Listening:
-        ui->senderStateHintLabel->setText("listening");
+        ui->senderStateHintLabel->setText(tr("listening"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Listening;
         break;
     case SenderState::Connected:
-        ui->senderStateHintLabel->setText("connected");
+        ui->senderStateHintLabel->setText(tr("connected"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Connected;
         break;
@@ -267,15 +277,15 @@ void MainUi::updateRecverState(RecverState state)
 {
     switch (state) {
     case RecverState::Disconnected:
-        ui->recverStateHintLabel->setText("closed");
+        ui->recverStateHintLabel->setText(tr("closed"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connecting:
-        ui->recverStateHintLabel->setText("connecting");
+        ui->recverStateHintLabel->setText(tr("connecting"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connected:
-        ui->recverStateHintLabel->setText("connected");
+        ui->recverStateHintLabel->setText(tr("connected"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     default:
@@ -341,10 +351,10 @@ void MainUi::getLocalIp()
 void MainUi::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
 {
     // FIXME: UI + clients
-    ui->clientsListWidget->addItem(QString("Name: %1\n"
-                                           "ID: %2\n"
-                                           "IP: %3\n"
-                                           "Port: %4").arg(readableName, id, ip, port));
+    ui->clientsListWidget->addItem(QString(tr("Name") + ": %1\n" +
+                                           tr("ID") + ": %2\n" +
+                                           tr("IP") + ": %3\n" +
+                                           tr("Port") + ": %4").arg(readableName, id, ip, port));
 }
 
 void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
@@ -596,5 +606,32 @@ void MainUi::onGetAutoConnectReply()
 void MainUi::on_openDownloadDirPushButton_clicked()
 {
     QDesktopServices::openUrl(QUrl("file:///" + m_saveFileDirPath, QUrl::TolerantMode));
+}
+
+void MainUi::textEditContextMenu(const QPoint &pos)
+{
+    QTextEdit *textEdit = reinterpret_cast<QTextEdit *>(sender());
+    if(textEdit == nullptr){
+        return;
+    }
+    QMenu *menu = new QMenu(textEdit);
+    QAction *cutAction = new QAction("剪切", textEdit);
+    QAction *copyAction = new QAction("复制", textEdit);
+    QAction *pasteAction = new QAction("粘贴", textEdit);
+    QAction *selectAllAction = new QAction("全选", textEdit);
+    connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
+    connect(cutAction, &QAction::triggered, textEdit, &QTextEdit::cut);
+    connect(copyAction, &QAction::triggered, textEdit, &QTextEdit::copy);
+    connect(pasteAction, &QAction::triggered, textEdit, &QTextEdit::paste);
+    connect(selectAllAction, &QAction::triggered, textEdit, &QTextEdit::selectAll);
+    if(textEdit->isReadOnly()){
+        pasteAction->setEnabled(false);
+    }
+    menu->addAction(cutAction);
+    menu->addAction(copyAction);
+    menu->addAction(pasteAction);
+    menu->addAction(selectAllAction);
+    menu->move(cursor().pos());
+    menu->show();
 }
 

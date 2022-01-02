@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.4.1)
+set(APP_VERSION 1.4.2)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
@@ -31,7 +31,8 @@ if(COMPILE_QML)
         Quick
         Network
         Svg
-        WebSockets)
+        WebSockets
+        LinguistTools)
 else()
     message(STATUS "COMPILE_QML is NOT enabled")
     find_package(
@@ -43,7 +44,8 @@ else()
         Widgets
         Network
         Svg
-        WebSockets)
+        WebSockets
+        LinguistTools)
 endif()
 
 if(WIN32)
@@ -65,10 +67,17 @@ include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
 
+# Generate translations
+set(LOCALCHARGER_TS_FILES
+    ${CMAKE_SOURCE_DIR}/src/resource/translation/localcharger_en.ts
+    ${CMAKE_SOURCE_DIR}/src/resource/translation/localcharger_zh_CN.ts)
+set_source_files_properties(${LOCALCHARGER_TS_FILES} PROPERTIES OUTPUT_LOCATION "${CMAKE_SOURCE_DIR}/src/resource/translation")
+qt5_add_translation(QM_FILES ${LOCALCHARGER_TS_FILES})
+
 if(WIN32)
-    add_executable(LocalCharger WIN32)
+    add_executable(LocalCharger WIN32 ${QM_FILES})
 else()
-    add_executable(LocalCharger)
+    add_executable(LocalCharger ${QM_FILES})
 endif()
 
 if(COMPILE_QML)

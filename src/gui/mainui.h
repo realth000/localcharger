@@ -48,6 +48,7 @@ private slots:
     void on_autoConnectComboBox_stateChanged(int arg1);
     void onGetAutoConnectReply();
     void on_openDownloadDirPushButton_clicked();
+    void textEditContextMenu(const QPoint &pos);
 
 private:
     Ui::MainUi *ui;
