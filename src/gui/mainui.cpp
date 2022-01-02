@@ -254,17 +254,17 @@ void MainUi::updateSenderState(SenderState state)
 {
     switch (state) {
     case SenderState::Disconnected:
-        ui->senderStateHintLabel->setText("closed");
+        ui->senderStateHintLabel->setText(tr("closed"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Disconnected;
         break;
     case SenderState::Listening:
-        ui->senderStateHintLabel->setText("listening");
+        ui->senderStateHintLabel->setText(tr("listening"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Listening;
         break;
     case SenderState::Connected:
-        ui->senderStateHintLabel->setText("connected");
+        ui->senderStateHintLabel->setText(tr("connected"));
         ui->senderStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->senderStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         m_socketSenderState = SenderState::Connected;
         break;
@@ -277,15 +277,15 @@ void MainUi::updateRecverState(RecverState state)
 {
     switch (state) {
     case RecverState::Disconnected:
-        ui->recverStateHintLabel->setText("closed");
+        ui->recverStateHintLabel->setText(tr("closed"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/disconnected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connecting:
-        ui->recverStateHintLabel->setText("connecting");
+        ui->recverStateHintLabel->setText(tr("connecting"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connecting.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     case RecverState::Connected:
-        ui->recverStateHintLabel->setText("connected");
+        ui->recverStateHintLabel->setText(tr("connected"));
         ui->recverStateHintPicLabel->setPixmap(QPixmap(":/pic/connected.png").scaled(ui->recverStateHintPicLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation));
         break;
     default:
@@ -351,10 +351,10 @@ void MainUi::getLocalIp()
 void MainUi::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
 {
     // FIXME: UI + clients
-    ui->clientsListWidget->addItem(QString("Name: %1\n"
-                                           "ID: %2\n"
-                                           "IP: %3\n"
-                                           "Port: %4").arg(readableName, id, ip, port));
+    ui->clientsListWidget->addItem(QString(tr("Name") + ": %1\n" +
+                                           tr("ID") + ": %2\n" +
+                                           tr("IP") + ": %3\n" +
+                                           tr("Port") + ": %4").arg(readableName, id, ip, port));
 }
 
 void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)

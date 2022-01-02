@@ -25,7 +25,7 @@ Item {
 
         GroupBoxEx {
             id: socketCtlGroupBoxEx
-            labelText: "连接端"
+            labelText: qsTr("Connections")
             labelHeight: 40
             iconPath: "qrc:/pic/link2.png"
             height: clientNameColumnLayout.height + titleHeight + 10 + 10
@@ -81,7 +81,7 @@ Item {
                             id: clientNameText
                             Layout.preferredWidth: 100
                             Layout.preferredHeight: parent.height
-                            text: "本地名称"
+                            text: qsTr("Name")
                             horizontalAlignment: Text.AlignHCenter
                             verticalAlignment: Text.AlignVCenter
                             font.pixelSize: 16
@@ -176,7 +176,7 @@ Item {
                                 Layout.preferredHeight: 60
                                 bgColor: "transparent"
                                 checkable: false
-                                texts: "广播"
+                                texts: qsTr("Broadcast")
                                 textsUncheckedColor: "#f0ffff"
                                 iconUnchecked: "qrc:/pic/broadcast.png"
                                 iconPos: ButtonEx.IconPos.IconLeft
@@ -190,7 +190,7 @@ Item {
                                 Layout.preferredHeight: 60
                                 bgColor: "transparent"
                                 checkable: false
-                                texts: "连接"
+                                texts: qsTr("Connect")
                                 textsUncheckedColor: "#f0ffff"
                                 iconUnchecked: "qrc:/pic/start_connect.png"
                                 iconPos: ButtonEx.IconPos.IconLeft
@@ -237,7 +237,7 @@ Item {
                                 Layout.fillHeight: true
                                 bgColor: "transparent"
                                 checkable: false
-                                texts: "启动发送端"
+                                texts: qsTr("Start sender")
                                 textsUncheckedColor: "#f0ffff"
                                 textsBold: true
                                 iconUnchecked: "qrc:/pic/start_connect.png"
@@ -276,7 +276,7 @@ Item {
                                 Layout.fillHeight: true
                                 bgColor: "transparent"
                                 checkable: false
-                                texts: "启动接收端"
+                                texts: qsTr("Start receiver")
                                 textsUncheckedColor: "#f0ffff"
                                 textsBold: true
                                 iconUnchecked: "qrc:/pic/start_connect.png"
@@ -297,7 +297,7 @@ Item {
 
         GroupBoxEx {
             id: recvedGroupBoxEx
-            labelText: "已接收"
+            labelText: qsTr("Received")
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
             height: recvedTextRectangle.height + titleHeight + 10 + 10
@@ -387,7 +387,7 @@ Item {
 
         GroupBoxEx {
             id: sendedGroupBoxEx
-            labelText: "已发送"
+            labelText: qsTr("Sended")
             labelHeight: 40
             iconPath: "qrc:/pic/sended2.png"
             height: sendedTextRectangle.height + titleHeight + 10 + 10
@@ -477,7 +477,7 @@ Item {
 
         GroupBoxEx {
             id: toSendGroupBoxEx
-            labelText: "发文字"
+            labelText: qsTr("Send text")
             labelHeight: 40
             iconPath: "qrc:/pic/sendtext2.png"
             height: toSendTextArea.height + titleHeight + 10 + 10
@@ -505,7 +505,7 @@ Item {
             Layout.preferredHeight: parent.height
             bgColor: "transparent"
             checkable: false
-            texts: "发文件"
+            texts: qsTr("Send file")
             textsUncheckedColor: "#f0ffff"
             textsBold: true
             iconUnchecked: "qrc:/pic/send_file.png"
@@ -522,7 +522,7 @@ Item {
             Layout.preferredHeight: parent.height
             bgColor: "transparent"
             checkable: false
-            texts: "发信息"
+            texts: qsTr("Send text")
             textsUncheckedColor: "#f0ffff"
             textsBold: true
             iconUnchecked: "qrc:/pic/send.png"
