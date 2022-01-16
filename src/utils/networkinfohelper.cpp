@@ -61,7 +61,8 @@ QList<IpInfo> NetworkInfoHelper::getLocalIpAddressEx()
     if(GetAdaptersInfo(pAdapterInfo, &buflen) == NO_ERROR){
         PIP_ADAPTER_INFO pAdapter = pAdapterInfo;
         while (pAdapter){
-            if(QString(pAdapter->IpAddressList.IpAddress.String) != "0.0.0.0" && QString(pAdapter->GatewayList.IpAddress.String) != "0.0.0.0"){
+            const int lastNumber = QString(pAdapter->IpAddressList.IpAddress.String).split(".").constLast().toInt();
+            if(lastNumber != 0 && lastNumber != 1 && QString(pAdapter->GatewayList.IpAddress.String) != "0.0.0.0"){
                 ipAddressList.append(IpInfo(pAdapter->IpAddressList.IpAddress.String, netmaskToPrefixLength(pAdapter->IpAddressList.IpMask.String)));
             }
             pAdapter = pAdapter->Next;
