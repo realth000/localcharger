@@ -88,6 +88,7 @@ add_subdirectory(src/include)
 add_subdirectory(src/utils)
 add_subdirectory(src/core)
 add_subdirectory(src/gui)
+add_subdirectory(src/cli)
 
 if(COMPILE_QML)
     target_link_libraries(${PROJECT_NAME}  Qt5::Core Qt5::Gui Qt5::Network Qt5::WebSockets Qt5::Qml Qt5::Quick)
