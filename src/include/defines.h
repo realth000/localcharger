@@ -110,5 +110,8 @@ enum class RecverState{
     Connected
 };
 
+// Daemon settings
+#define DAEMON_SERVICE_NAME "th000.localcharger.daemon"
+#define DAEMON_SERVICE_PATH "/th000/LocalChargerDaemon"
 
 #endif // DEFINES_H

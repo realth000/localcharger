@@ -25,7 +25,7 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
     getLocalIp();
 }
 
-QString LocalChargerDaemon::getSenderStateStr()
+QString LocalChargerDaemon::getSenderStatus()
 {
     switch (m_socketSenderState) {
     case SenderState::Disconnected:
@@ -43,7 +43,7 @@ QString LocalChargerDaemon::getSenderStateStr()
     }
 }
 
-QString LocalChargerDaemon::getRecverStateStr()
+QString LocalChargerDaemon::getRecverStatus()
 {
     switch (m_socketRecverState) {
     case RecverState::Disconnected:

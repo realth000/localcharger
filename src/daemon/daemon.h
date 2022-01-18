@@ -7,14 +7,14 @@
 class LocalChargerDaemon : public QObject
 {
     Q_OBJECT
-    Q_CLASSINFO("D-Bus Interface", "th000.localcharger.daemon")
+    Q_CLASSINFO("D-Bus Interface", DAEMON_SERVICE_NAME)
 
 public:
     LocalChargerDaemon(QObject *parent = nullptr);
 
 public slots:
-    QString getSenderStateStr();
-    QString getRecverStateStr();
+    QString getSenderStatus();
+    QString getRecverStatus();
 
 private:
     QString m_sockerSenderIp;
