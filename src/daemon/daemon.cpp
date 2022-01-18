@@ -76,6 +76,12 @@ QString LocalChargerDaemon::getRecverStatus()
     }
 }
 
+void LocalChargerDaemon::connectRemote(const QString &remotePath)
+{
+    qDebug() << "connect to remote" << remotePath;
+    m_identifier->startAutoConnect(remotePath);
+}
+
 void LocalChargerDaemon::getLocalIp()
 {
     const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();

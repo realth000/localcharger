@@ -14,6 +14,7 @@ public:
     QString getSenderStatus() const;
     QString getRecverStatus() const;
     bool getDaemonConnectionStatus() const;
+    void connectRemote(const QString &remotePath);
 
 private:
     // FIXME: Can m_daemonInterface use as non-static?

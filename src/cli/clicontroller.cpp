@@ -71,3 +71,12 @@ bool CliController::getDaemonConnectionStatus() const
 {
     return m_daemonConnectionStatus;
 }
+
+void CliController::connectRemote(const QString &remotePath)
+{
+    if(!m_daemonConnectionStatus){
+        qDebug() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.call(DAEMON_METHOD_CONNECT_REMOTE, remotePath);
+}

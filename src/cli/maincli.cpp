@@ -1,4 +1,5 @@
-﻿#include "getopt.h"
+﻿#include <QtCore/QRegularExpression>
+#include "getopt.h"
 #include "clicontroller.h"
 
 void printUsage()
@@ -11,6 +12,17 @@ void printUsage()
                 "-r, --remove      remove connection\n"
                 "-x, --exit        disconnect and exit\n"
                 "-h, --help        print this help message";
+}
+
+bool checkRemotePath(const QString &remotePath)
+{
+    if(remotePath.isEmpty()){
+        return false;
+    }
+    QRegularExpression re("^((([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])\\.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]))"
+                            ":(6553[0-5]|655[0-2]\\d|65[0-4]\\d{2}|6[0-4]\\d{4}|[1-5]\\d{4}|[1-9]\\d{1,3}|[0-9])");
+    QRegularExpressionMatch match = re.match(remotePath);
+    return match.hasMatch() ? true : false;
 }
 
 int main(int argc, char *argv[])
@@ -46,6 +58,12 @@ int main(int argc, char *argv[])
             cli.getRecverStatus();
             break;
         case 's':
+            if(!checkRemotePath(optarg)){
+                qDebug() << "Invalid remote path.\n"
+                            "e.g. 192.168.1.1:8080";
+                break;
+            }
+            cli.connectRemote(optarg);
             break;
         case 'r':
             break;
