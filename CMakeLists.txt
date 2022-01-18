@@ -80,6 +80,8 @@ else()
     add_executable(LocalCharger ${QM_FILES})
 endif()
 
+add_executable(LocalChargerCli)
+
 if(COMPILE_QML)
     add_subdirectory(src/qml)
 endif()

@@ -2,3 +2,5 @@
 if(NOT COMPILE_QML)
     target_sources(LocalCharger PRIVATE iconinstaller.h qssinstaller.h proxystyle.h messageboxexx.h titlebar.h)
 endif()
+
+target_sources(LocalChargerCli PUBLIC defines.h)
