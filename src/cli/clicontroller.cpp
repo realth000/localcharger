@@ -67,6 +67,15 @@ QString CliController::getRecverStatus() const
     return reply.value();
 }
 
+void CliController::exitDaemon() const
+{
+    if(!m_daemonConnectionStatus){
+        qDebug() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.call(DAEMON_METHOD_EXIT_DAEMON);
+}
+
 bool CliController::getDaemonConnectionStatus() const
 {
     return m_daemonConnectionStatus;

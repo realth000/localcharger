@@ -16,6 +16,7 @@ public slots:
     QString getStatus();
     QString getSenderStatus();
     QString getRecverStatus();
+    void exitDaemon();
     void connectRemote(const QString &remotePath);
 
 private:

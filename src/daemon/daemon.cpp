@@ -76,6 +76,11 @@ QString LocalChargerDaemon::getRecverStatus()
     }
 }
 
+void LocalChargerDaemon::exitDaemon()
+{
+    exit(0);
+}
+
 void LocalChargerDaemon::connectRemote(const QString &remotePath)
 {
     qDebug() << "connect to remote" << remotePath;

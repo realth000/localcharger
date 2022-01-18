@@ -68,6 +68,7 @@ int main(int argc, char *argv[])
         case 'r':
             break;
         case 'x':
+            cli.exitDaemon();
             break;
         case 'h':
         default:

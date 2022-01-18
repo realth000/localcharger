@@ -13,6 +13,7 @@ public:
     QString getStatus() const;
     QString getSenderStatus() const;
     QString getRecverStatus() const;
+    void exitDaemon() const;
     bool getDaemonConnectionStatus() const;
     void connectRemote(const QString &remotePath);
 
