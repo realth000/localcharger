@@ -22,19 +22,19 @@ CliController::CliController(QObject *parent)
     m_daemonConnectionStatus = true;
 }
 
-void CliController::getLocalChargerStatus() const
+QString CliController::getStatus() const
 {
-//    qDebug()
-//       << qPrintable(QString("Sender status: %1\n"
-//                              "Recver status: %2\n"
-//                              "Local  IP:   %3\n"
-//                              "Local  Port: %4\n"
-//                              "Remote Ip:   %5\n"
-//                              "Remote Port: %6\n")
-//                          .arg(getSenderStateStr(), getRecverStateStr(),
-//                               m_localIp, QString::number(m_socketRecverPort),
-//                               m_sockerSenderIp, QString::number(m_socketSenderPort))
-//                    );
+    if(!m_daemonConnectionStatus){
+        qDebug() << "Daemon not connected";
+        return QString();
+    }
+    QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_STATUS);
+    if(!reply.isValid()){
+        qDebug() << "Failed to get status: invalid reply";
+        return QString();
+    }
+    qDebug("%s", qPrintable(reply.value()));
+    return reply.value();
 }
 
 QString CliController::getSenderStatus() const
@@ -43,9 +43,9 @@ QString CliController::getSenderStatus() const
         qDebug() << "Daemon not connected";
         return QString();
     }
-    QDBusReply<QString> reply = m_daemonInterface.call("getSenderStatus");
+    QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_SENDER_STATUS);
     if(!reply.isValid()){
-        qDebug() << "Failed to get sender state: invalid reply";
+        qDebug() << "Failed to get sender status: invalid reply";
         return QString();
     }
     qDebug("Sender status: %s", qPrintable(reply.value()));
@@ -58,9 +58,9 @@ QString CliController::getRecverStatus() const
         qDebug() << "Daemon not connected";
         return QString();
     }
-    QDBusReply<QString> reply = m_daemonInterface.call("getRecverStatus");
+    QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_RECVER_STATUS);
     if(!reply.isValid()){
-        qDebug() << "Failed to get recver state: invalid reply";
+        qDebug() << "Failed to get recver status: invalid reply";
         return QString();
     }
     qDebug("Recver status: %s", qPrintable(reply.value()));

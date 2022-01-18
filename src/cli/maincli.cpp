@@ -39,6 +39,8 @@ int main(int argc, char *argv[])
     while((c = getopt_long(argc, argv, "qls:r::xh", long_options, &option_index)) != -1){
         switch (c) {
         case 'q':
+            cli.getStatus();
+            break;
         case 'l':
             cli.getSenderStatus();
             cli.getRecverStatus();

@@ -113,5 +113,8 @@ enum class RecverState{
 // Daemon settings
 #define DAEMON_SERVICE_NAME "th000.localcharger.daemon"
 #define DAEMON_SERVICE_PATH "/th000/LocalChargerDaemon"
+#define DAEMON_METHOD_GET_STATUS        "getStatus"
+#define DAEMON_METHOD_GET_SENDER_STATUS "getSenderStatus"
+#define DAEMON_METHOD_GET_RECVER_STATUS "getRecverStatus"
 
 #endif // DEFINES_H

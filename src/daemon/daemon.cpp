@@ -25,6 +25,21 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
     getLocalIp();
 }
 
+QString LocalChargerDaemon::getStatus()
+{
+    const QString ret = QString( "Sender status: %1\n"
+                                 "Recver status: %2\n"
+                                 "Local  IP:     %3\n"
+                                 "Local  Port:   %4\n"
+                                 "Remote Ip:     %5\n"
+                                 "Remote Port:   %6\n")
+                             .arg(getSenderStatus(), getRecverStatus(),
+                                  m_localIp, QString::number(m_socketRecverPort),
+                                  m_sockerSenderIp, QString::number(m_socketSenderPort));
+    qDebug() << qPrintable(ret);
+    return ret;
+}
+
 QString LocalChargerDaemon::getSenderStatus()
 {
     switch (m_socketSenderState) {

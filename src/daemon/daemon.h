@@ -13,6 +13,7 @@ public:
     LocalChargerDaemon(QObject *parent = nullptr);
 
 public slots:
+    QString getStatus();
     QString getSenderStatus();
     QString getRecverStatus();
 

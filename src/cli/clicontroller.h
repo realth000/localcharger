@@ -10,7 +10,7 @@ class CliController : public QObject
     Q_OBJECT
 public:
     CliController(QObject *parent = nullptr);
-    void getLocalChargerStatus() const;
+    QString getStatus() const;
     QString getSenderStatus() const;
     QString getRecverStatus() const;
     bool getDaemonConnectionStatus() const;
