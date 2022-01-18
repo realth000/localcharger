@@ -52,11 +52,11 @@ int main(int argc, char *argv[])
         switch (c) {
         case 'q':
             cli.getStatus();
-            break;
+            return exitCode;
         case 'l':
             cli.getSenderStatus();
             cli.getRecverStatus();
-            break;
+            return exitCode;
         case 's':
             if(!checkRemotePath(optarg)){
                 qDebug() << "Invalid remote path.\n"
@@ -64,16 +64,16 @@ int main(int argc, char *argv[])
                 break;
             }
             cli.connectRemote(optarg);
-            break;
+            return exitCode;
         case 'r':
             break;
         case 'x':
             cli.exitDaemon();
-            break;
+            return exitCode;
         case 'h':
         default:
             printUsage();
-            break;
+            return exitCode;
         }
     }
     return exitCode;
