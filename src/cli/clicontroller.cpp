@@ -16,7 +16,7 @@ CliController::CliController(QObject *parent)
       m_daemonConnectionStatus(false)
 {
     if(!m_daemonInterface.isValid()){
-        qDebug() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
+        qInfo() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
         return;
     }
     m_daemonConnectionStatus = true;
@@ -25,52 +25,52 @@ CliController::CliController(QObject *parent)
 QString CliController::getStatus() const
 {
     if(!m_daemonConnectionStatus){
-        qDebug() << "Daemon not connected";
+        qInfo() << "Daemon not connected";
         return QString();
     }
     QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_STATUS);
     if(!reply.isValid()){
-        qDebug() << "Failed to get status: invalid reply";
+        qInfo() << "Failed to get status: invalid reply";
         return QString();
     }
-    qDebug("%s", qPrintable(reply.value()));
+    qInfo("%s", qPrintable(reply.value()));
     return reply.value();
 }
 
 QString CliController::getSenderStatus() const
 {
     if(!m_daemonConnectionStatus){
-        qDebug() << "Daemon not connected";
+        qInfo() << "Daemon not connected";
         return QString();
     }
     QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_SENDER_STATUS);
     if(!reply.isValid()){
-        qDebug() << "Failed to get sender status: invalid reply";
+        qInfo() << "Failed to get sender status: invalid reply";
         return QString();
     }
-    qDebug("Sender status: %s", qPrintable(reply.value()));
+    qInfo("Sender status: %s", qPrintable(reply.value()));
     return reply.value();
 }
 
 QString CliController::getRecverStatus() const
 {
     if(!m_daemonConnectionStatus){
-        qDebug() << "Daemon not connected";
+        qInfo() << "Daemon not connected";
         return QString();
     }
     QDBusReply<QString> reply = m_daemonInterface.call(DAEMON_METHOD_GET_RECVER_STATUS);
     if(!reply.isValid()){
-        qDebug() << "Failed to get recver status: invalid reply";
+        qInfo() << "Failed to get recver status: invalid reply";
         return QString();
     }
-    qDebug("Recver status: %s", qPrintable(reply.value()));
+    qInfo("Recver status: %s", qPrintable(reply.value()));
     return reply.value();
 }
 
 void CliController::exitDaemon() const
 {
     if(!m_daemonConnectionStatus){
-        qDebug() << "Daemon not connected";
+        qInfo() << "Daemon not connected";
         return;
     }
     m_daemonInterface.call(DAEMON_METHOD_EXIT_DAEMON);
@@ -84,7 +84,7 @@ bool CliController::getDaemonConnectionStatus() const
 void CliController::connectRemote(const QString &remotePath)
 {
     if(!m_daemonConnectionStatus){
-        qDebug() << "Daemon not connected";
+        qInfo() << "Daemon not connected";
         return;
     }
     m_daemonInterface.call(DAEMON_METHOD_CONNECT_REMOTE, remotePath);

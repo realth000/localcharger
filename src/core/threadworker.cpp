@@ -17,7 +17,7 @@ ThreadWorker::ThreadWorker(const QByteArray &fileData, const QString &filePath, 
 void ThreadWorker::saveFileFrameToDisk()
 {
     if(m_fileData.length() <= 0){
-        qDebug() << m_filePath << "empty file data";
+        qInfo() << m_filePath << "empty file data";
         emit saveFileFinish(0);
         return;
     }
@@ -28,7 +28,7 @@ void ThreadWorker::saveFileFrameToDisk()
         file.remove();
     }
     if(!file.open(QIODevice::Append)){
-        qDebug() << m_filePath << "write failed, device not open";
+        qInfo() << m_filePath << "write failed, device not open";
         emit saveFileFinish(0);
         return;
     }

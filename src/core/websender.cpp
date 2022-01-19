@@ -34,8 +34,8 @@ WebSender::WebSender(QObject *parent): QObject(parent),
 
 WebSender::WebSender(const port_t &port, QObject *parent): WebSender(parent)
 {
-    startListenPort(port) ? qDebug() << "WebSender: started listening" << port
-                          : qDebug() << "WebSender: start failed";
+    startListenPort(port) ? qInfo() << "WebSender: started listening" << port
+                          : qInfo() << "WebSender: start failed";
 }
 
 WebSender::~WebSender()
@@ -87,15 +87,15 @@ bool WebSender::sendFile(const QString &filePath)
     QFile fileToSend(filePath);
     QFileInfo fileInfo(filePath);
     if(!fileToSend.exists()){
-        qDebug() << "file not exists:" << filePath;
+        qInfo() << "file not exists:" << filePath;
         return false;
     }
     if(!fileInfo.isFile()){
-        qDebug() << filePath << "is not a file";
+        qInfo() << filePath << "is not a file";
         return false;
     }
     if(!fileToSend.open(QIODevice::ReadOnly)){
-        qDebug() << "can not open file" << filePath;
+        qInfo() << "can not open file" << filePath;
         return false;
     }
     emit prepareRecvFile();
@@ -129,7 +129,7 @@ bool WebSender::sendFile(const QString &filePath)
         fileFrameID ++;
     }
     fileToSend.close();
-    qDebug() << "WebSender: about to send file, array total length" << fileSendBytes;
+    qInfo() << "WebSender: about to send file, array total length" << fileSendBytes;
     emit sendFileFinish(filePath, fileSendBytes);
     return true;
 }
@@ -137,9 +137,9 @@ bool WebSender::sendFile(const QString &filePath)
 void WebSender::onNewConnection()
 {
     emit senderConnected();
-    qDebug() << "in new connection";
+    qInfo() << "in new connection";
     QWebSocket *pSocket = m_socketServer->nextPendingConnection();
-    qDebug() << "Client connected:" << pSocket->peerName() << pSocket->origin();
+    qInfo() << "Client connected:" << pSocket->peerName() << pSocket->origin();
     pSocket->setPauseMode(QAbstractSocket::PauseOnSslErrors);
     connect(pSocket, &QWebSocket::disconnected, this, &WebSender::socketDisconnected, Qt::QueuedConnection);
     if(m_currentSocket != nullptr){
@@ -151,7 +151,7 @@ void WebSender::onNewConnection()
 void WebSender::socketDisconnected()
 {
     emit senderDisconnected();
-    qDebug() << "Client disconnected";
+    qInfo() << "Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
         m_currentSocket = nullptr;
@@ -161,9 +161,9 @@ void WebSender::socketDisconnected()
 
 void WebSender::onSslErrors(const QList<QSslError> &errors)
 {
-    qDebug() << "Ssl errors occurred";
+    qInfo() << "Ssl errors occurred";
     foreach(QSslError error, errors){
-        qDebug() << error.errorString();
+        qInfo() << error.errorString();
     }
 }
 
@@ -181,7 +181,7 @@ QByteArray WebSender::generateFileInfoMessage(const QString &filePath)
 {
     QFile file(filePath);
     if(!file.exists() || !file.open(QIODevice::ReadOnly)){
-        qDebug() << "can not read file" << filePath;
+        qInfo() << "can not read file" << filePath;
         return QByteArray();
     }
     QFileInfo fileInfo(filePath);

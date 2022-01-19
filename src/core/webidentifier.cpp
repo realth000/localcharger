@@ -42,8 +42,8 @@ WebIdentifier::WebIdentifier(const QString &identityReadableName, const int &ide
     sslConfigure.setProtocol(QSsl::TlsV1SslV3);
     m_socketServer->setSslConfiguration(sslConfigure);
     connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebIdentifier::onNewConnection, Qt::UniqueConnection);
-    startListenPort(12336) ? qDebug() << "WebIdentifier: started listening" << 12336
-                          : qDebug() << "WebIdentifier: start failed";
+    startListenPort(12336) ? qInfo() << "WebIdentifier: started listening" << 12336
+                          : qInfo() << "WebIdentifier: start failed";
 
     // Setup m_outSocket
     connect(&m_outSocket, &QWebSocket::connected, this, &WebIdentifier::onOutSocketConnected, Qt::UniqueConnection);
@@ -89,7 +89,7 @@ void WebIdentifier::sendAutoConnectReply()
 void WebIdentifier::boardcastIdentityMessage()
 {
     QByteArray datagram = generateIdentidyData(m_identityReadableName, m_socketWorkingPort);
-    qDebug() << "boardcast: name" << m_identityReadableName << "port" << m_socketWorkingPort;
+    qInfo() << "boardcast: name" << m_identityReadableName << "port" << m_socketWorkingPort;
     m_identifierSocket.writeDatagram(datagram, QHostAddress::Broadcast, IDENTIFIER_UDP_PORT);
 }
 
@@ -104,7 +104,7 @@ void WebIdentifier::startAutoConnect(const url_t &url)
         m_outSocket.abort();
     }
     m_outSocket.open(url);
-    qDebug() << "connecting" << url;
+    qInfo() << "connecting" << url;
 }
 
 void WebIdentifier::onIdenReadReady()
@@ -116,7 +116,7 @@ void WebIdentifier::onIdenReadReady()
         m_identifierSocket.readDatagram(datagram.data(), datagram.size(), &senderAddress);
         qint64 head = QString::fromUtf8(datagram.left(IDENTITY_HEADER_LENGTH)).toInt();
         if(head != IDENTITY_HEADER){
-            qDebug() << "WebIdentifier: unreadable udp datagram head" << head;
+            qInfo() << "WebIdentifier: unreadable udp datagram head" << head;
             continue;
         }
         qint64 offset = IDENTITY_HEADER_LENGTH;
@@ -132,7 +132,7 @@ void WebIdentifier::onIdenReadReady()
             continue;
         }
         emit identityMessageParsed(senderIp, senderWorkingPort, senderReadableName, senderId);
-        qDebug() << QString("ientify client: ip=%1, workingPort=%2, name=%3, id=%4")
+        qInfo() << QString("ientify client: ip=%1, workingPort=%2, name=%3, id=%4")
                     .arg(senderIp, senderWorkingPort, senderReadableName, senderId);
     }
 }
@@ -146,7 +146,7 @@ void WebIdentifier::onNewConnection()
         delete m_inSocket;
     }
     m_inSocket = pSocket;
-    qDebug() << "identifier setup in socket";
+    qInfo() << "identifier setup in socket";
     // Setup m_inSocket
     connect(m_inSocket, &QWebSocket::connected, this, &WebIdentifier::onInSocketConnected, Qt::UniqueConnection);
     connect(m_inSocket, &QWebSocket::sslErrors, this, &WebIdentifier::onInSocketSslErrors, Qt::UniqueConnection);
@@ -157,7 +157,7 @@ void WebIdentifier::onNewConnection()
 
 void WebIdentifier::socketDisconnected()
 {
-    qDebug() << "Client disconnected";
+    qInfo() << "Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
         m_inSocket = nullptr;
@@ -167,15 +167,15 @@ void WebIdentifier::socketDisconnected()
 
 void WebIdentifier::onSslErrors(const QList<QSslError> &errors)
 {
-    qDebug() << "Ssl errors occurred in WebIdentifier";
+    qInfo() << "Ssl errors occurred in WebIdentifier";
     foreach(QSslError error, errors){
-        qDebug() << error.errorString();
+        qInfo() << error.errorString();
     }
 }
 
 void WebIdentifier::onInSocketConnected()
 {
-    qDebug() << "identifier in socket connected";
+    qInfo() << "identifier in socket connected";
 }
 
 void WebIdentifier::onInSocketBinaryMessageReceived(const QByteArray &message)
@@ -183,20 +183,20 @@ void WebIdentifier::onInSocketBinaryMessageReceived(const QByteArray &message)
     int offset = 0;
     QString autoConnectHeader = QString::fromUtf8(message.mid(0, IDENTITY_HEADER_LENGTH));
     if(autoConnectHeader != IDENTITY_AUTOCONNECT_HEADER){
-        qDebug() << "WebIdentifier in socket: not a autoconnect header:" << autoConnectHeader;
+        qInfo() << "WebIdentifier in socket: not a autoconnect header:" << autoConnectHeader;
         return;
     }
     offset += IDENTITY_HEADER_LENGTH;
     const AutoConnectMessageType messageType = static_cast<AutoConnectMessageType>(QString::fromUtf8(message.mid(offset, IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH)).toInt());
     if(messageType != AutoConnectMessageType::RequestToConnect){
-        qDebug() << "WebIdentifier: in socket: message type incorret value =" << messageType;
+        qInfo() << "WebIdentifier: in socket: message type incorret value =" << messageType;
         return;
     }
     offset += IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH;
     QString ip = QString::fromUtf8(message.mid(offset, IDENTITY_IP_LENGTH));
     offset += IDENTITY_IP_LENGTH;
     QString port = QString::fromUtf8(message.mid(offset, IDENTITY_WORKINGPORT_LENGTH));
-    qDebug() << "WebIdentifier in socket: get clinet to auto connect" << ip << port;
+    qInfo() << "WebIdentifier in socket: get clinet to auto connect" << ip << port;
     emit getClientToConnect(ip, port);
 }
 
@@ -206,14 +206,14 @@ void WebIdentifier::onInSocketSslErrors(const QList<QSslError> &errors)
     // The proper way to handle self-signed certificates is to add a custom root
     // to the CA store.
     foreach(QSslError error, errors){
-        qDebug() << "WebIdentifier: out socket ssl error:" << error.errorString();
+        qInfo() << "WebIdentifier: out socket ssl error:" << error.errorString();
     }
     m_inSocket->ignoreSslErrors();
 }
 
 void WebIdentifier::onOutSocketConnected()
 {
-    qDebug() << "identifier out socket connected" << m_outSocket.localAddress() << m_outSocket.localPort();
+    qInfo() << "identifier out socket connected" << m_outSocket.localAddress() << m_outSocket.localPort();
     QByteArray message;
     message.append(QString(IDENTITY_AUTOCONNECT_HEADER).toUtf8(), IDENTITY_HEADER_LENGTH);
     message.append(QString::number(static_cast<int>(AutoConnectMessageType::RequestToConnect)).toUtf8(), IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH);
@@ -229,11 +229,11 @@ void WebIdentifier::onOutSocketDisconnected()
 
 void WebIdentifier::onOutSocketBinaryMessageReceived(const QByteArray &message)
 {
-    qDebug() << "1222222222222";
+    qInfo() << "1222222222222";
     int offset = 0;
     QString autoConnectHeader = QString::fromUtf8(message.mid(0, IDENTITY_HEADER_LENGTH));
     if(autoConnectHeader != IDENTITY_AUTOCONNECT_HEADER){
-        qDebug() << "WebIdentifier in socket: not a autoconnect header:" << autoConnectHeader;
+        qInfo() << "WebIdentifier in socket: not a autoconnect header:" << autoConnectHeader;
         return;
     }
     offset += IDENTITY_HEADER_LENGTH;
@@ -243,7 +243,7 @@ void WebIdentifier::onOutSocketBinaryMessageReceived(const QByteArray &message)
         return;
     }
     else{
-        qDebug() << "WebIdentifier: out socket: unknown message type when pharsing auto-connect-reply" << messageType;
+        qInfo() << "WebIdentifier: out socket: unknown message type when pharsing auto-connect-reply" << messageType;
         return;
     }
 }
@@ -254,7 +254,7 @@ void WebIdentifier::onOutSocketSslErrors(const QList<QSslError> &errors)
     // The proper way to handle self-signed certificates is to add a custom root
     // to the CA store.
     foreach(QSslError error, errors){
-        qDebug() << "WebIdentifier: out socket ssl error:" << error.errorString();
+        qInfo() << "WebIdentifier: out socket ssl error:" << error.errorString();
     }
     m_outSocket.ignoreSslErrors();
 }

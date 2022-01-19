@@ -4,7 +4,7 @@
 
 void printUsage()
 {
-    qDebug() << "LocalChargerCli\n"
+    qInfo() << "LocalChargerCli\n"
                 "Usage:\n"
                 "-q, --query       query status\n"
                 "-l, --list        list all connections\n"
@@ -59,7 +59,7 @@ int main(int argc, char *argv[])
             return exitCode;
         case 's':
             if(!checkRemotePath(optarg)){
-                qDebug() << "Invalid remote path.\n"
+                qInfo() << "Invalid remote path.\n"
                             "e.g. 192.168.1.1:8080";
                 break;
             }

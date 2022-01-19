@@ -36,7 +36,7 @@ QString LocalChargerDaemon::getStatus()
                              .arg(getSenderStatus(), getRecverStatus(),
                                   m_localIp, QString::number(m_socketRecverPort),
                                   m_sockerSenderIp, QString::number(m_socketSenderPort));
-    qDebug() << qPrintable(ret);
+    qInfo() << qPrintable(ret);
     return ret;
 }
 
@@ -83,7 +83,7 @@ void LocalChargerDaemon::exitDaemon()
 
 void LocalChargerDaemon::connectRemote(const QString &remotePath)
 {
-    qDebug() << "connect to remote" << remotePath;
+    qInfo() << "connect to remote" << remotePath;
     m_identifier->startAutoConnect(remotePath);
 }
 
