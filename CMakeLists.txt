@@ -32,7 +32,8 @@ if(COMPILE_QML)
         Network
         Svg
         WebSockets
-        LinguistTools)
+        LinguistTools
+        DBus)
 else()
     message(STATUS "COMPILE_QML is NOT enabled")
     find_package(
@@ -45,7 +46,8 @@ else()
         Network
         Svg
         WebSockets
-        LinguistTools)
+        LinguistTools
+        DBus)
 endif()
 
 if(WIN32)
@@ -63,6 +65,7 @@ include_directories(${CMAKE_PREFIX_PATH}/../../include)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtCore)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtGui)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtWidgets)
+include_directories(${CMAKE_PREFIX_PATH}/../../include/QtDBus)
 include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
@@ -81,6 +84,7 @@ else()
 endif()
 
 add_executable(LocalChargerCli)
+add_executable(localcharger-daemon)
 
 if(COMPILE_QML)
     add_subdirectory(src/qml)
@@ -91,6 +95,7 @@ add_subdirectory(src/utils)
 add_subdirectory(src/core)
 add_subdirectory(src/gui)
 add_subdirectory(src/cli)
+add_subdirectory(src/daemon)
 
 if(COMPILE_QML)
     target_link_libraries(${PROJECT_NAME}  Qt5::Core Qt5::Gui Qt5::Network Qt5::WebSockets Qt5::Qml Qt5::Quick)

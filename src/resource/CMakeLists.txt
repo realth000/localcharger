@@ -4,3 +4,4 @@ if(WIN32)
 endif()
 
 target_sources(LocalChargerCli PRIVATE config.qrc)
+target_sources(localcharger-daemon PRIVATE config.qrc)

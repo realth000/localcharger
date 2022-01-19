@@ -4,3 +4,4 @@ if(NOT COMPILE_QML)
 endif()
 
 target_sources(LocalChargerCli PUBLIC defines.h)
+target_sources(localcharger-daemon PUBLIC defines.h)

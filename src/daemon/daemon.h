@@ -1,17 +1,20 @@
-﻿#ifndef CLICONTROLLER_H
-#define CLICONTROLLER_H
+#ifndef LOCALCHARGERDAEMON_H
+#define LOCALCHARGERDAEMON_H
 #include <QtCore/QObject>
 #include "defines.h"
 #include "core/webidentifier.h"
 
-class CliController : public QObject
+class LocalChargerDaemon : public QObject
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", "th000.localcharger.daemon")
+
 public:
-    CliController(QObject *parent = nullptr);
-    void getCliStatus() const;
-    QString getSenderStateStr() const;
-    QString getRecverStateStr() const;
+    LocalChargerDaemon(QObject *parent = nullptr);
+
+public slots:
+    QString getSenderStateStr();
+    QString getRecverStateStr();
 
 private:
     QString m_sockerSenderIp;
@@ -28,6 +31,8 @@ private:
     port_t m_localWorkingPort;
     WebIdentifier *m_identifier;
     QString m_localIp;
+
+    void getLocalIp();
 };
 
-#endif // CLICONTROLLER_H
+#endif // LOCALCHARGERDAEMON_H

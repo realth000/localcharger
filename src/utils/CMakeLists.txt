@@ -5,4 +5,4 @@ if(NOT COMPILE_QML)
     #target_sources(LocalCharger PRIVATE iconinstaller.cpp qssinstaller.cpp style/proxystyle.cpp widget/messageboxexx.ui widget/messageboxexx.cpp widget/texteditex.cpp widget/titlebar.cpp)
 endif()
 
-target_sources(LocalChargerCli PRIVATE randomgenerator.cpp networkinfohelper.cpp)
+target_sources(localcharger-daemon PRIVATE randomgenerator.cpp networkinfohelper.cpp)

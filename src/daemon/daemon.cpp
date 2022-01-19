@@ -1,4 +1,4 @@
-﻿#include "clicontroller.h"
+#include "daemon.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
@@ -6,7 +6,7 @@
 #include <QtNetwork/QNetworkInterface>
 #include "utils/networkinfohelper.h"
 
-CliController::CliController(QObject *parent)
+LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
     : QObject(parent),
       m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
       m_socketSenderPort(WEBSOCKET_SENDER_PORT_DEFAULT),
@@ -21,25 +21,11 @@ CliController::CliController(QObject *parent)
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
-    getCliStatus();
+    m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
+    getLocalIp();
 }
 
-void CliController::getCliStatus() const
-{
-    qDebug()
-       << qPrintable(QString("Sender status: %1\n"
-                              "Recver status: %2\n"
-                              "Local  IP:   %3\n"
-                              "Local  Port: %4\n"
-                              "Remote Ip:   %5\n"
-                              "Remote Port: %6\n")
-                          .arg(getSenderStateStr(), getRecverStateStr(),
-                               m_localIp, QString::number(m_socketRecverPort),
-                               m_sockerSenderIp, QString::number(m_socketSenderPort))
-                    );
-}
-
-QString CliController::getSenderStateStr() const
+QString LocalChargerDaemon::getSenderStateStr()
 {
     switch (m_socketSenderState) {
     case SenderState::Disconnected:
@@ -57,7 +43,7 @@ QString CliController::getSenderStateStr() const
     }
 }
 
-QString CliController::getRecverStateStr() const
+QString LocalChargerDaemon::getRecverStateStr()
 {
     switch (m_socketRecverState) {
     case RecverState::Disconnected:
@@ -72,5 +58,19 @@ QString CliController::getRecverStateStr() const
     default:
         return QStringLiteral("Unknown");
         break;
+    }
+}
+
+void LocalChargerDaemon::getLocalIp()
+{
+    const QList<IpInfo> ipList = NetworkInfoHelper::getLocalIpAddress();
+    QStringList ipStringList;
+    foreach(IpInfo ip, ipList){
+        ipStringList << QString("%1/%2").arg(ip.ipV4Address, QString::number(ip.prefixLength));
+    }
+    // TODO: when have more than one ip
+    if(ipList.length() > 0){
+        m_identifier->setIdentityIp(ipList[0].ipV4Address);
+        m_localIp = ipList[0].ipV4Address;
     }
 }
