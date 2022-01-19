@@ -275,6 +275,7 @@ void MainUi::updateSenderState(SenderState state)
 
 void MainUi::updateRecverState(RecverState state)
 {
+    // FIXME: Update m_socketRecverState
     switch (state) {
     case RecverState::Disconnected:
         ui->recverStateHintLabel->setText(tr("closed"));

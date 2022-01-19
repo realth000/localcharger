@@ -3,6 +3,8 @@
 #include <QtCore/QObject>
 #include "defines.h"
 #include "core/webidentifier.h"
+#include "core/webrecver.h"
+#include "core/websender.h"
 
 class LocalChargerDaemon : public QObject
 {
@@ -29,13 +31,39 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
+
+    // for WebIdentifier
+    QMap<QString, QString> m_clientsMap;
     QString m_localClientReadableName;
     int m_localClientId;
     port_t m_localWorkingPort;
     WebIdentifier *m_identifier;
     QString m_localIp;
+    WebSender m_socketSender;
+    WebRecver m_socketRecver;
 
+    void initConnections();
     void getLocalIp();
+    void startSender(const port_t &port);
+    void stopSender();
+    void updateSenderState(SenderState state);
+    void startRecver(const url_t &url);
+    void stopRecver();
+    void updateRecverState(RecverState state);
+
+private slots:
+    void autoConnectToClinet(const QString &ip, const QString &port);
+    void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void onGetAutoConnectReply();
+    void onSenderConnected();
+    void onSenderDisconnected();
+    void onRecverConnected();
+    void onRecverDisconnected();
+    void onSendFileStart(const QString &filePath, const qint64 &fileSize);
+    void onSendFileFinish(const QString &filePath, const qint64 &fileSize);
+    void onRecvFileStart(const QString &filePath, const qint64 &fileSize);
+    void onRecvFileFinish(const QString &filePath, const qint64 &fileSize);
+    void recoredRecvedMsg(const QString &msg);
 };
 
 #endif // LOCALCHARGERDAEMON_H
