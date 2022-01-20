@@ -63,9 +63,11 @@ int main(int argc, char *argv[])
             if(!checkRemotePath(optarg)){
                 qInfo() << "Invalid remote path.\n"
                             "e.g. 192.168.1.1:8080";
-                break;
+                exitCode = -1;
             }
-            cli.connectRemote(optarg);
+            else{
+                cli.connectRemote(optarg);
+            }
             return exitCode;
         case 'r':
             break;
