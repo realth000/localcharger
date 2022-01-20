@@ -20,6 +20,7 @@ public slots:
     QString getRecverStatus();
     void exitDaemon();
     void connectRemote(const QString &remotePath);
+    void sendMessage(const QString &msg);
 
 private:
     QString m_sockerSenderIp;

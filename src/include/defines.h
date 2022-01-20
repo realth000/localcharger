@@ -118,5 +118,6 @@ enum class RecverState{
 #define DAEMON_METHOD_GET_RECVER_STATUS "getRecverStatus"
 #define DAEMON_METHOD_CONNECT_REMOTE    "connectRemote"
 #define DAEMON_METHOD_EXIT_DAEMON       "exitDaemon"
+#define DAEMON_METHOS_SEND_MESSAGE      "sendMessage"
 
 #endif // DEFINES_H

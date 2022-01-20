@@ -89,3 +89,12 @@ void CliController::connectRemote(const QString &remotePath)
     }
     m_daemonInterface.call(DAEMON_METHOD_CONNECT_REMOTE, remotePath);
 }
+
+void CliController::sendMessage(const QString &msg)
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.call(DAEMON_METHOS_SEND_MESSAGE, msg);
+}

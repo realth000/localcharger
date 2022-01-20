@@ -16,6 +16,7 @@ public:
     void exitDaemon() const;
     bool getDaemonConnectionStatus() const;
     void connectRemote(const QString &remotePath);
+    void sendMessage(const QString &msg);
 
 private:
     // FIXME: Can m_daemonInterface use as non-static?

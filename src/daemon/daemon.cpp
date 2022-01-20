@@ -106,6 +106,17 @@ void LocalChargerDaemon::connectRemote(const QString &remotePath)
     }
 }
 
+void LocalChargerDaemon::sendMessage(const QString &msg)
+{
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
+    if(msg.isEmpty()){
+        return;
+    }
+    m_socketSender.sendMessage(msg);
+}
+
 void LocalChargerDaemon::initConnections()
 {
     // passing sender state
