@@ -27,7 +27,7 @@ WebSocketFileInfo JsonParser::parseFileInfoFromArray(const QByteArray &fileInfoA
     QJsonParseError jsonErr;
     const QJsonDocument jsonDoc = jsonDoc.fromJson(fileInfoArray, &jsonErr);
     if(jsonDoc.isNull() || jsonErr.error != QJsonParseError::NoError){
-        qDebug() << "json parse error when parsing file info from array:" << jsonErr.errorString();
+        qInfo() << "json parse error when parsing file info from array:" << jsonErr.errorString();
         return WebSocketFileInfo();
     }
     const QJsonObject jsonObj = jsonDoc.object();

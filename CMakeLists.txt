@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.4.2)
+set(APP_VERSION 1.4.3)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
@@ -32,7 +32,8 @@ if(COMPILE_QML)
         Network
         Svg
         WebSockets
-        LinguistTools)
+        LinguistTools
+        DBus)
 else()
     message(STATUS "COMPILE_QML is NOT enabled")
     find_package(
@@ -45,7 +46,8 @@ else()
         Network
         Svg
         WebSockets
-        LinguistTools)
+        LinguistTools
+        DBus)
 endif()
 
 if(WIN32)
@@ -63,6 +65,7 @@ include_directories(${CMAKE_PREFIX_PATH}/../../include)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtCore)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtGui)
 include_directories(${CMAKE_PREFIX_PATH}/../../include/QtWidgets)
+include_directories(${CMAKE_PREFIX_PATH}/../../include/QtDBus)
 include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
@@ -80,6 +83,11 @@ else()
     add_executable(LocalCharger ${QM_FILES})
 endif()
 
+if(UNIX)
+    add_executable(LocalChargerCli)
+    add_executable(localcharger-daemon)
+endif()
+
 if(COMPILE_QML)
     add_subdirectory(src/qml)
 endif()
@@ -88,6 +96,10 @@ add_subdirectory(src/include)
 add_subdirectory(src/utils)
 add_subdirectory(src/core)
 add_subdirectory(src/gui)
+if(UNIX)
+    add_subdirectory(src/cli)
+    add_subdirectory(src/daemon)
+endif()
 
 if(COMPILE_QML)
     target_link_libraries(${PROJECT_NAME}  Qt5::Core Qt5::Gui Qt5::Network Qt5::WebSockets Qt5::Qml Qt5::Quick)

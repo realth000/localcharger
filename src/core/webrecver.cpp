@@ -43,7 +43,7 @@ port_t WebRecver::recverPort() const noexcept
 bool WebRecver::start(const url_t &url)
 {
     if(!url.isValid()){
-        qDebug() << "Recver start failed: invalid url" << url;
+        qInfo() << "Recver start failed: invalid url" << url;
         return false;
     }
     openUrl(url);
@@ -64,7 +64,7 @@ void WebRecver::setFileSavePath(QString path)
 
 void WebRecver::sendMessage(const QString &msg)
 {
-    qDebug() << "send";
+    qInfo() << "send";
     m_socket.sendTextMessage(msg);
 }
 
@@ -82,7 +82,7 @@ void WebRecver::openUrl(const url_t &url)
 void WebRecver::onConnected()
 {
     emit recverConnected();
-    qDebug() << "WebSocket connected";
+    qInfo() << "WebSocket connected";
     // Without Qt::QueuedConnection, connection will become apart when transporting files divided into two frames or more
     // Without Qt::UniqueConnection, connection will be multiple when restart connecting without changing socket config
     connect(&m_socket, &QWebSocket::textMessageReceived, this, &WebRecver::onTextMessageReceived, static_cast<Qt::ConnectionType>(Qt::QueuedConnection | Qt::UniqueConnection));
@@ -118,7 +118,7 @@ void WebRecver::onSslErrors(const QList<QSslError> &errors)
     // The proper way to handle self-signed certificates is to add a custom root
     // to the CA store.
     foreach(QSslError error, errors){
-        qDebug() << error.errorString();
+        qInfo() << error.errorString();
     }
     m_socket.ignoreSslErrors();
 }
@@ -175,7 +175,7 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
             [this, &fileSaveSize, fileFrameID, fileInfo, saveFileInfo](qint64 writeBytes){
             fileSaveSize = writeBytes;
             m_fileSavedSize += writeBytes;
-            qDebug() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
+            qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
             if(fileFrameID == fileInfo.m_fileFrameCount -1){
                 emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
             }
@@ -187,8 +187,8 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
     const QByteArray fileInfoArray = message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH, fileInfoArrayLength);
     const WebSocketFileInfo fileInfo = JsonParser::parseFileInfoFromArray(fileInfoArray);
     const int fileFrameID = QString::fromUtf8(message.mid(WEBSOCKET_MESSAGETYPE_LENGTH + WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH + fileInfoArrayLength, WEBSOCKET_FILEFRAME_ID_LENGTH)).toInt();
-    qDebug() << fileInfo.m_fileID << fileInfo.m_fileName << fileInfo.m_fileSize << fileInfo.m_fileChkSum << fileInfo.m_fileFrameCount;
-    qDebug() << "receive id =" << fileFrameID;
+    qInfo() << fileInfo.m_fileID << fileInfo.m_fileName << fileInfo.m_fileSize << fileInfo.m_fileChkSum << fileInfo.m_fileFrameCount;
+    qInfo() << "receive id =" << fileFrameID;
     QFile file(m_fileSavePath + NATIVE_PATH_SEP + fileInfo.m_fileName);
     if(fileFrameID == 0){
         emit recvFileStart(file.fileName(), fileInfo.m_fileSize);
@@ -197,12 +197,12 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
         }
     }
     if(!file.open(QIODevice::Append)){
-        qDebug() << "WebRecver can't save file not open" << QFileInfo(file).absoluteFilePath();
+        qInfo() << "WebRecver can't save file not open" << QFileInfo(file).absoluteFilePath();
         return;
     }
     qint64 fileWriteSize = file.write(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH - WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH - fileInfoArrayLength - WEBSOCKET_FILEFRAME_ID_LENGTH));
     file.close();
-    qDebug() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(QFileInfo(file).absoluteFilePath(), QString::number(fileWriteSize), QString::number(fileFrameID));
+    qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(QFileInfo(file).absoluteFilePath(), QString::number(fileWriteSize), QString::number(fileFrameID));
     if(fileFrameID == fileInfo.m_fileFrameCount -1){
         emit recvFileFinish(file.fileName(), file.size());
     }

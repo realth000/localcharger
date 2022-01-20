@@ -110,5 +110,14 @@ enum class RecverState{
     Connected
 };
 
+// Daemon settings
+#define DAEMON_SERVICE_NAME "th000.localcharger.daemon"
+#define DAEMON_SERVICE_PATH "/th000/localcharger/daemon"
+#define DAEMON_METHOD_GET_STATUS        "getStatus"
+#define DAEMON_METHOD_GET_SENDER_STATUS "getSenderStatus"
+#define DAEMON_METHOD_GET_RECVER_STATUS "getRecverStatus"
+#define DAEMON_METHOD_CONNECT_REMOTE    "connectRemote"
+#define DAEMON_METHOD_EXIT_DAEMON       "exitDaemon"
+#define DAEMON_METHOS_SEND_MESSAGE      "sendMessage"
 
 #endif // DEFINES_H

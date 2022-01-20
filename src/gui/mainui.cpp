@@ -50,7 +50,7 @@ MainUi::MainUi(QWidget *parent)
     updateSenderState(SenderState::Disconnected);
     updateRecverState(RecverState::Disconnected);
     m_identifier->boardcastIdentityMessage();
-    qDebug() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
+    qInfo() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
 }
 
 void MainUi::initUi()
@@ -217,16 +217,16 @@ void MainUi::recoredRecvedMsg(const QString &msg)
 void MainUi::startSender(const port_t &port)
 {
     if(m_socketSender.isSenderListening()){
-        qDebug() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort() << "stop first";
+        qInfo() << "Sender already listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort() << "stop first";
         stopSender();
     }
 
     if(m_socketSender.start(port)){
-        qDebug() << "Sender start listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
+        qInfo() << "Sender start listening at" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Listening);
     }
     else{
-        qDebug() << "Sender failed to listen" << m_socketSender.senderUrl() << m_socketSender.senderPort();
+        qInfo() << "Sender failed to listen" << m_socketSender.senderUrl() << m_socketSender.senderPort();
         updateSenderState(SenderState::Disconnected);
     }
 }
@@ -275,6 +275,7 @@ void MainUi::updateSenderState(SenderState state)
 
 void MainUi::updateRecverState(RecverState state)
 {
+    // FIXME: Update m_socketRecverState
     switch (state) {
     case RecverState::Disconnected:
         ui->recverStateHintLabel->setText(tr("closed"));
@@ -301,7 +302,7 @@ void MainUi::loadDefaultConfig()
 void MainUi::loadConfig()
 {
     if(!QFileInfo::exists(m_configFilePath)){
-        qDebug() << "config file not found, load default config";
+        qInfo() << "config file not found, load default config";
         return;
     }
     const QSettings *configIni = new QSettings(m_configFilePath, QSettings::IniFormat);
@@ -359,7 +360,7 @@ void MainUi::addDetectedClients(const QString &ip, const QString &port, const QS
 
 void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
 {
-    qDebug() << ip << m_localIp << port << m_socketRecverPort;
+    qInfo() << ip << m_localIp << port << m_socketRecverPort;
     if(ip == m_localIp && port.toInt() == m_socketRecverPort){
         return;
     }
@@ -387,7 +388,7 @@ void MainUi::on_startRecverPushButton_clicked()
 {
     stopRecver();
     if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
-        qDebug() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
+        qInfo() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
         return;
     }
     m_socketRecverUrl.setHost(ui->senderUrlLineEdit->text());
@@ -423,7 +424,7 @@ void MainUi::on_updateWebConfigPushButton_clicked()
     }
     const url_t testUrl(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), ui->senderPortLineEdit->text()));
     if(!testUrl.isValid()){
-        qDebug() << "invalid url" << testUrl.toString();
+        qInfo() << "invalid url" << testUrl.toString();
         return;
     }
     m_socketRecverUrl = testUrl;
@@ -443,10 +444,10 @@ void MainUi::on_sendFilePushButton_clicked()
     }
     QFile fileToSend(filePath);
     if(!fileToSend.exists()){
-        qDebug() << "file not exists:" << filePath;
+        qInfo() << "file not exists:" << filePath;
         return;
     }
-    m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
+    m_socketSender.sendFile(filePath) ? qInfo() << "send file finish:" << filePath : qInfo() << "error sending file:" << filePath;
 }
 
 bool MainUi::updateWebSocketConfig()
@@ -462,7 +463,7 @@ bool MainUi::updateWebSocketConfig()
         ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_VALID));
     }
     else{
-        qDebug() << "Invalid sender ip set in config";
+        qInfo() << "Invalid sender ip set in config";
         ui->senderUrlLineEdit->setProperty(LINEEDIT_PROPERTY_TEXTVALID_NAME, QStringLiteral(LINEEDIT_PROPERTY_TEXTVALID_INVALID));
         ret = false;
     }
@@ -485,7 +486,7 @@ bool MainUi::updateWebSocketConfig()
     style()->polish(ui->senderUrlLineEdit);
     style()->polish(ui->senderPortLineEdit);
     style()->polish(ui->recverPortLineEdit);
-    qDebug() << "update" << m_sockerSenderIp << m_socketSenderPort << m_socketRecverPort;
+    qInfo() << "update" << m_sockerSenderIp << m_socketSenderPort << m_socketRecverPort;
     return ret;
 }
 
@@ -548,17 +549,17 @@ void MainUi::on_saveFilePathLineEdit_textChanged(const QString &arg1)
 void MainUi::on_connectSelectedClientPushButton_clicked()
 {
     if(ui->clientsListWidget->selectedItems().length() <= 0){
-        qDebug() << "client not selected";
+        qInfo() << "client not selected";
         return;
     }
     const QStringList configList = ui->clientsListWidget->selectedItems()[0]->text().split("\n");
     ui->senderUrlLineEdit->setText(configList[2].split(" ")[1]);
     ui->senderPortLineEdit->setText(configList[3].split(" ")[1]);
     on_updateWebConfigPushButton_clicked();
-//    QDebug
+//    qInfo
     const url_t t(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), QString::number(12336)));
     if(!t.isValid()){
-        qDebug() << "invalid url to identifier:" << t;
+        qInfo() << "invalid url to identifier:" << t;
     }
     m_identifier->startAutoConnect(t);
 }
@@ -580,11 +581,11 @@ void MainUi::autoConnectToClinet(const QString &ip, const QString &port)
 {
     // TODO: autoconnect config check
     if(!m_enableAutoConnect){
-        qDebug() << "auto connect isdisabled";
+        qInfo() << "auto connect isdisabled";
         return;
     }
     if(ip.isEmpty() || port.isEmpty()){
-        qDebug() << "empty cient to auto connect, ip =" << ip << "port =" << port;
+        qInfo() << "empty cient to auto connect, ip =" << ip << "port =" << port;
         return;
     }
     ui->senderUrlLineEdit->setText(ip);

@@ -640,7 +640,7 @@ void ComboBoxStyle::drawComplexControl(QStyle::ComplexControl control, const QSt
 //            painter->setPen(QPen(QColor(255,0,0), 4));
 //            painter->drawRect(listPopupRect);
 //            painter->restore();
-//            qDebug() << listPopupRect;
+//            qInfo() << listPopupRect;
 
             painter->save();
             painter->setPen(QPen(QColor(240,255,255), 2));
@@ -655,7 +655,7 @@ void ComboBoxStyle::drawComplexControl(QStyle::ComplexControl control, const QSt
 
 //            painter->save();
 //            QRect popupRect = cb->popupRect;
-//            qDebug() << popupRect;
+//            qInfo() << popupRect;
 //            painter->setPen(QPen(QColor(255,0,0),4));
 //            painter->setBrush(QColor(0,255,0));
 //            painter->drawRect(popupRect);
