@@ -2,6 +2,13 @@
 #include "getopt.h"
 #include "clicontroller.h"
 
+void version()
+{
+    qInfo().noquote() << QString("LocalCharger:\n"
+                       "Verion: %1\n"
+                       "use \"LocalChargerCli -h to show help message.\"").arg(LOCALCHARGER_VERSION_STRING);
+}
+
 void printUsage()
 {
     qInfo() << "LocalChargerCli\n"
@@ -12,6 +19,7 @@ void printUsage()
                 "-r, --remove      remove connection\n"
                 "-m, --message     send message\n"
                 "-x, --exit        disconnect and exit\n"
+                "-v, --version     check version\n"
                 "-h, --help        print this help message";
 }
 
@@ -43,6 +51,7 @@ int main(int argc, char *argv[])
         {"remove", optional_argument, 0, 'r'},
         {"message",required_argument, 0, 'm'},
         {"exit",         no_argument, 0, 'x'},
+        {"version",      no_argument, 0, 'v'},
         {"help",         no_argument, 0, 'h'},
         {0,                        0, 0,   0}
     };
@@ -50,7 +59,7 @@ int main(int argc, char *argv[])
         printUsage();
         return 0;
     }
-    while((c = getopt_long(argc, argv, "qls:r::m:xh", long_options, &option_index)) != -1){
+    while((c = getopt_long(argc, argv, "qls:r::m:xvh", long_options, &option_index)) != -1){
         switch (c) {
         case 'q':
             cli.getStatus();
@@ -76,6 +85,9 @@ int main(int argc, char *argv[])
             return exitCode;
         case 'x':
             cli.exitDaemon();
+            return exitCode;
+        case 'v':
+            version();
             return exitCode;
         case 'h':
         default:
