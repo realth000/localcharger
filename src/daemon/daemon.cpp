@@ -77,6 +77,16 @@ QString LocalChargerDaemon::getRecverStatus()
     }
 }
 
+int LocalChargerDaemon::getSenderStatusCode()
+{
+    return static_cast<int>(m_socketSenderState);
+}
+
+int LocalChargerDaemon::getRecverStatusCode()
+{
+    return static_cast<int>(m_socketRecverState);
+}
+
 void LocalChargerDaemon::exitDaemon()
 {
     exit(0);

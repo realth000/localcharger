@@ -81,6 +81,11 @@ int main(int argc, char *argv[])
         case 'r':
             break;
         case 'm':
+            if(cli.getSenderStatusCode() != static_cast<int>(SenderState::Connected)) {
+                qInfo() << "Sender not connected";
+                exitCode = -1;
+                return exitCode;
+            }
             cli.sendMessage(optarg);
             return exitCode;
         case 'x':

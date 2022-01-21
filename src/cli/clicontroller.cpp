@@ -67,6 +67,34 @@ QString CliController::getRecverStatus() const
     return reply.value();
 }
 
+int CliController::getSenderStatusCode() const
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return static_cast<int>(SenderState::Disconnected);
+    }
+    QDBusReply<int> reply = m_daemonInterface.call(DAEMON_METHOD_GET_SENDER_STATUS_CODE);
+    if(!reply.isValid()){
+        qInfo() << "Failed to get recver status: invalid reply";
+        return reply.value();
+    }
+    return static_cast<int>(SenderState::Disconnected);
+}
+
+int CliController::getRecverStatusCode() const
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return static_cast<int>(RecverState::Disconnected);
+    }
+    QDBusReply<int> reply = m_daemonInterface.call(DAEMON_METHOD_GET_RECVER_STATUS_CODE);
+    if(!reply.isValid()){
+        qInfo() << "Failed to get recver status: invalid reply";
+        return reply.value();
+    }
+    return static_cast<int>(RecverState::Disconnected);
+}
+
 void CliController::exitDaemon() const
 {
     if(!m_daemonConnectionStatus){
