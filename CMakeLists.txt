@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.4.3)
+set(APP_VERSION 1.4.4)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
@@ -50,6 +50,8 @@ else()
         DBus)
 endif()
 
+add_definitions(-DLOCALCHARGER_VERSION_STRING="${PROJECT_VERSION}")
+
 if(WIN32)
     # For MSVC, enable UTF-8 codec
     add_compile_options("$<$<C_COMPILER_ID:MSVC>:/utf-8>")
@@ -58,7 +60,6 @@ if(WIN32)
     add_definitions(-DLOCALCHARGER_VERSION_MINOR=${CMAKE_PROJECT_VERSION_MINOR})
     add_definitions(-DLOCALCHARGER_VERSION_BUGFIX=${CMAKE_PROJECT_VERSION_PATCH})
     add_definitions(-DLOCALCHARGER_VERSION_BUILD=1)
-    add_definitions(-DLOCALCHARGER_VERSION_STRING="${PROJECT_VERSION}")
 endif()
 
 include_directories(${CMAKE_PREFIX_PATH}/../../include)
