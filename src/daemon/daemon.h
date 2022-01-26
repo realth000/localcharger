@@ -6,6 +6,49 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 
+// test HTTPSERVER
+#include "qhttprequest.h"
+#include "qhttpresponse.h"
+#include "qhttpserver.h"
+
+class Test : public QObject
+{
+    Q_OBJECT
+public:
+    Test(){
+        QHttpServer *server = new QHttpServer(this);
+        connect(server, &QHttpServer::newRequest, this, &Test::handleRequest);
+        server->listen(QHostAddress::Any, 8080);
+    }
+private slots:
+    void handleRequest(QHttpRequest *req, QHttpResponse *resp){
+        Q_UNUSED(req)
+#if 0
+        QByteArray body = "Hello world";
+        resp->setHeader("Content-Length", QString::number(body.length()));
+        resp->writeHead(200);
+        resp->end(body);
+#else
+        qInfo() << "resp->path =" << req->path();
+        QRegExp exp("^/user/([a-z]+)$");
+        if( exp.indexIn(req->path()) != -1 )
+        {
+            resp->setHeader("Content-Type", "text/html");
+            resp->writeHead(200);
+
+            QString name = exp.capturedTexts()[1];
+            QString body = tr("<html><head><title>Greeting App</title></head><body><h1>Hello %1!</h1></body></html>");
+            resp->end(body.arg(name).toUtf8());
+        }
+        else
+        {
+            resp->writeHead(403);
+            resp->end(QByteArray("You aren't allowed here!"));
+        }
+#endif
+    }
+};
+
 class LocalChargerDaemon : public QObject
 {
     Q_OBJECT

@@ -8,6 +8,11 @@
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication a2(argc, argv);
+    Test t;
+    return a2.exec();
+
+
     QCoreApplication app(argc, argv);
     QSharedMemory sharedMemory("local_charger_daemon_shared_mem11");
     if(sharedMemory.attach()){
