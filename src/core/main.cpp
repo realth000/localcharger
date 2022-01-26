@@ -13,6 +13,9 @@
 #include <QtWidgets/QApplication>
 #endif
 
+// test HTTPSERVER
+#include <QtHttpServer/QtHttpServer>
+
 #ifdef Q_OS_ANDROID
 #include <QtGui/QFontDatabase>
 #endif

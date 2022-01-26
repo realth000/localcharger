@@ -70,6 +70,9 @@ include_directories(${CMAKE_PREFIX_PATH}/../../include/QtDBus)
 include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
+include_directories(src/3rdparty/include)
+
+link_directories(src/3rdparty/lib)
 
 # Generate translations
 set(LOCALCHARGER_TS_FILES
