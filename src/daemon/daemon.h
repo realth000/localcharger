@@ -10,16 +10,38 @@
 #include "qhttprequest.h"
 #include "qhttpresponse.h"
 #include "qhttpserver.h"
+#include <QtCore/QDir>
+#include <QtCore/QFile>
+#include <QtCore/QFileInfo>
 
 class Test : public QObject
 {
     Q_OBJECT
 public:
-    Test(){
+    Test()
+    {
         QHttpServer *server = new QHttpServer(this);
         connect(server, &QHttpServer::newRequest, this, &Test::handleRequest);
         server->listen(QHostAddress::Any, 8080);
     }
+
+private:
+    bool exists(const QString &filePath) const
+    {
+        return QFileInfo::exists(filePath);
+    }
+
+    bool isDir(const QString &filePath) const
+    {
+        return QFileInfo(filePath).isDir();
+    }
+
+    bool isFile(const QString &filePath) const
+    {
+        return QFileInfo(filePath).isFile();
+    }
+
+
 private slots:
     void handleRequest(QHttpRequest *req, QHttpResponse *resp){
         Q_UNUSED(req)
@@ -29,15 +51,50 @@ private slots:
         resp->writeHead(200);
         resp->end(body);
 #else
-        qInfo() << "resp->path =" << req->path();
+        const QString accessPath = req->path();
+        qInfo() << "resp->path =" << accessPath;
+        if(!exists(accessPath)){
+            resp->writeHead(403);
+            resp->end(QByteArray("Accessing empty path"));
+        }
+        if(isFile(accessPath)){
+            resp->setHeader("Content-Type", "application/octet-stream");
+            resp->writeHead(200);
+            QString body = tr("<html><head>"
+                              "<title>Greeting App</title>"
+                              "</head>"
+                              "<body>"
+                              "<h1>Hello file!</h1>"
+                              "<hr>"
+                              "<ul>"
+                              "<li><a href=\".git/\">.git/</a></li>"
+                              "<li><a href=\"Makefile\">Makefile</a></li>"
+                              "<li><a href=\"123\">123</a></li>"
+                              "</ul>"
+                              "<hr>"
+                              "</body></html>");
+            resp->end(body.toUtf8());
+            return;
+        }
         QRegExp exp("^/user/([a-z]+)$");
-        if( exp.indexIn(req->path()) != -1 )
+        if( exp.indexIn(req->path()) != -1 || true )
         {
             resp->setHeader("Content-Type", "text/html");
             resp->writeHead(200);
-
             QString name = exp.capturedTexts()[1];
-            QString body = tr("<html><head><title>Greeting App</title></head><body><h1>Hello %1!</h1></body></html>");
+            QString body = tr("<html><head>"
+                              "<title>Greeting App</title>"
+                              "</head>"
+                              "<body>"
+                              "<h1>Hello %1!</h1>"
+                              "<hr>"
+                              "<ul>"
+                              "<li><a href=\".git/\">.git/</a></li>"
+                              "<li><a href=\"Makefile\">Makefile</a></li>"
+                              "<li><a href=\"123\">123</a></li>"
+                              "</ul>"
+                              "<hr>"
+                              "</body></html>");
             resp->end(body.arg(name).toUtf8());
         }
         else
