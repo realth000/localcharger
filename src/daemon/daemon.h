@@ -6,6 +6,7 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 
+#if 0
 // test HTTPSERVER
 #include "qhttprequest.h"
 #include "qhttpresponse.h"
@@ -105,6 +106,7 @@ private slots:
 #endif
     }
 };
+#endif
 
 class LocalChargerDaemon : public QObject
 {
