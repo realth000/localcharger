@@ -6,16 +6,17 @@
 #include "daemon.h"
 #include "defines.h"
 
+#if 0
 // test
 #include "qhttpserver.hpp"
 #include "qhttpserverconnection.hpp"
 #include "qhttpserverrequest.hpp"
 #include "qhttpserverresponse.hpp"
 #include "unixcatcher.hpp"
-
+#endif
 int main(int argc, char *argv[])
 {
-#if 0
+#if 1
     QCoreApplication a2(argc, argv);
     Test t;
     return a2.exec();

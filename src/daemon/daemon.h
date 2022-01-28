@@ -6,7 +6,7 @@
 #include "core/webrecver.h"
 #include "core/websender.h"
 
-#if 0
+#if 1
 // test HTTPSERVER
 #include "qhttprequest.h"
 #include "qhttpresponse.h"
@@ -58,25 +58,35 @@ private slots:
             resp->writeHead(403);
             resp->end(QByteArray("Accessing empty path"));
         }
+        QString body = "";
+        QByteArray bodyArray;
+        // Is a file
         if(isFile(accessPath)){
-            resp->setHeader("Content-Type", "application/octet-stream");
-            resp->writeHead(200);
-            QString body = tr("<html><head>"
-                              "<title>Greeting App</title>"
-                              "</head>"
-                              "<body>"
-                              "<h1>Hello file!</h1>"
-                              "<hr>"
-                              "<ul>"
-                              "<li><a href=\".git/\">.git/</a></li>"
-                              "<li><a href=\"Makefile\">Makefile</a></li>"
-                              "<li><a href=\"123\">123</a></li>"
-                              "</ul>"
-                              "<hr>"
-                              "</body></html>");
-            resp->end(body.toUtf8());
+            QFile file(accessPath);
+            if(!file.open(QIODevice::ReadOnly)){
+                resp->setHeader("Content-Type", "text/html");
+                resp->writeHead(200);
+                qInfo() << "can not read file" << accessPath;
+                body = "<html><head>"
+                       "<title>Greeting App</title>"
+                       "</head>"
+                       "<body>"
+                       "<h1>Can not read file %1</h1>"
+                       "<hr>"
+                       "</body></html>";
+                body.arg(accessPath);
+                resp->end(body.toUtf8());
+            }
+            else{
+                resp->setHeader("Content-Type", "application/octet-stream");
+                resp->writeHead(200);
+                bodyArray = file.readAll();
+                file.close();
+                resp->end(bodyArray);
+            }
             return;
         }
+        // Not a file
         QRegExp exp("^/user/([a-z]+)$");
         if( exp.indexIn(req->path()) != -1 || true )
         {
