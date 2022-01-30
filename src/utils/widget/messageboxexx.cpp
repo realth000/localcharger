@@ -15,6 +15,48 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     this->setWindowFlags(Qt::FramelessWindowHint);
     this->setFixedSize(this->width(), this->height());
 
+    const QString qssString = QString("QWidget{"
+                              "    font-size:13px;"
+                              "}"
+                              ""
+                              "QWidget#%1{"
+                              "    background:qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
+                              "    border:1px solid rgb(64,66,68);"
+                              "}"
+                              ""
+                              "QTextEdit{"
+                              "    color:rgb(240,255,255);"
+                              "    background:transparent;"
+                              "    border:none;"
+                              "    selection-background-color:rgb(93,94,95);"
+                              "}"
+                              ""
+                              "QGroupBox{"
+                              "    color:rgb(240,255,255);"
+                              "    background-color:%3;"
+                              "    border:1px solid %2;"
+                              "}"
+                              ""
+                              "QPushButton{"
+                              "    background:transparent;"
+                              "    border:1px solid %2;"
+                              "    color:rgb(240,255,255);"
+                              "}"
+                              ""
+                              "QPushButton:hover{"
+                              "    background:rgb(64,64,61);"
+                              "}"
+                              ""
+                              "QPushButton:pressed{"
+                              "    background:rgb(55,55,55);"
+                              "}"
+                              ""
+                              "QLabel{"
+                              "    color:rgb(240,255,255);"
+                              "}"
+                              ""
+                              "").arg(this->objectName(), "rgb(55,85,100)", "qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
+                                                        "alternate-background-color:rgb(55,55,55)");
     // 标题栏样式
     ui->titleBar->setCloseIcon(QStringLiteral(TITLEBAR_CLOSEICON));
     ui->titleBar->setTitleText(QStringLiteral(TITLEBAR_TITLETEXT));
@@ -24,9 +66,7 @@ MessageBoxExX::MessageBoxExX(QWidget *parent) :
     ui->titleBar->setTitleIcon(QStringLiteral(TITLEBAR_TITLEICON));
 
     // 样式
-    this->setStyleSheet(QssInstaller::QssInstallFromFile(":/stylesheet/stylesheet_messageboxexx.css").arg(this->objectName()).arg("rgb(55,85,100)")
-            .arg("qlineargradient(x1:0, y1:0, x2:0, y2:1, stop: 0 rgb(45,45,45), stop: 1 rgb(51,51,51));"
-                 "alternate-background-color:rgb(55,55,55)"));
+    this->setStyleSheet(qssString);
     ui->infoTE->setReadOnly(true);
     ui->infoTE->setLineWrapColumnOrWidth(ui->infoTE->width() - 30);
     ui->infoTE->setLineWrapMode(QTextEdit::WidgetWidth);

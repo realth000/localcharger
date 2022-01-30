@@ -15,6 +15,7 @@
 #include "qssinstaller.h"
 #include "titlebar.h"
 #include "utils/networkinfohelper.h"
+#include "messageboxexx.h"
 
 MainUi::MainUi(QWidget *parent)
     : QWidget(parent),
@@ -51,6 +52,9 @@ MainUi::MainUi(QWidget *parent)
     updateRecverState(RecverState::Disconnected);
     m_identifier->boardcastIdentityMessage();
     qInfo() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
+    if(QSslSocket::sslLibraryVersionNumber() == 0){
+        MessageBoxExY::critical("openssl初始化失败", QString("openssl初始化失败，当前openssl版本:\"%1\"(%2)").arg(QSslSocket::sslLibraryVersionString(), QString::number(QSslSocket::sslLibraryVersionNumber())));
+    }
 }
 
 void MainUi::initUi()
