@@ -4,6 +4,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QtMath>
+#include <QtCore/QThread>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 #include "core/jsonparser.h"
@@ -123,6 +124,7 @@ bool WebSender::sendFile(const QString &filePath)
         messageArray.append(QString::number(fileFrameID).toUtf8(), WEBSOCKET_FILEFRAME_ID_LENGTH);
         messageArray.append(fileDataArray);
         m_currentSocket->sendBinaryMessage(messageArray);
+        QThread::msleep(1000);
         messageArray.clear();
         fileSendBytes += fileDataArray.length();
         fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
@@ -146,6 +148,7 @@ void WebSender::onNewConnection()
         delete m_currentSocket;
     }
     m_currentSocket = pSocket;
+    m_currentSocket->setOutgoingFrameSize(1048576);
 }
 
 void WebSender::socketDisconnected()

@@ -7,8 +7,8 @@ project(LocalCharger
     LANGUAGES CXX)
 
 # Set compile options
-set(COMPILE_GUI    OFF CACHE BOOL "Compile GUI version(LocalCharger)" FORCE)
-set(COMPILE_DAEMON OFF CACHE BOOL "Compile DBus-daemon(localcharger-daemon)" FORCE)
+set(COMPILE_GUI    ON CACHE BOOL "Compile GUI version(LocalCharger)" FORCE)
+set(COMPILE_DAEMON ON CACHE BOOL "Compile DBus-daemon(localcharger-daemon)" FORCE)
 set(COMPILE_CLI    ON CACHE BOOL "Compile CLI version(LocalChargerCli), use with dbus" FORCE)
 set(COMPILE_QML    OFF CACHE BOOL "Compile Qt.Quick version LocalCharger" FORCE)
 
