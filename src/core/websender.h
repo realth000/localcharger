@@ -26,6 +26,7 @@ signals:
     void senderDisconnected();
     void sendFileStart(QString fileName, qint64 sendBytes);
     void sendFileFinish(QString fileName, qint64 sendBytes);
+    void sendFileFrameFinish(QString fileName, qint64 frameID, qint64 fileTotalFrameCount);
     void prepareRecvFile();
 
 public slots:

@@ -166,3 +166,14 @@ QListWidget::item:selected {
     border-radius: 5px;
     background-color: #393939;
 }
+
+QProgressBar{
+    color:rgb(240,255,255);
+    border:1px solid rgb(55,85,100);
+    background:transparent;
+    text-align: center;
+}
+
+QProgressBar::chunk{
+    background:qlineargradient(x1:0, y1:0, x2:1, y2:0, stop: 0 rgb(42,62,90), stop: 1 rgb(36,56,85));
+}

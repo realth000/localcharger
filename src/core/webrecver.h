@@ -29,6 +29,7 @@ signals:
     void recverDisconnected();
     void recvFileStart(QString filePath, qint64 recvBytes);
     void recvFileFinish(QString filePath, qint64 recvBytes);
+    void recvFileFrameFinish(QString filePath, qint64 frameID, qint64 fileTotalFrameCount);
 
 public slots:
     void sendMessage(const QString &msg);

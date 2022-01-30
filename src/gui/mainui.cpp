@@ -148,6 +148,7 @@ void MainUi::initUi()
     ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 
+    ui->fileTransportLabel->setText(tr("File:"));
 }
 
 void MainUi::initConnections()
@@ -158,6 +159,7 @@ void MainUi::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &MainUi::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &MainUi::onRecverConnected);
@@ -166,6 +168,7 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -638,5 +641,17 @@ void MainUi::textEditContextMenu(const QPoint &pos)
     menu->addAction(selectAllAction);
     menu->move(cursor().pos());
     menu->show();
+}
+
+void MainUi::onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount)
+{
+    ui->fileTransportLabel->setText(QString("%1:[%2/%3]%4").arg(tr("Send file"), QString::number(frameID), QString::number(fileTotalFrameCount), fileName));
+    ui->fileTransportProgressBar->setValue(100*frameID/fileTotalFrameCount);
+}
+
+void MainUi::onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount)
+{
+    ui->fileTransportLabel->setText(QString("%1:[%2/%3]%4").arg(tr("Recv file"), QString::number(frameID), QString::number(fileTotalFrameCount), fileName));
+    ui->fileTransportProgressBar->setValue(100*frameID/fileTotalFrameCount);
 }
 

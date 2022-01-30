@@ -49,6 +49,8 @@ private slots:
     void onGetAutoConnectReply();
     void on_openDownloadDirPushButton_clicked();
     void textEditContextMenu(const QPoint &pos);
+    void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
+    void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
 
 private:
     Ui::MainUi *ui;
