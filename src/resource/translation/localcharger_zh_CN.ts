@@ -123,17 +123,17 @@
     <message>
         <location filename="../../gui/mainui.ui" line="405"/>
         <source>select dir</source>
-        <translation>选择目录</translation>
+        <translation>选择文件夹</translation>
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="428"/>
         <source>Connect</source>
-        <translation>连接客户端</translation>
+        <translation>连接</translation>
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="441"/>
         <source>Broadcast</source>
-        <translation>广播客户端</translation>
+        <translation>广播</translation>
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="454"/>
@@ -230,12 +230,12 @@
     <message>
         <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="179"/>
         <source>Broadcast</source>
-        <translation>广播客户端</translation>
+        <translation>广播</translation>
     </message>
     <message>
         <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="193"/>
         <source>Connect</source>
-        <translation>连接客户端</translation>
+        <translation>连接</translation>
     </message>
     <message>
         <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="240"/>

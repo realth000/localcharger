@@ -17,7 +17,13 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
-    explicit MainUi(QWidget *parent = nullptr);
+    enum class AppLanguage{
+        En = 0,
+        Zh_cn
+    };
+    Q_ENUM(AppLanguage)
+
+    explicit MainUi(QWidget *parent = nullptr, const AppLanguage &appLanguage = AppLanguage::En);
     void initUi();
     void initConnections();
     ~MainUi();
@@ -68,6 +74,7 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
+    const AppLanguage m_appLanguage;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;

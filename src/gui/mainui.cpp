@@ -17,7 +17,7 @@
 #include "utils/networkinfohelper.h"
 #include "messageboxexx.h"
 
-MainUi::MainUi(QWidget *parent)
+MainUi::MainUi(QWidget *parent, const AppLanguage &appLanguage)
     : QWidget(parent),
       ui(new Ui::MainUi),
       m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
@@ -34,6 +34,7 @@ MainUi::MainUi(QWidget *parent)
       m_localClientReadableName("default"),
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
+      m_appLanguage(appLanguage),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
       m_vScrollStyle(new VerticalScrollBarStyle),
@@ -149,6 +150,20 @@ void MainUi::initUi()
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 
     ui->fileTransportLabel->setText(tr("File:"));
+
+    // Adjust UI according to app language
+    switch (m_appLanguage) {
+    case AppLanguage::En:
+        break;
+    case AppLanguage::Zh_cn:
+        ui->sendFilePushButton->setGeometry(ui->sendFilePushButton->frameGeometry().adjusted(+40, 0, +20, 0));
+        ui->sendMsgPushButton->setGeometry(ui->sendMsgPushButton->frameGeometry().adjusted(+20, 0, 0, 0));
+        ui->broadcastPushButton->setGeometry(ui->broadcastPushButton->frameGeometry().adjusted(0, 0, -35, 0));
+        ui->connectSelectedClientPushButton->setGeometry(ui->connectSelectedClientPushButton->frameGeometry().adjusted(0, 0, -35, 0));
+        break;
+    default:
+        break;
+    }
 }
 
 void MainUi::initConnections()
