@@ -111,6 +111,7 @@ bool WebSender::sendFile(const QString &filePath)
     QByteArray messageArray;
     const QByteArray fileInfoArray = generateFileInfoMessage(filePath);
     QByteArray fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
+    const qint64 fileTotalFrameCount = qCeil(fileInfo.size()/qreal(WEBSOCKET_FILEFRAME_FRAME_LENGTH));
     qint64 fileFrameID = 0;
     qint64 fileSendBytes = 0;
     emit sendFileStart(filePath, fileToSend.size());
@@ -124,6 +125,7 @@ bool WebSender::sendFile(const QString &filePath)
         messageArray.append(QString::number(fileFrameID).toUtf8(), WEBSOCKET_FILEFRAME_ID_LENGTH);
         messageArray.append(fileDataArray);
         m_currentSocket->sendBinaryMessage(messageArray);
+        emit sendFileFrameFinish(fileInfo.fileName(), fileFrameID + 1, fileTotalFrameCount);
         QThread::msleep(1000);
         messageArray.clear();
         fileSendBytes += fileDataArray.length();

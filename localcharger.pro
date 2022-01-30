@@ -10,7 +10,7 @@ CONFIG += c++11 no_batch
 
 INCLUDEPATH += src src/include
 
-VERSION = 1.5.0
+VERSION = 1.5.1
 DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 TARGET = "LocalCharger"

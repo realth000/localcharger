@@ -15,8 +15,9 @@
 #include "qssinstaller.h"
 #include "titlebar.h"
 #include "utils/networkinfohelper.h"
+#include "messageboxexx.h"
 
-MainUi::MainUi(QWidget *parent)
+MainUi::MainUi(QWidget *parent, const AppLanguage &appLanguage)
     : QWidget(parent),
       ui(new Ui::MainUi),
       m_sockerSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
@@ -33,6 +34,7 @@ MainUi::MainUi(QWidget *parent)
       m_localClientReadableName("default"),
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT),
+      m_appLanguage(appLanguage),
       m_pushButtonStyle(new PushButtonStyle),
       m_hScrollStyle(new HorizontalScrollBarStyle),
       m_vScrollStyle(new VerticalScrollBarStyle),
@@ -51,6 +53,9 @@ MainUi::MainUi(QWidget *parent)
     updateRecverState(RecverState::Disconnected);
     m_identifier->boardcastIdentityMessage();
     qInfo() << "openssl lib state" << QSslSocket::sslLibraryBuildVersionNumber() << QSslSocket::sslLibraryBuildVersionString() << QSslSocket::sslLibraryVersionNumber() << QSslSocket::sslLibraryVersionString();
+    if(QSslSocket::sslLibraryVersionNumber() == 0){
+        MessageBoxExY::critical("openssl初始化失败", QString("openssl初始化失败，当前openssl版本:\"%1\"(%2)").arg(QSslSocket::sslLibraryVersionString(), QString::number(QSslSocket::sslLibraryVersionNumber())));
+    }
 }
 
 void MainUi::initUi()
@@ -144,6 +149,21 @@ void MainUi::initUi()
     ui->autoConnectComboBox->setStyle(m_checkBoxStyle);
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 
+    ui->fileTransportLabel->setText(tr("File:"));
+
+    // Adjust UI according to app language
+    switch (m_appLanguage) {
+    case AppLanguage::En:
+        break;
+    case AppLanguage::Zh_cn:
+        ui->sendFilePushButton->setGeometry(ui->sendFilePushButton->frameGeometry().adjusted(+40, 0, +20, 0));
+        ui->sendMsgPushButton->setGeometry(ui->sendMsgPushButton->frameGeometry().adjusted(+20, 0, 0, 0));
+        ui->broadcastPushButton->setGeometry(ui->broadcastPushButton->frameGeometry().adjusted(0, 0, -35, 0));
+        ui->connectSelectedClientPushButton->setGeometry(ui->connectSelectedClientPushButton->frameGeometry().adjusted(0, 0, -35, 0));
+        break;
+    default:
+        break;
+    }
 }
 
 void MainUi::initConnections()
@@ -154,6 +174,7 @@ void MainUi::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &MainUi::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &MainUi::onRecverConnected);
@@ -162,6 +183,7 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -634,5 +656,17 @@ void MainUi::textEditContextMenu(const QPoint &pos)
     menu->addAction(selectAllAction);
     menu->move(cursor().pos());
     menu->show();
+}
+
+void MainUi::onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount)
+{
+    ui->fileTransportLabel->setText(QString("%1:[%2/%3]%4").arg(tr("Send file"), QString::number(frameID), QString::number(fileTotalFrameCount), fileName));
+    ui->fileTransportProgressBar->setValue(100*frameID/fileTotalFrameCount);
+}
+
+void MainUi::onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount)
+{
+    ui->fileTransportLabel->setText(QString("%1:[%2/%3]%4").arg(tr("Recv file"), QString::number(frameID), QString::number(fileTotalFrameCount), fileName));
+    ui->fileTransportProgressBar->setValue(100*frameID/fileTotalFrameCount);
 }
 

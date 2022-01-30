@@ -2,6 +2,7 @@
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QThread>
+#include <QtCore/QtMath>
 #include "core/jsonparser.h"
 #include "core/threadworker.h"
 
@@ -173,13 +174,14 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
 
     connect(saveThreadWorker, &ThreadWorker::saveFileFinish, this,
             [this, &fileSaveSize, fileFrameID, fileInfo, saveFileInfo](qint64 writeBytes){
-            fileSaveSize = writeBytes;
-            m_fileSavedSize += writeBytes;
-            qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
-            if(fileFrameID == fileInfo.m_fileFrameCount -1){
-                emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
-            }
-        });
+                fileSaveSize = writeBytes;
+                m_fileSavedSize += writeBytes;
+                qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
+                emit recvFileFrameFinish(saveFileInfo.fileName(), fileFrameID + 1, fileInfo.m_fileFrameCount);
+                if(fileFrameID == fileInfo.m_fileFrameCount -1){
+                    emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
+                }
+            });
     saveThreadWorker->moveToThread(saveThread);
     saveThread->start();
 #else

@@ -17,7 +17,13 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
-    explicit MainUi(QWidget *parent = nullptr);
+    enum class AppLanguage{
+        En = 0,
+        Zh_cn
+    };
+    Q_ENUM(AppLanguage)
+
+    explicit MainUi(QWidget *parent = nullptr, const AppLanguage &appLanguage = AppLanguage::En);
     void initUi();
     void initConnections();
     ~MainUi();
@@ -49,6 +55,8 @@ private slots:
     void onGetAutoConnectReply();
     void on_openDownloadDirPushButton_clicked();
     void textEditContextMenu(const QPoint &pos);
+    void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
+    void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
 
 private:
     Ui::MainUi *ui;
@@ -66,6 +74,7 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
+    const AppLanguage m_appLanguage;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
