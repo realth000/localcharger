@@ -52,7 +52,9 @@ int main(int argc, char *argv[])
     switch (locale.script()) {
     case QLocale::SimplifiedChineseScript:
         appTranslator.load(QLatin1String(":/translation/localcharger_zh_CN.qm"));
+//        appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
         appLanguage = MainUi::AppLanguage::Zh_cn;
+//        appLanguage = MainUi::AppLanguage::En;
         break;
     default:
         appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));

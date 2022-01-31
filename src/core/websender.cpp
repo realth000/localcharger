@@ -1,6 +1,7 @@
 ﻿#include "websender.h"
 #include <QtCore/QCoreApplication>
 #include <QtCore/QDebug>
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QtMath>
@@ -136,6 +137,31 @@ bool WebSender::sendFile(const QString &filePath)
     qInfo() << "WebSender: about to send file, array total length" << fileSendBytes;
     emit sendFileFinish(filePath, fileSendBytes);
     return true;
+}
+
+void WebSender::sendDir(const QString &dirPath)
+{
+    QDir sourceDir(dirPath);
+    if(!sourceDir.exists()){
+        qInfo() << "source directory not exists:" << dirPath;
+        return;
+    }
+    const QFileInfoList sourceDirEntryList = sourceDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    for(const QFileInfo &sourceInfo : sourceDirEntryList){
+        /*
+         * TODO: now only handle on symbol link, file and directory,
+         * other types should also be in concern.
+         */
+        if(sourceInfo.isSymLink()){
+            continue;
+        }
+        else if(sourceInfo.isFile()){
+            sendFile(sourceInfo.absoluteFilePath());
+        }
+        else if(sourceInfo.isDir()){
+            sendDir(sourceInfo.absoluteFilePath());
+        }
+    }
 }
 
 void WebSender::onNewConnection()

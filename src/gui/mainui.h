@@ -57,6 +57,7 @@ private slots:
     void textEditContextMenu(const QPoint &pos);
     void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
+    void selectSendDir();
 
 private:
     Ui::MainUi *ui;

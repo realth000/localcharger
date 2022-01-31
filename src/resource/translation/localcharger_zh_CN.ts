@@ -59,8 +59,8 @@
     <message>
         <location filename="../../gui/mainui.ui" line="69"/>
         <location filename="../../gui/mainui.ui" line="317"/>
-        <location filename="../../gui/mainui.cpp" line="264"/>
-        <location filename="../../gui/mainui.cpp" line="288"/>
+        <location filename="../../gui/mainui.cpp" line="282"/>
+        <location filename="../../gui/mainui.cpp" line="306"/>
         <source>closed</source>
         <translation>已关闭</translation>
     </message>
@@ -116,50 +116,50 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="368"/>
-        <location filename="../../gui/mainui.cpp" line="648"/>
+        <location filename="../../gui/mainui.cpp" line="666"/>
         <source>Send file</source>
         <translation>发送文件</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="405"/>
+        <location filename="../../gui/mainui.ui" line="418"/>
         <source>select dir</source>
         <translation>选择文件夹</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="428"/>
+        <location filename="../../gui/mainui.ui" line="441"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="441"/>
+        <location filename="../../gui/mainui.ui" line="454"/>
         <source>Broadcast</source>
         <translation>广播</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="454"/>
-        <location filename="../../gui/mainui.cpp" line="362"/>
+        <location filename="../../gui/mainui.ui" line="467"/>
+        <location filename="../../gui/mainui.cpp" line="380"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="503"/>
+        <location filename="../../gui/mainui.ui" line="516"/>
         <source>Auto connect</source>
         <translation>自动连接</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="516"/>
+        <location filename="../../gui/mainui.ui" line="529"/>
         <source>open dir</source>
         <translation>打开文件夹</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="542"/>
-        <location filename="../../gui/mainui.cpp" line="151"/>
+        <location filename="../../gui/mainui.ui" line="555"/>
+        <location filename="../../gui/mainui.cpp" line="155"/>
         <source>File:</source>
         <translation>文件</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="477"/>
-        <location filename="../../gui/mainui.cpp" line="363"/>
+        <location filename="../../gui/mainui.ui" line="490"/>
+        <location filename="../../gui/mainui.cpp" line="381"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
@@ -169,38 +169,43 @@
         <translation>MainUi</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="392"/>
+        <location filename="../../gui/mainui.ui" line="381"/>
+        <source>Send Dir</source>
+        <translation>发送文件夹</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainui.ui" line="405"/>
         <source>Save path</source>
         <translation>保存目录</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="269"/>
+        <location filename="../../gui/mainui.cpp" line="287"/>
         <source>listening</source>
         <translation>监听中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="274"/>
-        <location filename="../../gui/mainui.cpp" line="296"/>
+        <location filename="../../gui/mainui.cpp" line="292"/>
+        <location filename="../../gui/mainui.cpp" line="314"/>
         <source>connected</source>
         <translation>已连接</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="292"/>
+        <location filename="../../gui/mainui.cpp" line="310"/>
         <source>connecting</source>
         <translation>连接中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="364"/>
+        <location filename="../../gui/mainui.cpp" line="382"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="365"/>
+        <location filename="../../gui/mainui.cpp" line="383"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="654"/>
+        <location filename="../../gui/mainui.cpp" line="672"/>
         <source>Recv file</source>
         <translation>接收文件</translation>
     </message>

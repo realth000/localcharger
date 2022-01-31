@@ -59,8 +59,8 @@
     <message>
         <location filename="../../gui/mainui.ui" line="69"/>
         <location filename="../../gui/mainui.ui" line="317"/>
-        <location filename="../../gui/mainui.cpp" line="264"/>
-        <location filename="../../gui/mainui.cpp" line="288"/>
+        <location filename="../../gui/mainui.cpp" line="282"/>
+        <location filename="../../gui/mainui.cpp" line="306"/>
         <source>closed</source>
         <translation>closed</translation>
     </message>
@@ -116,39 +116,39 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="368"/>
-        <location filename="../../gui/mainui.cpp" line="648"/>
+        <location filename="../../gui/mainui.cpp" line="666"/>
         <source>Send file</source>
         <translation>Send file</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="405"/>
+        <location filename="../../gui/mainui.ui" line="418"/>
         <source>select dir</source>
         <translation>Select dir</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="428"/>
+        <location filename="../../gui/mainui.ui" line="441"/>
         <source>Connect</source>
         <translation>Connect</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="441"/>
+        <location filename="../../gui/mainui.ui" line="454"/>
         <source>Broadcast</source>
         <translation>Broadcast</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="454"/>
-        <location filename="../../gui/mainui.cpp" line="362"/>
+        <location filename="../../gui/mainui.ui" line="467"/>
+        <location filename="../../gui/mainui.cpp" line="380"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="503"/>
+        <location filename="../../gui/mainui.ui" line="516"/>
         <source>Auto connect</source>
         <translation>Auto connect</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="542"/>
-        <location filename="../../gui/mainui.cpp" line="151"/>
+        <location filename="../../gui/mainui.ui" line="555"/>
+        <location filename="../../gui/mainui.cpp" line="155"/>
         <source>File:</source>
         <translation>File:</translation>
     </message>
@@ -157,13 +157,13 @@
         <translation type="vanished">Auto connect</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="516"/>
+        <location filename="../../gui/mainui.ui" line="529"/>
         <source>open dir</source>
         <translation>open dir</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="477"/>
-        <location filename="../../gui/mainui.cpp" line="363"/>
+        <location filename="../../gui/mainui.ui" line="490"/>
+        <location filename="../../gui/mainui.cpp" line="381"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
@@ -173,38 +173,43 @@
         <translation>MainUi</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.ui" line="392"/>
+        <location filename="../../gui/mainui.ui" line="381"/>
+        <source>Send Dir</source>
+        <translation>Send Dir</translation>
+    </message>
+    <message>
+        <location filename="../../gui/mainui.ui" line="405"/>
         <source>Save path</source>
         <translation>Save path</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="269"/>
+        <location filename="../../gui/mainui.cpp" line="287"/>
         <source>listening</source>
         <translation>listening</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="274"/>
-        <location filename="../../gui/mainui.cpp" line="296"/>
+        <location filename="../../gui/mainui.cpp" line="292"/>
+        <location filename="../../gui/mainui.cpp" line="314"/>
         <source>connected</source>
         <translation>connected</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="292"/>
+        <location filename="../../gui/mainui.cpp" line="310"/>
         <source>connecting</source>
         <translation>connecting</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="364"/>
+        <location filename="../../gui/mainui.cpp" line="382"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="365"/>
+        <location filename="../../gui/mainui.cpp" line="383"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="654"/>
+        <location filename="../../gui/mainui.cpp" line="672"/>
         <source>Recv file</source>
         <translation>Receive file</translation>
     </message>

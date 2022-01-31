@@ -368,6 +368,19 @@
      <string>Send file</string>
     </property>
    </widget>
+   <widget class="QPushButton" name="sendDirPushButton">
+    <property name="geometry">
+     <rect>
+      <x>80</x>
+      <y>2</y>
+      <width>120</width>
+      <height>40</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Send Dir</string>
+    </property>
+   </widget>
   </widget>
   <widget class="QLineEdit" name="saveFilePathLineEdit">
    <property name="geometry">

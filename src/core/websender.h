@@ -32,6 +32,7 @@ signals:
 public slots:
     void sendMessage(const QString &msg);
     bool sendFile(const QString &filePath);
+    void sendDir(const QString &dirPath);
 
 private slots:
     void onNewConnection();
