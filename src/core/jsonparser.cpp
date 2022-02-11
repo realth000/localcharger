@@ -38,3 +38,40 @@ WebSocketFileInfo JsonParser::parseFileInfoFromArray(const QByteArray &fileInfoA
                              jsonObj.value(QStringLiteral(WEBSOCKET_FILEINFO_FILEID_NAME)).toString(),
                              jsonObj.value(QStringLiteral(WEBSOCKET_FILEINFO_FILEFRAME_COUNT_NAME)).toVariant().toLongLong());
 }
+
+QByteArray JsonParser::genDirListsFromVector(const dir_lists &dirs)
+{
+    QJsonDocument JsonDoc;
+    QJsonObject jsonObj;
+    qint64 key = 0;
+    for(const QString &dir: dirs){
+        jsonObj.insert(QString::number(key), dir);
+        key++;
+    }
+    JsonDoc.setObject(jsonObj);
+    return JsonDoc.toJson();
+}
+
+dir_lists JsonParser::parseDirListsFromArray(const QByteArray &dirListsArray)
+{
+    dir_lists d;
+    if(dirListsArray.length() <= 0){
+        return d;
+    }
+    QJsonParseError jsonErr;
+    const QJsonDocument jsonDoc = jsonDoc.fromJson(dirListsArray, &jsonErr);
+    if(jsonDoc.isNull() || jsonErr.error != QJsonParseError::NoError){
+        qInfo() << "json parse error when parsing dir lists from array:" << jsonErr.errorString();
+        return d;
+    }
+    const QJsonObject obj = jsonDoc.object();
+    QJsonObject::const_iterator it = obj.constBegin();
+
+    it++;
+
+    while(it != obj.constEnd()){
+        d.append(it.value().toString());
+        it++;
+    }
+    return d;
+}

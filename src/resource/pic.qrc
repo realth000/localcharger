@@ -31,5 +31,6 @@
         <file>pic/splashscreen.png</file>
         <file>pic/broadcast.png</file>
         <file>pic/openfolder3.png</file>
+        <file>pic/send_folder.png</file>
     </qresource>
 </RCC>

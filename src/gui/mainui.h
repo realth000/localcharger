@@ -17,11 +17,6 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
-    enum class AppLanguage{
-        En = 0,
-        Zh_cn
-    };
-    Q_ENUM(AppLanguage)
 
     explicit MainUi(QWidget *parent = nullptr, const AppLanguage &appLanguage = AppLanguage::En);
     void initUi();
@@ -57,6 +52,7 @@ private slots:
     void textEditContextMenu(const QPoint &pos);
     void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
+    void selectSendDir();
 
 private:
     Ui::MainUi *ui;

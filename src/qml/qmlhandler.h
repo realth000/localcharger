@@ -68,6 +68,7 @@ public slots:
     void connectSelectedClient(const QString &name, const QString &id, const QString &ip, const QString &port);
     void setClipBoardText(const QString text);
     void setAutoConnect(const bool &isEnabled);
+    void sendDir(const QString &dirPath);
 
 private:
     WebSender m_socketSender;

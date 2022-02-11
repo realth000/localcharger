@@ -73,7 +73,7 @@
 
 using url_t = QUrl;
 using port_t = quint16;
-
+using dir_lists = QVector<QString>;
 struct WebSocketFileInfo{
     explicit WebSocketFileInfo(){};
     explicit WebSocketFileInfo(QString fileName, qint64 fileSize, QString fileChkSum, QString fileID, qint64 fileFrameCount):
@@ -96,7 +96,9 @@ struct WebSocketFileInfo{
  *
  */
 enum  WebSocketBinaryMessageType{
-    SingleFile = 0x511781EF
+    SingleFile = 0x511781EF,
+    SingleFileWithPath = SingleFile + 1,
+    MakeDir = SingleFile + 10
 };
 
 enum class SenderState{
@@ -121,5 +123,10 @@ enum class RecverState{
 #define DAEMON_METHOS_SEND_MESSAGE      "sendMessage"
 #define DAEMON_METHOD_GET_SENDER_STATUS_CODE "getSenderStatusCode"
 #define DAEMON_METHOD_GET_RECVER_STATUS_CODE "getRecverStatusCode"
+
+enum class AppLanguage{
+    En = 0,
+    Zh_cn
+};
 
 #endif // DEFINES_H

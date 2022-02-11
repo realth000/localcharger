@@ -11,11 +11,12 @@
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QScrollBar>
 #include "defines.h"
+#include "filehelper.h"
 #include "iconinstaller.h"
+#include "messageboxexx.h"
 #include "qssinstaller.h"
 #include "titlebar.h"
 #include "utils/networkinfohelper.h"
-#include "messageboxexx.h"
 
 MainUi::MainUi(QWidget *parent, const AppLanguage &appLanguage)
     : QWidget(parent),
@@ -71,6 +72,7 @@ void MainUi::initUi()
     IconInstaller::installPushButtonIcon(ui->updateWebConfigPushButton, ":/pic/reload.png");
     IconInstaller::installPushButtonIcon(ui->sendMsgPushButton, ":/pic/send.png");
     IconInstaller::installPushButtonIcon(ui->sendFilePushButton, ":/pic/send_file.png");
+    IconInstaller::installPushButtonIcon(ui->sendDirPushButton, ":/pic/send_folder.png");
     IconInstaller::installPushButtonIcon(ui->saveConfigPushButton, ":/pic/save_config.png");
     IconInstaller::installPushButtonIcon(ui->selectSaveFilePathPushButton, ":/pic/openfolder3.png");
     IconInstaller::installPushButtonIcon(ui->openDownloadDirPushButton, ":/pic/openfolder.png");
@@ -82,6 +84,7 @@ void MainUi::initUi()
     ui->updateWebConfigPushButton->setStyle(m_pushButtonStyle);
     ui->sendMsgPushButton->setStyle(m_pushButtonStyle);
     ui->sendFilePushButton->setStyle(m_pushButtonStyle);
+    ui->sendDirPushButton->setStyle(m_pushButtonStyle);
     ui->saveConfigPushButton->setStyle(m_pushButtonStyle);
     ui->selectSaveFilePathPushButton->setStyle(m_pushButtonStyle);
     ui->openDownloadDirPushButton->setStyle(m_pushButtonStyle);
@@ -92,6 +95,7 @@ void MainUi::initUi()
     ui->updateWebConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendMsgPushButton->setFocusPolicy(Qt::NoFocus);
     ui->sendFilePushButton->setFocusPolicy(Qt::NoFocus);
+    ui->sendDirPushButton->setFocusPolicy(Qt::NoFocus);
     ui->saveConfigPushButton->setFocusPolicy(Qt::NoFocus);
     ui->selectSaveFilePathPushButton->setFocusPolicy(Qt::NoFocus);
     ui->openDownloadDirPushButton->setFocusPolicy(Qt::NoFocus);
@@ -150,12 +154,12 @@ void MainUi::initUi()
     ui->autoConnectComboBox->setChecked(m_enableAutoConnect);
 
     ui->fileTransportLabel->setText(tr("File:"));
-
     // Adjust UI according to app language
     switch (m_appLanguage) {
     case AppLanguage::En:
         break;
     case AppLanguage::Zh_cn:
+        ui->sendDirPushButton->setGeometry(ui->sendDirPushButton->frameGeometry().adjusted(+50, 0, +40, 0));
         ui->sendFilePushButton->setGeometry(ui->sendFilePushButton->frameGeometry().adjusted(+40, 0, +20, 0));
         ui->sendMsgPushButton->setGeometry(ui->sendMsgPushButton->frameGeometry().adjusted(+20, 0, 0, 0));
         ui->broadcastPushButton->setGeometry(ui->broadcastPushButton->frameGeometry().adjusted(0, 0, -35, 0));
@@ -196,6 +200,8 @@ void MainUi::initConnections()
     connect(ui->msgSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgRecvTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
+
+    connect(ui->sendDirPushButton, &QPushButton::clicked, this, &MainUi::selectSendDir);
 }
 
 MainUi::~MainUi()
@@ -460,7 +466,7 @@ void MainUi::on_sendFilePushButton_clicked()
     if(m_socketSenderState != SenderState::Connected){
         return;
     }
-    QString filePath = QFileDialog::getOpenFileName(this, "发送文件", QCoreApplication::applicationFilePath());
+    QString filePath = QFileDialog::getOpenFileName(this, tr("Send file"), QCoreApplication::applicationFilePath());
     if(filePath.isEmpty()){
         return;
     }
@@ -522,34 +528,34 @@ void MainUi::on_saveConfigPushButton_clicked()
 
 void MainUi::onSendFileStart(const QString &fielPath, const qint64 &fileSize)
 {
-    ui->msgSendTextEdit->append(QString("<font color=\"%3\">Sending file:</font>"
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">%5:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
-                                arg(fielPath, QString::number(fileSize), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
+                                arg(fielPath, QString::number(fileSize), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR, tr("Sending file")));
 }
 
 void MainUi::onSendFileFinish(const QString &fielPath, const qint64 &sendBytes)
 {
-    ui->msgSendTextEdit->append(QString("<font color=\"%3\">File sended:</font>"
+    ui->msgSendTextEdit->append(QString("<font color=\"%3\">%5:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
-                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR));
+                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR, tr("File sended")));
 }
 
 void MainUi::onRecvFileStart(const QString &fielPath, const qint64 &fileSize)
 {
-    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">Recving file:</font>"
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">%5:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
-                                arg(fielPath, QString::number(fileSize), MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR));
+                                arg(fielPath, QString::number(fileSize), MSGRECV_TEXTEDIT_RECVING_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVING_TAIL_COLOR, tr("Recving file")));
 }
 
 void MainUi::onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes)
 {
-    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">File recvied:</font>"
+    ui->msgRecvTextEdit->append(QString("<font color=\"%3\">%5:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
-                                arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
+                                arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR, tr("File recvied")));
 }
 
 void MainUi::on_selectSaveFilePathPushButton_clicked()
@@ -638,10 +644,10 @@ void MainUi::textEditContextMenu(const QPoint &pos)
         return;
     }
     QMenu *menu = new QMenu(textEdit);
-    QAction *cutAction = new QAction("剪切", textEdit);
-    QAction *copyAction = new QAction("复制", textEdit);
-    QAction *pasteAction = new QAction("粘贴", textEdit);
-    QAction *selectAllAction = new QAction("全选", textEdit);
+    QAction *cutAction = new QAction(tr("Cut"), textEdit);
+    QAction *copyAction = new QAction(tr("Copy"), textEdit);
+    QAction *pasteAction = new QAction(tr("Paste"), textEdit);
+    QAction *selectAllAction = new QAction(tr("Select all"), textEdit);
     connect(menu, &QMenu::aboutToHide, menu, &QMenu::deleteLater);
     connect(cutAction, &QAction::triggered, textEdit, &QTextEdit::cut);
     connect(copyAction, &QAction::triggered, textEdit, &QTextEdit::copy);
@@ -668,5 +674,26 @@ void MainUi::onRecvFileFrameFinish(const QString fileName, const qint64 frameID,
 {
     ui->fileTransportLabel->setText(QString("%1:[%2/%3]%4").arg(tr("Recv file"), QString::number(frameID), QString::number(fileTotalFrameCount), fileName));
     ui->fileTransportProgressBar->setValue(100*frameID/fileTotalFrameCount);
+}
+
+void MainUi::selectSendDir()
+{
+    const QString dirPath = QFileDialog::getExistingDirectory(this, tr("Send dir"));
+    if(dirPath.isEmpty()){
+        return;
+    }
+    qint64 fileCount = 0;
+    qint64 totalSize = 0;
+    dir_lists dirVector;
+    if(!FileHelper::checkDirectoryInfo(dirPath, fileCount, totalSize, dirVector)){
+        qInfo() << "Error checking directory:" << dirPath;
+        return;
+    }
+    // test
+    qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    qInfo() << "all dirs:" << dirVector;
+    m_socketSender.setRootPath(dirPath);
+    m_socketSender.makeDir(dirVector);
+    m_socketSender.sendDir(dirPath);
 }
 

@@ -1,4 +1,5 @@
 ﻿#include "webrecver.h"
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QThread>
@@ -105,8 +106,12 @@ void WebRecver::onBinaryMessageReceived(const QByteArray &message)
     const int messageType = QString::fromUtf8(message.left(10)).toInt();
 
     switch (messageType) {
-    case WebSocketBinaryMessageType::SingleFile:
+    case MsgType::SingleFile:
+    case MsgType::SingleFileWithPath:
         saveSingleFileFrame(message);
+        break;
+    case MsgType::MakeDir:
+        makeDir(message);
         break;
     default:
         break;
@@ -159,7 +164,7 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
 
     if(fileFrameID == 0){
         m_fileSavedSize = 0;
-        emit recvFileStart(saveFileInfo.absoluteFilePath(), fileInfo.m_fileSize);
+        emit recvFileStart(fileInfo.m_fileName, fileInfo.m_fileSize);
     }
     qint64 fileSaveSize = 0;
     QThread *saveThread = new QThread();
@@ -177,9 +182,9 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
                 fileSaveSize = writeBytes;
                 m_fileSavedSize += writeBytes;
                 qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
-                emit recvFileFrameFinish(saveFileInfo.fileName(), fileFrameID + 1, fileInfo.m_fileFrameCount);
+                emit recvFileFrameFinish(fileInfo.m_fileName, fileFrameID + 1, fileInfo.m_fileFrameCount);
                 if(fileFrameID == fileInfo.m_fileFrameCount -1){
-                    emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
+                    emit recvFileFinish(fileInfo.m_fileName, m_fileSavedSize);
                 }
             });
     saveThreadWorker->moveToThread(saveThread);
@@ -209,4 +214,15 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
         emit recvFileFinish(file.fileName(), file.size());
     }
 #endif
+}
+
+void WebRecver::makeDir(const QByteArray &dirListsArrary)
+{
+    QDir rootDir(m_fileSavePath);
+    const dir_lists dirs = JsonParser::parseDirListsFromArray(dirListsArrary.right(dirListsArrary.length() - WEBSOCKET_MESSAGETYPE_LENGTH));
+    for(const QString &dir : dirs){
+        if(rootDir.mkpath(dir)){
+            qInfo() << "WebRecver: failed to make directory" << dir;
+        }
+    }
 }
