@@ -9,6 +9,7 @@
 #include <QtCore/QDir>
 #endif
 #include "src/utils/networkinfohelper.h"
+#include "filehelper.h"
 
 QmlHandler::QmlHandler(QObject *parent)
     : QObject(parent),
@@ -339,6 +340,26 @@ void QmlHandler::setAutoConnect(const bool &isEnabled)
 {
     m_enableAutoConnect = isEnabled;
     saveConfig();
+}
+
+void QmlHandler::sendDir(const QString &dirPath)
+{
+    if(dirPath.isEmpty()){
+        return;
+    }
+    qint64 fileCount = 0;
+    qint64 totalSize = 0;
+    dir_lists dirVector;
+    if(!FileHelper::checkDirectoryInfo(dirPath, fileCount, totalSize, dirVector)){
+        qInfo() << "Error checking directory:" << dirPath;
+        return;
+    }
+    // test
+    qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    qInfo() << "all dirs:" << dirVector;
+    m_socketSender.setRootPath(dirPath);
+    m_socketSender.makeDir(dirVector);
+    m_socketSender.sendDir(dirPath);
 }
 
 void QmlHandler::getLocalIp()

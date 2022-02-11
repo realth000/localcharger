@@ -500,8 +500,26 @@ Item {
         height: 60
         anchors.bottom: parent.bottom
         ButtonEx {
+            id: sendDirButtonEx
+            Layout.preferredWidth: parent.width/3
+            Layout.preferredHeight: parent.height
+            bgColor: "transparent"
+            checkable: false
+            texts: qsTr("Send dir")
+            textsUncheckedColor: "#f0ffff"
+            textsBold: true
+            iconUnchecked: "qrc:/pic/send_folder.png"
+            iconPos: ButtonEx.IconPos.IconLeft
+            iconWidth: 30
+            iconHeight: 30
+            onClicked: {
+                sendFileFileDialogEx.workMode = FileDialogEx.WorkMode.SelectDirOnly
+                sendFileFileDialogEx.open()
+            }
+        }
+        ButtonEx {
             id: sendFileButtonEx
-            Layout.preferredWidth: parent.width/2
+            Layout.preferredWidth: parent.width/3
             Layout.preferredHeight: parent.height
             bgColor: "transparent"
             checkable: false
@@ -513,12 +531,13 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
+                sendFileFileDialogEx.workMode = FileDialogEx.WorkMode.SelectFileAndDir
                 sendFileFileDialogEx.open()
             }
         }
         ButtonEx {
             id: sendMessageButtonEx
-            Layout.preferredWidth: parent.width/2
+            Layout.preferredWidth: parent.width/3
             Layout.preferredHeight: parent.height
             bgColor: "transparent"
             checkable: false
@@ -542,7 +561,14 @@ Item {
         onChangeSelectedDir: {
             var fileSavePath = selectedPath
             console.log("select file", fileSavePath)
-            mainQmlHandler.sendFile(fileSavePath)
+            if(workMode === FileDialogEx.WorkMode.SelectFileAndDir){
+                mainQmlHandler.sendFile(fileSavePath)
+            }
+            else{
+                mainQmlHandler.sendDir(fileSavePath)
+            }
+
+
         }
     }
 
