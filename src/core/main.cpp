@@ -51,10 +51,13 @@ int main(int argc, char *argv[])
 
     switch (locale.script()) {
     case QLocale::SimplifiedChineseScript:
+#if 1
         appTranslator.load(QLatin1String(":/translation/localcharger_zh_CN.qm"));
-//        appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
         appLanguage = AppLanguage::Zh_cn;
-//        appLanguage = AppLanguage::En;
+#else
+        appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
+        appLanguage = AppLanguage::En;
+#endif
         break;
     default:
         appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));

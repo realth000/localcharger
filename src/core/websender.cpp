@@ -120,7 +120,7 @@ bool WebSender::sendFile(const QString &filePath, const MsgType &msgType)
     const qint64 fileTotalFrameCount = qCeil(fileInfo.size()/qreal(WEBSOCKET_FILEFRAME_FRAME_LENGTH));
     qint64 fileFrameID = 0;
     qint64 fileSendBytes = 0;
-    emit sendFileStart(filePath, fileToSend.size());
+    emit sendFileStart(fileInfo.fileName(), fileToSend.size());
     while(!fileDataArray.isEmpty()){
         // TODO: processEvents can control speed but controls too much
         // length = 10 bytes
@@ -140,7 +140,7 @@ bool WebSender::sendFile(const QString &filePath, const MsgType &msgType)
     }
     fileToSend.close();
     qInfo() << "WebSender: about to send file, array total length" << fileSendBytes;
-    emit sendFileFinish(filePath, fileSendBytes);
+    emit sendFileFinish(fileInfo.fileName(), fileSendBytes);
     return true;
 }
 

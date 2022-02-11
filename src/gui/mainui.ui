@@ -378,7 +378,7 @@
      </rect>
     </property>
     <property name="text">
-     <string>Send Dir</string>
+     <string>Send dir</string>
     </property>
    </widget>
   </widget>

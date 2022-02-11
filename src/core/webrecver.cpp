@@ -164,7 +164,7 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
 
     if(fileFrameID == 0){
         m_fileSavedSize = 0;
-        emit recvFileStart(saveFileInfo.absoluteFilePath(), fileInfo.m_fileSize);
+        emit recvFileStart(fileInfo.m_fileName, fileInfo.m_fileSize);
     }
     qint64 fileSaveSize = 0;
     QThread *saveThread = new QThread();
@@ -182,9 +182,9 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
                 fileSaveSize = writeBytes;
                 m_fileSavedSize += writeBytes;
                 qInfo() << QString("WebSocket: write file %1(%2 bytes, fileFrameID=%3)").arg(saveFileInfo.absoluteFilePath(), QString::number(fileSaveSize), QString::number(fileFrameID));
-                emit recvFileFrameFinish(saveFileInfo.fileName(), fileFrameID + 1, fileInfo.m_fileFrameCount);
+                emit recvFileFrameFinish(fileInfo.m_fileName, fileFrameID + 1, fileInfo.m_fileFrameCount);
                 if(fileFrameID == fileInfo.m_fileFrameCount -1){
-                    emit recvFileFinish(saveFileInfo.fileName(), m_fileSavedSize);
+                    emit recvFileFinish(fileInfo.m_fileName, m_fileSavedSize);
                 }
             });
     saveThreadWorker->moveToThread(saveThread);

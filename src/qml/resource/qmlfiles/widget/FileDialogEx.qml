@@ -58,7 +58,7 @@ Rectangle {
                 checkable: false
                 useIcon: false
                 posToLeft: true
-                texts: "选择目录"
+                texts: qsTr("Select dir")
                 textsSize: 18
                 textsLeftMargin: 10
                 enablePressWave: false
@@ -172,7 +172,7 @@ Rectangle {
         checkable: false
         iconUnchecked: "qrc:/pic/yes.png"
         iconPos: ButtonEx.IconPos.IconLeft
-        texts: "确定"      
+        texts: qsTr("Ok")
         textsSize: 20
         textsUncheckedColor: "#f0ffff"
         width: parent.width/2
@@ -206,7 +206,7 @@ Rectangle {
         checkable: false
         iconUnchecked: "qrc:/pic/no.png"
         iconPos: ButtonEx.IconPos.IconLeft
-        texts: "取消"
+        texts: qsTr("Cancel")
         textsSize: 20
         textsUncheckedColor: "#f0ffff"
         width: okBtnEx.width

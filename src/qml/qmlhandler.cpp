@@ -439,7 +439,7 @@ void QmlHandler::onSendFileFinish(const QString &fielPath, const qint64 &sendByt
     emit qmlAppendSendedMessage(QString("<font color=\"%3\">File sended:</font>"
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
-                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDING_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDING_TAIL_COLOR));
+                                arg(fielPath, QString::number(sendBytes), MSGSEND_TEXTEDIT_SENDED_HEAD_COLOR, MSGSEND_TEXTEDIT_SENDED_TAIL_COLOR));
 
 }
 
