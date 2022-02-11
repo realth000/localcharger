@@ -47,18 +47,18 @@ int main(int argc, char *argv[])
     // Setup translation
     QLocale locale = QLocale::system();
     QTranslator appTranslator;
-    MainUi::AppLanguage appLanguage;
+    AppLanguage appLanguage;
 
     switch (locale.script()) {
     case QLocale::SimplifiedChineseScript:
         appTranslator.load(QLatin1String(":/translation/localcharger_zh_CN.qm"));
 //        appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
-        appLanguage = MainUi::AppLanguage::Zh_cn;
-//        appLanguage = MainUi::AppLanguage::En;
+        appLanguage = AppLanguage::Zh_cn;
+//        appLanguage = AppLanguage::En;
         break;
     default:
         appTranslator.load(QLatin1String(":/translation/localcharger_en.qm"));
-        appLanguage = MainUi::AppLanguage::En;
+        appLanguage = AppLanguage::En;
     }
 
 #ifdef ENABLE_QML

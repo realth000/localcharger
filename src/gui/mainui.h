@@ -17,11 +17,6 @@ class MainUi : public QWidget
 Q_OBJECT
 
 public:
-    enum class AppLanguage{
-        En = 0,
-        Zh_cn
-    };
-    Q_ENUM(AppLanguage)
 
     explicit MainUi(QWidget *parent = nullptr, const AppLanguage &appLanguage = AppLanguage::En);
     void initUi();
