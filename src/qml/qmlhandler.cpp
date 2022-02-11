@@ -9,7 +9,7 @@
 #include <QtCore/QDir>
 #endif
 #include "src/utils/networkinfohelper.h"
-#include "filehelper.h"
+#include "src/utils/filehelper.h"
 
 QmlHandler::QmlHandler(QObject *parent)
     : QObject(parent),

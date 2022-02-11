@@ -73,6 +73,7 @@ SOURCES += \
     src/core/webidentifier.cpp \
     src/core/webrecver.cpp \
     src/core/websender.cpp \
+    src/utils/filehelper.cpp \
     src/utils/networkinfohelper.cpp \
     src/utils/randomgenerator.cpp
 
@@ -83,6 +84,7 @@ HEADERS += \
     src/core/webrecver.h \
     src/core/websender.h \
     src/include/defines.h \
+    src/utils/filehelper.h \
     src/utils/networkinfohelper.h \
     src/utils/randomgenerator.h \
 
