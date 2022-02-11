@@ -78,13 +78,18 @@ void WebSender::stop()
     m_socketServer->close();
 }
 
+void WebSender::setRootPath(const QString &rootPath)
+{
+    m_rootPath = rootPath;
+}
+
 void WebSender::sendMessage(const QString &msg)
 {
     // TODO: NOW only communicate in the lateset socket connection.
     m_currentSocket->sendTextMessage(msg);
 }
 
-bool WebSender::sendFile(const QString &filePath)
+bool WebSender::sendFile(const QString &filePath, const MsgType &msgType)
 {
     QFile fileToSend(filePath);
     QFileInfo fileInfo(filePath);
@@ -110,7 +115,7 @@ bool WebSender::sendFile(const QString &filePath)
      *
      */
     QByteArray messageArray;
-    const QByteArray fileInfoArray = generateFileInfoMessage(filePath);
+    const QByteArray fileInfoArray = generateFileInfoMessage(filePath, msgType);
     QByteArray fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
     const qint64 fileTotalFrameCount = qCeil(fileInfo.size()/qreal(WEBSOCKET_FILEFRAME_FRAME_LENGTH));
     qint64 fileFrameID = 0;
@@ -120,7 +125,7 @@ bool WebSender::sendFile(const QString &filePath)
         // TODO: processEvents can control speed but controls too much
         // length = 10 bytes
         QCoreApplication::processEvents();
-        messageArray.append(QString::number(WebSocketBinaryMessageType::SingleFile).toUtf8());
+        messageArray.append(QString::number(msgType).toUtf8());
         messageArray.append(QString::number(qint64(fileInfoArray.length())).toUtf8(), WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH);
         messageArray.append(fileInfoArray);
         messageArray.append(QString::number(fileFrameID).toUtf8(), WEBSOCKET_FILEFRAME_ID_LENGTH);
@@ -156,12 +161,20 @@ void WebSender::sendDir(const QString &dirPath)
             continue;
         }
         else if(sourceInfo.isFile()){
-            sendFile(sourceInfo.absoluteFilePath());
+            sendFile(sourceInfo.absoluteFilePath(), MsgType::SingleFileWithPath);
         }
         else if(sourceInfo.isDir()){
             sendDir(sourceInfo.absoluteFilePath());
         }
     }
+}
+
+void WebSender::makeDir(const dir_lists &dirs)
+{
+    QByteArray messageArray;
+    messageArray.append(QString::number(MsgType::MakeDir).toUtf8());
+    messageArray.append(JsonParser::genDirListsFromVector(dirs));
+    m_currentSocket->sendBinaryMessage(messageArray);
 }
 
 void WebSender::onNewConnection()
@@ -208,7 +221,7 @@ bool WebSender::startListenPort(const port_t &port)
     return true;
 }
 
-QByteArray WebSender::generateFileInfoMessage(const QString &filePath)
+QByteArray WebSender::generateFileInfoMessage(const QString &filePath, const MsgType &msgType)
 {
     QFile file(filePath);
     if(!file.exists() || !file.open(QIODevice::ReadOnly)){
@@ -216,9 +229,21 @@ QByteArray WebSender::generateFileInfoMessage(const QString &filePath)
         return QByteArray();
     }
     QFileInfo fileInfo(filePath);
-    return JsonParser::genFileInfoFromString(WebSocketFileInfo(fileInfo.fileName(),
-                                             fileInfo.size(),
-                                             "",
-                                             RandomGenerator::generateFromString(WEBSOCKET_FILEINFO_FILEID_LENGTH),
-                                             qCeil(qreal(fileInfo.size())/WEBSOCKET_FILEFRAME_FRAME_LENGTH)));
+    QString fileName;
+    switch (msgType) {
+    case MsgType::SingleFile:
+        fileName = fileInfo.fileName();
+        break;
+    case MsgType::SingleFileWithPath:
+        fileName = fileInfo.absoluteFilePath().replace(QFileInfo(m_rootPath).dir().absolutePath() + "/", "");
+        break;
+    default:
+        break;
+    }
+    return JsonParser::genFileInfoFromString(WebSocketFileInfo(
+                                                 fileName,
+                                                 fileInfo.size(),
+                                                 "",
+                                                 RandomGenerator::generateFromString(WEBSOCKET_FILEINFO_FILEID_LENGTH),
+                                                 qCeil(qreal(fileInfo.size())/WEBSOCKET_FILEFRAME_FRAME_LENGTH)));
 }

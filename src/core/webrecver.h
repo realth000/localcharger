@@ -9,6 +9,8 @@
 #include <QtCore/QUrl>
 #include "defines.h"
 
+using MsgType = WebSocketBinaryMessageType;
+
 class WebRecver : public QObject
 {
     Q_OBJECT
@@ -50,6 +52,7 @@ private:
     qint64 m_fileSavedSize;
     WebSocketBinaryMessageType parseBinaryMessageType(const QByteArray &message);
     void saveSingleFileFrame(const QByteArray &message);
+    void makeDir(const QByteArray &dirListsArrary);
 };
 
 #endif // WEBRECVER_H

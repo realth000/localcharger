@@ -12,7 +12,7 @@
 #endif // if defined(Q_OS_WINDWOS)
 #endif // ifndef NATIVE_SEPARATOR
 
-bool FileHelper::checkDirectoryInfo(const QString &dirPath, qint64 &fileCount, qint64 &totalSize)
+bool FileHelper::checkDirectoryInfo(const QString &dirPath, qint64 &fileCount, qint64 &totalSize, dir_lists &dirVector)
 {
     if(dirPath.isEmpty()){
         qInfo() << "Empty directory path:" << dirPath;
@@ -28,11 +28,16 @@ bool FileHelper::checkDirectoryInfo(const QString &dirPath, qint64 &fileCount, q
     }
     fileCount = 0;
     totalSize = 0;
-    QDirIterator it(dirPath, QDir::Files | QDir::Dirs | QDir::Hidden);
+    QDirIterator it(dirPath, QDir::Files | QDir::Dirs | QDir::Hidden | QDir::NoDotAndDotDot, QDirIterator::Subdirectories);
+    const QString unusedSuffix = QFileInfo(dirPath).dir().absolutePath() + "/";
+
     while(it.hasNext()){
         totalSize += it.fileInfo().size();
         if(it.fileInfo().isFile()){
             fileCount++;
+        }
+        if(it.fileInfo().isDir()){
+            dirVector.append(it.fileInfo().absoluteFilePath().replace(unusedSuffix, ""));
         }
         it.next();
     }

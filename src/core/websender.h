@@ -8,6 +8,8 @@
 #include <QtWebSockets/QWebSocketServer>
 #include "defines.h"
 
+using MsgType = WebSocketBinaryMessageType;
+
 class WebSender : public QObject
 {
     Q_OBJECT
@@ -20,6 +22,7 @@ public:
     port_t senderPort() const noexcept;
     bool start(const port_t &port);
     void stop();
+    void setRootPath(const QString &rootPath);
 
 signals:
     void senderConnected();
@@ -31,8 +34,9 @@ signals:
 
 public slots:
     void sendMessage(const QString &msg);
-    bool sendFile(const QString &filePath);
+    bool sendFile(const QString &filePath, const MsgType &msgType = MsgType::SingleFile);
     void sendDir(const QString &dirPath);
+    void makeDir(const dir_lists &dirs);
 
 private slots:
     void onNewConnection();
@@ -43,7 +47,8 @@ private:
     QWebSocketServer *m_socketServer;
     QWebSocket * m_currentSocket;
     bool startListenPort(const port_t &port);
-    QByteArray generateFileInfoMessage(const QString &filePath);
+    QByteArray generateFileInfoMessage(const QString &filePath, const MsgType &msgType = MsgType::SingleFile);
+    QString m_rootPath; // Use when sending directory, replace() and get the relative file path.
 };
 
 #endif // WEBSENDER_H

@@ -684,12 +684,16 @@ void MainUi::selectSendDir()
     }
     qint64 fileCount = 0;
     qint64 totalSize = 0;
-    if(!FileHelper::checkDirectoryInfo(dirPath, fileCount, totalSize)){
+    dir_lists dirVector;
+    if(!FileHelper::checkDirectoryInfo(dirPath, fileCount, totalSize, dirVector)){
         qInfo() << "Error checking directory:" << dirPath;
         return;
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    qInfo() << "all dirs:" << dirVector;
+    m_socketSender.setRootPath(dirPath);
+    m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
 }
 

@@ -1,4 +1,5 @@
 ﻿#include "webrecver.h"
+#include <QtCore/QDir>
 #include <QtCore/QFile>
 #include <QtCore/QFileInfo>
 #include <QtCore/QThread>
@@ -105,8 +106,12 @@ void WebRecver::onBinaryMessageReceived(const QByteArray &message)
     const int messageType = QString::fromUtf8(message.left(10)).toInt();
 
     switch (messageType) {
-    case WebSocketBinaryMessageType::SingleFile:
+    case MsgType::SingleFile:
+    case MsgType::SingleFileWithPath:
         saveSingleFileFrame(message);
+        break;
+    case MsgType::MakeDir:
+        makeDir(message);
         break;
     default:
         break;
@@ -209,4 +214,15 @@ void WebRecver::saveSingleFileFrame(const QByteArray &message)
         emit recvFileFinish(file.fileName(), file.size());
     }
 #endif
+}
+
+void WebRecver::makeDir(const QByteArray &dirListsArrary)
+{
+    QDir rootDir(m_fileSavePath);
+    const dir_lists dirs = JsonParser::parseDirListsFromArray(dirListsArrary.right(dirListsArrary.length() - WEBSOCKET_MESSAGETYPE_LENGTH));
+    for(const QString &dir : dirs){
+        if(rootDir.mkpath(dir)){
+            qInfo() << "WebRecver: failed to make directory" << dir;
+        }
+    }
 }
