@@ -697,7 +697,7 @@ void MainUi::selectSendDir()
     dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector << QFileInfo(dirPath).fileName();
     // Set local root path
-//    m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
     // Let remote make directory
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
