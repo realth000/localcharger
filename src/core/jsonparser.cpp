@@ -56,6 +56,7 @@ dir_lists JsonParser::parseDirListsFromArray(const QByteArray &dirListsArray)
 {
     dir_lists d;
     if(dirListsArray.length() <= 0){
+        qInfo() << "empty dir lists(length <= 0)";
         return d;
     }
     QJsonParseError jsonErr;
@@ -66,8 +67,6 @@ dir_lists JsonParser::parseDirListsFromArray(const QByteArray &dirListsArray)
     }
     const QJsonObject obj = jsonDoc.object();
     QJsonObject::const_iterator it = obj.constBegin();
-
-    it++;
 
     while(it != obj.constEnd()){
         d.append(it.value().toString());
