@@ -278,4 +278,12 @@ Item {
         autoConnectSwitchEx.checked = isEnabled
     }
 
+    function updateSenderIp(ip) {
+        remoteUrlTextFieldEx.text = ip
+    }
+
+    function updateSenderPort(port) {
+        remotePortTextFieldEx.text = port
+    }
+
 }

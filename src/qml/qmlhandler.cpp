@@ -362,6 +362,11 @@ void QmlHandler::sendDir(const QString &dirPath)
     m_socketSender.sendDir(dirPath);
 }
 
+int QmlHandler::getSenderState()
+{
+    return m_socketSenderState;
+}
+
 void QmlHandler::getLocalIp()
 {
     // Get local ip address and netmask
@@ -490,7 +495,9 @@ void QmlHandler::autoConnectToClinet(const QString &ip, const QString &port)
         return;
     }
     emit qmlUpdateSenderIp(ip);
+    m_socketSenderIp = ip;
     emit qmlUpdateSenderPort(port.toInt());
+    m_socketSenderPort = port.toInt();
     updateWebConfig();
     m_identifier->sendAutoConnectReply();
 }

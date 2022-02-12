@@ -678,6 +678,9 @@ void MainUi::onRecvFileFrameFinish(const QString fileName, const qint64 frameID,
 
 void MainUi::selectSendDir()
 {
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
     const QString dirPath = QFileDialog::getExistingDirectory(this, tr("Send dir"));
     if(dirPath.isEmpty()){
         return;
@@ -691,8 +694,11 @@ void MainUi::selectSendDir()
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
-    qInfo() << "all dirs:" << dirVector;
-    m_socketSender.setRootPath(dirPath);
+    dirVector.prepend(QFileInfo(dirPath).fileName());
+    qInfo() << "all dirs:" << dirVector << QFileInfo(dirPath).fileName();
+    // Set local root path
+    m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    // Let remote make directory
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
 }

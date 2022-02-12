@@ -74,6 +74,12 @@ ApplicationWindow {
         onQmlUpdateClientAutoConnect: {
             configPage.updateClientAutoConnect(isEnabled)
         }
+        onQmlUpdateSenderIp: {
+            configPage.updateSenderIp(senderIp)
+        }
+        onQmlUpdateSenderPort: {
+            configPage.updateSenderPort(senderPort)
+        }
 
         onQmlUpdateSenderState: {
             workPage.updateSenderState(state)

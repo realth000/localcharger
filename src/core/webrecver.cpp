@@ -221,7 +221,7 @@ void WebRecver::makeDir(const QByteArray &dirListsArrary)
     QDir rootDir(m_fileSavePath);
     const dir_lists dirs = JsonParser::parseDirListsFromArray(dirListsArrary.right(dirListsArrary.length() - WEBSOCKET_MESSAGETYPE_LENGTH));
     for(const QString &dir : dirs){
-        if(rootDir.mkpath(dir)){
+        if(!rootDir.mkpath(dir)){
             qInfo() << "WebRecver: failed to make directory" << dir;
         }
     }

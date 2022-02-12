@@ -235,7 +235,7 @@ QByteArray WebSender::generateFileInfoMessage(const QString &filePath, const Msg
         fileName = fileInfo.fileName();
         break;
     case MsgType::SingleFileWithPath:
-        fileName = fileInfo.absoluteFilePath().replace(QFileInfo(m_rootPath).dir().absolutePath() + "/", "");
+        fileName = fileInfo.absoluteFilePath().replace(m_rootPath + "/", "");
         break;
     default:
         break;
