@@ -362,6 +362,11 @@ void QmlHandler::sendDir(const QString &dirPath)
     m_socketSender.sendDir(dirPath);
 }
 
+int QmlHandler::getSenderState()
+{
+    return m_socketSenderState;
+}
+
 void QmlHandler::getLocalIp()
 {
     // Get local ip address and netmask

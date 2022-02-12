@@ -9,6 +9,11 @@ Item {
     id: mainWorkPageItem
     property int senderState: QmlHandler.SenderDisconnected
     property int recverState: QmlHandler.RecverDisconnected
+    enum SenderState {
+        SenderDisconnected = 0,
+        SenderListening,
+        SenderConnected
+    }
     ScrollView {
         id: mainWorkScrollView
         width: parent.width
@@ -513,6 +518,9 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
+                if(mainQmlHandler.getSenderState() !== MainWorkPage.SenderState.SenderConnected){
+                    return
+                }
                 sendFileFileDialogEx.workMode = FileDialogEx.WorkMode.SelectDirOnly
                 sendFileFileDialogEx.open()
             }
@@ -531,6 +539,10 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
+                if(mainQmlHandler.getSenderState() !== MainWorkPage.SenderState.SenderConnected){
+                    return
+                }
+
                 sendFileFileDialogEx.workMode = FileDialogEx.WorkMode.SelectFileAndDir
                 sendFileFileDialogEx.open()
             }
@@ -549,6 +561,9 @@ Item {
             iconWidth: 30
             iconHeight: 30
             onClicked: {
+                if(mainQmlHandler.getSenderState() !== MainWorkPage.SenderState.SenderConnected){
+                    return
+                }
                 mainQmlHandler.sendMessage(toSendTextArea.text)
             }
 

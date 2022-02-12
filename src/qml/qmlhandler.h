@@ -69,6 +69,7 @@ public slots:
     void setClipBoardText(const QString text);
     void setAutoConnect(const bool &isEnabled);
     void sendDir(const QString &dirPath);
+    int getSenderState();
 
 private:
     WebSender m_socketSender;

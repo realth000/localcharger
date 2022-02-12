@@ -678,6 +678,9 @@ void MainUi::onRecvFileFrameFinish(const QString fileName, const qint64 frameID,
 
 void MainUi::selectSendDir()
 {
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
     const QString dirPath = QFileDialog::getExistingDirectory(this, tr("Send dir"));
     if(dirPath.isEmpty()){
         return;
