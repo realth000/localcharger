@@ -7,11 +7,8 @@
 * CMake for Windows and Linux.
 * QMake mainly for Android.
 
-## v1.6.0
+## v1.6.1
 ### Known issues
-* Collapse in receiving directory on Android.
-* Access directory transmission although sockets not connected.
-* Error occurs if start auto-connection from Android to Linux(e.g. Manjaro).
 * UI hangs when sending file and directory, especially in Qml version.
 ### Todo lists
 * Progress bar for total progress sending/receiving directory.
