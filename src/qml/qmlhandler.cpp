@@ -495,7 +495,9 @@ void QmlHandler::autoConnectToClinet(const QString &ip, const QString &port)
         return;
     }
     emit qmlUpdateSenderIp(ip);
+    m_socketSenderIp = ip;
     emit qmlUpdateSenderPort(port.toInt());
+    m_socketSenderPort = port.toInt();
     updateWebConfig();
     m_identifier->sendAutoConnectReply();
 }
