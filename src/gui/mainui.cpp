@@ -585,7 +585,7 @@ void MainUi::on_connectSelectedClientPushButton_clicked()
     ui->senderPortLineEdit->setText(configList[3].split(" ")[1]);
     on_updateWebConfigPushButton_clicked();
 //    qInfo
-    const url_t t(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), QString::number(12336)));
+    const url_t t(QString("wss://%1:%2").arg(ui->senderUrlLineEdit->text(), QString::number(IDENTIFIER_UDP_LISTION_PORT)));
     if(!t.isValid()){
         qInfo() << "invalid url to identifier:" << t;
     }
