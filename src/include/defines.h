@@ -124,6 +124,7 @@ enum class RecverState{
 #define DAEMON_METHOD_GET_SENDER_STATUS_CODE "getSenderStatusCode"
 #define DAEMON_METHOD_GET_RECVER_STATUS_CODE "getRecverStatusCode"
 #define DAEMON_METHOD_SEND_FILE "sendFile"
+#define DAEMON_METHOD_GET_SEND_FILE_PROCESS  "getSendFileProcess"
 
 enum class AppLanguage{
     En = 0,

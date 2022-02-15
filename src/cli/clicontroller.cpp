@@ -3,6 +3,7 @@
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
+#include <QtCore/QTimer>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
@@ -13,13 +14,26 @@ QDBusInterface CliController::m_daemonInterface(DAEMON_SERVICE_NAME, DAEMON_SERV
 
 CliController::CliController(QObject *parent)
     : QObject(parent),
-      m_daemonConnectionStatus(false)
+      m_daemonConnectionStatus(false),
+      m_taskName(""),
+      m_process(-3),
+      m_processTimer()
 {
     if(!m_daemonInterface.isValid()){
         qInfo() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
         return;
     }
     m_daemonConnectionStatus = true;
+
+    connect(&m_processTimer, &QTimer::timeout, this,
+            [this](){
+        qInfo() << "123123";
+                m_daemonInterface.call(DAEMON_METHOD_GET_SEND_FILE_PROCESS, m_taskName, m_process);
+                printProcess(m_taskName, m_process);
+                if(m_process >= 100){
+                    m_processTimer.stop();
+                }
+            });
 }
 
 QString CliController::getStatus() const
@@ -133,5 +147,16 @@ void CliController::sendFile(const QString &filePath)
         qInfo() << "Daemon not connected";
         return;
     }
+    qDebug() <<"123";
     m_daemonInterface.call(DAEMON_METHOD_SEND_FILE, filePath);
+    qDebug() << "456";
+    m_processTimer.start(100);
+    qDebug() << "789";
+}
+
+void CliController::printProcess(const QString &taskName, const int &process)
+{
+    printf("1231232131233");
+    printf("%s  %d\r", taskName.toStdString().c_str(), process);
+    fflush(stdout);
 }

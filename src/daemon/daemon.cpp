@@ -17,6 +17,8 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
       m_enableAutoConnect(true),
+      m_sendFileName(""),
+      m_sendFileProcess(-1),
       m_localClientReadableName("default"),
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
@@ -142,6 +144,12 @@ void LocalChargerDaemon::sendFile(const QString &filePath)
     m_socketSender.sendFile(filePath);
 }
 
+void LocalChargerDaemon::getSendFileProcess(QString &fileName, int &sendProcess)
+{
+    fileName = m_sendFileName;
+    sendProcess = m_sendFileProcess;
+}
+
 void LocalChargerDaemon::initConnections()
 {
     // passing sender state
@@ -150,6 +158,7 @@ void LocalChargerDaemon::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &LocalChargerDaemon::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &LocalChargerDaemon::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &LocalChargerDaemon::onSendFileFrameFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &LocalChargerDaemon::onRecverConnected);
@@ -332,12 +341,18 @@ void LocalChargerDaemon::onRecverDisconnected()
 
 void LocalChargerDaemon::onSendFileStart(const QString &filePath, const qint64 &fileSize)
 {
-    qInfo() << QString("Sending file:%1(%2)").arg(filePath, fileSize);
+//    qInfo() << QString("Sending file:%1(%2)").arg(filePath, fileSize);
 }
 
 void LocalChargerDaemon::onSendFileFinish(const QString &filePath, const qint64 &fileSize)
 {
     qInfo() << QString("File sended:%1(%2)").arg(filePath, fileSize);
+}
+
+void LocalChargerDaemon::onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount)
+{
+    m_sendFileName = fileName;
+    m_sendFileProcess = 100*frameID/fileTotalFrameCount;
 }
 
 void LocalChargerDaemon::onRecvFileStart(const QString &filePath, const qint64 &fileSize)

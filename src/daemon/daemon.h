@@ -24,6 +24,7 @@ public slots:
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
+    void getSendFileProcess(QString &fileName, int &sendProcess);
 
 private:
     QString m_sockerSenderIp;
@@ -35,6 +36,8 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
+    QString m_sendFileName;
+    int m_sendFileProcess;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
@@ -65,6 +68,7 @@ private slots:
     void onRecverDisconnected();
     void onSendFileStart(const QString &filePath, const qint64 &fileSize);
     void onSendFileFinish(const QString &filePath, const qint64 &fileSize);
+    void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void onRecvFileStart(const QString &filePath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &filePath, const qint64 &fileSize);
     void recoredRecvedMsg(const QString &msg);

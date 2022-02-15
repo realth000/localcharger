@@ -1,4 +1,5 @@
-﻿#include <QtCore/QFileInfo>
+﻿#include <QtCore/QCoreApplication>
+#include <QtCore/QFileInfo>
 #include <QtCore/QRegularExpression>
 #include "getopt.h"
 #include "clicontroller.h"
@@ -38,6 +39,7 @@ bool checkRemotePath(const QString &remotePath)
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication app(argc, argv);
     int c = 0;
     int option_index = 0;
     int exitCode = 0;

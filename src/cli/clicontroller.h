@@ -1,6 +1,7 @@
 ﻿#ifndef CLICONTROLLER_H
 #define CLICONTROLLER_H
 #include <QtCore/QObject>
+#include <QtCore/QTimer>
 #include <QtDBus/QDBusInterface>
 #include "defines.h"
 #include "core/webidentifier.h"
@@ -25,6 +26,10 @@ private:
     // FIXME: Can m_daemonInterface use as non-static?
     static QDBusInterface m_daemonInterface;
     bool m_daemonConnectionStatus;
+    QString m_taskName;
+    int m_process;
+    QTimer m_processTimer;
+    void printProcess(const QString &taskName, const int &process);
 };
 
 #endif // CLICONTROLLER_H
