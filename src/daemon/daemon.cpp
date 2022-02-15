@@ -24,6 +24,7 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
     m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     getLocalIp();
     initConnections();
+    m_identifier->boardcastIdentityMessage();
 }
 
 QString LocalChargerDaemon::getStatus()
