@@ -134,6 +134,14 @@ void LocalChargerDaemon::sendMessage(const QString &msg)
     m_socketSender.sendMessage(msg);
 }
 
+void LocalChargerDaemon::sendFile(const QString &filePath)
+{
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
+    m_socketSender.sendFile(filePath);
+}
+
 void LocalChargerDaemon::initConnections()
 {
     // passing sender state

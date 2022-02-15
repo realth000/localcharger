@@ -126,3 +126,12 @@ void CliController::sendMessage(const QString &msg)
     }
     m_daemonInterface.call(DAEMON_METHOS_SEND_MESSAGE, msg);
 }
+
+void CliController::sendFile(const QString &filePath)
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.call(DAEMON_METHOD_SEND_FILE, filePath);
+}
