@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.6.1)
+set(APP_VERSION 1.6.2)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
@@ -65,9 +65,6 @@ include_directories(${CMAKE_PREFIX_PATH}/../../include/QtDBus)
 include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)
-include_directories(src/3rdparty/include)
-
-link_directories(src/3rdparty/lib)
 
 if(COMPILE_GUI)
     if(WIN32)

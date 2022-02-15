@@ -7,6 +7,9 @@
 #include <QtWebSockets/QWebSocketServer>
 #include "defines.h"
 
+#define IDENTIFIER_UDP_PORT 12335
+#define IDENTIFIER_UDP_LISTION_PORT IDENTIFIER_UDP_PORT+1
+
 class WebIdentifier : public QObject
 {
     Q_OBJECT

@@ -5,7 +5,6 @@
 #include <QtNetwork/QSslKey>
 #include <QRandomGenerator>
 
-#define IDENTIFIER_UDP_PORT 12335
 #define IDENTITY_HEADER 0x4B9ACA00
 #define IDENTITY_AUTOCONNECT_HEADER 0x6A027C31
 #define IDENTITY_AUTOCONNECT_MESSAGE_TYPE_LENGTH 1
@@ -42,7 +41,7 @@ WebIdentifier::WebIdentifier(const QString &identityReadableName, const int &ide
     sslConfigure.setProtocol(QSsl::TlsV1SslV3);
     m_socketServer->setSslConfiguration(sslConfigure);
     connect(m_socketServer, &QWebSocketServer::newConnection, this, &WebIdentifier::onNewConnection, Qt::UniqueConnection);
-    startListenPort(12336) ? qInfo() << "WebIdentifier: started listening" << 12336
+    startListenPort(IDENTIFIER_UDP_LISTION_PORT) ? qInfo() << "WebIdentifier: started listening" << IDENTIFIER_UDP_LISTION_PORT
                           : qInfo() << "WebIdentifier: start failed";
 
     // Setup m_outSocket

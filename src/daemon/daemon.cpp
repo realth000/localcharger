@@ -24,6 +24,7 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
     m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     getLocalIp();
     initConnections();
+    m_identifier->boardcastIdentityMessage();
 }
 
 QString LocalChargerDaemon::getStatus()
@@ -95,8 +96,14 @@ void LocalChargerDaemon::exitDaemon()
 void LocalChargerDaemon::connectRemote(const QString &remotePath)
 {
     qInfo() << "connect to remote" << remotePath;
-//    m_identifier->startAutoConnect(QString("wss://%1").arg(remotePath));
+    qDebug() << "after split" << remotePath.split(":") << "all" << remotePath;
+    // NOTE: remotePath here had been checked with pattern [ip:port].
+    const url_t t(QString("wss://%1:%2").arg(remotePath.split(":")[0], QString::number(IDENTIFIER_UDP_LISTION_PORT)));
     const url_t testUrl(QString("wss://%1").arg(remotePath));
+    if(!t.isValid()){
+        qInfo() << "invalid url to identifier:" << t;
+    }
+    m_identifier->startAutoConnect(t);
     if(!testUrl.isValid()){
         qInfo() << "invalid url" << testUrl.toString();
         return;
