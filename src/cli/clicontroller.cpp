@@ -78,7 +78,7 @@ int CliController::getSenderStatusCode() const
         qInfo() << "Failed to get recver status: invalid reply";
         return reply.value();
     }
-    return static_cast<int>(SenderState::Disconnected);
+    return static_cast<int>(reply.value());
 }
 
 int CliController::getRecverStatusCode() const
