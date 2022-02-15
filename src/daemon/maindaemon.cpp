@@ -6,36 +6,8 @@
 #include "daemon.h"
 #include "defines.h"
 
-#if 0
-// test
-#include "qhttpserver.hpp"
-#include "qhttpserverconnection.hpp"
-#include "qhttpserverrequest.hpp"
-#include "qhttpserverresponse.hpp"
-#include "unixcatcher.hpp"
-#endif
 int main(int argc, char *argv[])
 {
-#if 1
-    QCoreApplication a2(argc, argv);
-    Test t;
-    return a2.exec();
-#else
-    QCoreApplication a3(argc, argv);
-    using namespace qhttp::server;
-    QHttpServer server(&a3);
-    server.listen(QHostAddress::Any, 8080,
-                  [](QHttpRequest *req, QHttpResponse *res){
-                    res->setStatusCode(qhttp::ESTATUS_OK);
-    });
-    if(!server.isListening()){
-        qInfo() << "failed to listen";
-        return -1;
-    }
-    return a3.exec();
-#endif
-
-
     QCoreApplication app(argc, argv);
     QSharedMemory sharedMemory("local_charger_daemon_shared_mem11");
     if(sharedMemory.attach()){

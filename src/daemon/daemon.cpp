@@ -97,23 +97,23 @@ void LocalChargerDaemon::connectRemote(const QString &remotePath)
     qInfo() << "connect to remote" << remotePath;
 //    m_identifier->startAutoConnect(QString("wss://%1").arg(remotePath));
     const url_t testUrl(QString("wss://%1").arg(remotePath));
-    if(!testUrl.isValid()){
-        qInfo() << "invalid url" << testUrl.toString();
-        return;
-    }
-    m_sockerSenderIp = testUrl.url();
-    m_socketSenderPort = testUrl.port();
-    m_socketRecverUrl = testUrl;
-    stopSender();
-    startSender(m_socketSenderPort);
-    stopRecver();
-    if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
-        qInfo() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
-        return;
-    }
-    else{
-        startRecver(m_socketRecverUrl);
-    }
+//    if(!testUrl.isValid()){
+//        qInfo() << "invalid url" << testUrl.toString();
+//        return;
+//    }
+//    m_sockerSenderIp = testUrl.url();
+//    m_socketSenderPort = testUrl.port();
+//    m_socketRecverUrl = testUrl;
+//    stopSender();
+//    startSender(m_socketSenderPort);
+//    stopRecver();
+//    if(m_socketRecver.getRecverState() != QAbstractSocket::UnconnectedState){
+//        qInfo() << "Recver is already running" << m_socketRecver.recverUrl() << m_socketRecver.recverPort();
+//        return;
+//    }
+//    else{
+//        startRecver(m_socketRecverUrl);
+//    }
 }
 
 void LocalChargerDaemon::sendMessage(const QString &msg)
