@@ -3,6 +3,7 @@
 #include <QtCore/QSharedMemory>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusError>
+#include <QtDBus/QDBusInterface>
 #include "daemon.h"
 #include "defines.h"
 
@@ -11,14 +12,12 @@ int main(int argc, char *argv[])
     QCoreApplication app(argc, argv);
     QSharedMemory sharedMemory("local_charger_daemon_shared_mem11");
     if(sharedMemory.attach()){
-        qInfo() << "daemon already started";
-        // FIXME: Normally, there should NOT be detch().
-        // In fact, the attached sharedMemory will not free after exit, so
-        // detach() is needed, which performs different in KeyContainer.
-        // In this case, detach() will free sharedMemory so the latter
-        // start will success if the former one exited.
+        QDBusInterface daemonInterface(DAEMON_SERVICE_NAME, DAEMON_SERVICE_PATH, DAEMON_SERVICE_NAME, QDBusConnection::sessionBus());
+        if(daemonInterface.isValid()){
+            qInfo() << "daemon already started";
+            exit(-2);
+        }
         sharedMemory.detach();
-        exit(-2);
     }
     sharedMemory.create(1);
     LocalChargerDaemon d;
