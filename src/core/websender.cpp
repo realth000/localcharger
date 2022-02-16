@@ -132,7 +132,11 @@ bool WebSender::sendFile(const QString &filePath, const MsgType &msgType)
         messageArray.append(fileDataArray);
         m_currentSocket->sendBinaryMessage(messageArray);
         emit sendFileFrameFinish(fileInfo.fileName(), fileFrameID + 1, fileTotalFrameCount);
-        QThread::msleep(1000);
+        /* frame size, msleep
+         * 10485760,   1000
+         * 1048576,    100
+         */
+        QThread::msleep(100);
         messageArray.clear();
         fileSendBytes += fileDataArray.length();
         fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
