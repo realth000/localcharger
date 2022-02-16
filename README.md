@@ -9,7 +9,6 @@
 
 ## v1.6.1
 ### Known issues
-* UI hangs when sending file and directory, especially in Qml version.
 ### Todo lists
 * Progress bar for total progress sending/receiving directory.
 * Pause, resume and stop transmission.
