@@ -17,12 +17,17 @@ LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
       m_configFilePath(QCoreApplication::applicationDirPath() + QStringLiteral(NATIVE_PATH_SEP) + QStringLiteral(APP_CONFIGFILE_NAME)),
       m_saveFileDirPath(QCoreApplication::applicationDirPath()),
       m_enableAutoConnect(true),
+      m_cliInterface(CLI_SERVICE_NAME, CLI_SERVICE_PATH, CLI_SERVICE_NAME, QDBusConnection::sessionBus()),
+      m_cliDBusConnected(m_cliInterface.isValid()),
       m_sendFileName(""),
       m_sendFileProcess(-1),
       m_localClientReadableName("default"),
       m_localClientId(QRandomGenerator::securelySeeded().bounded(1000, 10000)),
       m_localWorkingPort(WEBSOCKET_PORT_DEFAULT)
 {
+    if(!m_cliDBusConnected){
+        qInfo() << "Warning: Can NOT connect to cli dbus service, running without connection" << QDBusConnection::sessionBus().lastError().message();
+    }
     m_identifier = new WebIdentifier(m_localClientReadableName, m_localClientId, m_localWorkingPort, this);
     getLocalIp();
     initConnections();
@@ -141,14 +146,21 @@ void LocalChargerDaemon::sendFile(const QString &filePath)
     if(m_socketSenderState != SenderState::Connected){
         return;
     }
+    m_sendFileName = filePath;
     m_socketSender.sendFile(filePath);
 }
 
-void LocalChargerDaemon::getSendFileProcess(QString &fileName, int &sendProcess)
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+QString LocalChargerDaemon::getSendFileName()
 {
-    fileName = m_sendFileName;
-    sendProcess = m_sendFileProcess;
+    return m_sendFileName;
 }
+
+int LocalChargerDaemon::getSendFileProgress()
+{
+    return m_sendFileProcess;
+}
+#endif
 
 void LocalChargerDaemon::initConnections()
 {
@@ -157,7 +169,7 @@ void LocalChargerDaemon::initConnections()
     connect(&m_socketSender, &WebSender::senderDisconnected, this, &LocalChargerDaemon::onSenderDisconnected);
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &LocalChargerDaemon::onSendFileStart);
-    connect(&m_socketSender, &WebSender::sendFileFinish, this, &LocalChargerDaemon::onSendFileFinish);
+//    connect(&m_socketSender, &WebSender::sendFileFinish, this, &LocalChargerDaemon::onSendFileFinish);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &LocalChargerDaemon::onSendFileFrameFinish);
 
     // passing recver state
@@ -353,6 +365,8 @@ void LocalChargerDaemon::onSendFileFrameFinish(const QString fileName, const qin
 {
     m_sendFileName = fileName;
     m_sendFileProcess = 100*frameID/fileTotalFrameCount;
+    qInfo() << "Update send file progress" << m_sendFileName << m_sendFileProcess;
+    m_cliInterface.call(CLI_METHOD_UPDATE_SEND_FILE_PROGRESS, m_sendFileName, m_sendFileProcess);
 }
 
 void LocalChargerDaemon::onRecvFileStart(const QString &filePath, const qint64 &fileSize)

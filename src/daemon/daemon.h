@@ -1,6 +1,7 @@
 #ifndef LOCALCHARGERDAEMON_H
 #define LOCALCHARGERDAEMON_H
 #include <QtCore/QObject>
+#include <QtDBus/QDBusInterface>
 #include "defines.h"
 #include "core/webidentifier.h"
 #include "core/webrecver.h"
@@ -10,6 +11,11 @@ class LocalChargerDaemon : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", DAEMON_SERVICE_NAME)
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    // FIXME: Property here not works
+    Q_PROPERTY(QString sendFileName READ getSendFileName)
+    Q_PROPERTY(int sendFileProgress READ getSendFileProgress)
+#endif
 
 public:
     LocalChargerDaemon(QObject *parent = nullptr);
@@ -24,7 +30,12 @@ public slots:
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
-    void getSendFileProcess(QString &fileName, int &sendProcess);
+    // NOTE: If use by property() and setProperty(),
+    // these two should NOT be slots.
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    QString getSendFileName();
+    int getSendFileProgress();
+#endif
 
 private:
     QString m_sockerSenderIp;
@@ -38,6 +49,8 @@ private:
     bool m_enableAutoConnect;
     QString m_sendFileName;
     int m_sendFileProcess;
+    QDBusInterface m_cliInterface;
+    const bool m_cliDBusConnected;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;

@@ -9,6 +9,8 @@
 class CliController : public QObject
 {
     Q_OBJECT
+    Q_CLASSINFO("D-Bus Interface", CLI_SERVICE_NAME)
+
 public:
     CliController(QObject *parent = nullptr);
     QString getStatus() const;
@@ -22,13 +24,19 @@ public:
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
 
+public slots:
+    void updateSendProgress(const QString &fileName, const int &fileProgress);
+
 private:
     // FIXME: Can m_daemonInterface use as non-static?
     static QDBusInterface m_daemonInterface;
     bool m_daemonConnectionStatus;
     QString m_taskName;
     int m_process;
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
     QTimer m_processTimer;
+#endif
+
     void printProcess(const QString &taskName, const int &process);
 };
 

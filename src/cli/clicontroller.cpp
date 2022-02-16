@@ -16,24 +16,42 @@ CliController::CliController(QObject *parent)
     : QObject(parent),
       m_daemonConnectionStatus(false),
       m_taskName(""),
-      m_process(-3),
+      m_process(-3)
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+                   ,
       m_processTimer()
+#endif
 {
     if(!m_daemonInterface.isValid()){
         qInfo() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
         return;
     }
     m_daemonConnectionStatus = true;
-
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    m_processTimer.setSingleShot(false);
     connect(&m_processTimer, &QTimer::timeout, this,
             [this](){
-        qInfo() << "123123";
-                m_daemonInterface.call(DAEMON_METHOD_GET_SEND_FILE_PROCESS, m_taskName, m_process);
+                // FIXME: Property here not works
+                // FIXME: valiation check always fails
+#if 1
+                QDBusReply<QString> nameReply = m_daemonInterface.call("getSendFileName");
+                m_taskName = nameReply.value();
+                QDBusReply<int> progressReply = m_daemonInterface.call("getSendFileProgress");
+                m_process = progressReply.value();
+#else
+                QVariant nameReply = m_daemonInterface.property("sendFileName");
+                m_taskName = nameReply.toString();
+                QVariant progressReply = m_daemonInterface.property("sendFileProgress");
+                m_process = progressReply.toInt();
+#endif
+                qDebug() << m_taskName << m_process << nameReply << progressReply;
                 printProcess(m_taskName, m_process);
                 if(m_process >= 100){
                     m_processTimer.stop();
+                    QCoreApplication::exit(0);
                 }
             });
+#endif
 }
 
 QString CliController::getStatus() const
@@ -147,16 +165,23 @@ void CliController::sendFile(const QString &filePath)
         qInfo() << "Daemon not connected";
         return;
     }
-    qDebug() <<"123";
-    m_daemonInterface.call(DAEMON_METHOD_SEND_FILE, filePath);
-    qDebug() << "456";
-    m_processTimer.start(100);
-    qDebug() << "789";
+//    m_processTimer.start(1000);
+    m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_FILE, filePath);
 }
 
+void CliController::updateSendProgress(const QString &fileName, const int &fileProgress)
+{
+    printf("%s: %d%%\r", fileName.toStdString().c_str(), fileProgress);
+    fflush(stdout);
+    if(fileProgress >= 100){
+        QCoreApplication::exit(0);
+    }
+}
+
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
 void CliController::printProcess(const QString &taskName, const int &process)
 {
-    printf("1231232131233");
     printf("%s  %d\r", taskName.toStdString().c_str(), process);
     fflush(stdout);
 }
+#endif

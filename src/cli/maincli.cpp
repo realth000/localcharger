@@ -1,6 +1,9 @@
 ﻿#include <QtCore/QCoreApplication>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRegularExpression>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusError>
+#include <QtDBus/QDBusInterface>
 #include "getopt.h"
 #include "clicontroller.h"
 
@@ -47,6 +50,15 @@ int main(int argc, char *argv[])
     if(!cli.getDaemonConnectionStatus()){
         return -1;
     }
+
+    QDBusConnection daemonConnection = QDBusConnection::sessionBus();
+    if(!daemonConnection.registerService(CLI_SERVICE_NAME)){
+        qInfo() << "Can NOT connect to session DBus:" << daemonConnection.lastError().message();
+        exitCode = -1;
+        return exitCode;
+    }
+    daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
+
     static struct option long_options[] ={
         {"query",        no_argument, 0, 'q'},
         {"list",         no_argument, 0, 'l'},
@@ -104,7 +116,7 @@ int main(int argc, char *argv[])
                 return exitCode;
             }
             cli.sendFile(optarg);
-            return exitCode;
+            return app.exec();
         case 'x':
             cli.exitDaemon();
             return exitCode;
