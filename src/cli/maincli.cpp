@@ -51,14 +51,6 @@ int main(int argc, char *argv[])
         return -1;
     }
 
-    QDBusConnection daemonConnection = QDBusConnection::sessionBus();
-    if(!daemonConnection.registerService(CLI_SERVICE_NAME)){
-        qInfo() << "Can NOT connect to session DBus:" << daemonConnection.lastError().message();
-        exitCode = -1;
-        return exitCode;
-    }
-    daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
-
     static struct option long_options[] ={
         {"query",        no_argument, 0, 'q'},
         {"list",         no_argument, 0, 'l'},
@@ -105,18 +97,32 @@ int main(int argc, char *argv[])
             cli.sendMessage(optarg);
             return exitCode;
         case 'f':
-            if(!QFileInfo::exists(optarg)){
-                qInfo() << "File not exists:" << optarg;
-                exitCode = -1;
-                return exitCode;
+            {
+                if(cli.getSenderStatusCode() != static_cast<int>(SenderState::Connected)) {
+                    qInfo() << "Sender not connected";
+                    exitCode = -1;
+                    return exitCode;
+                }
+                if(!QFileInfo::exists(optarg)){
+                    qInfo() << "File not exists:" << optarg;
+                    exitCode = -1;
+                    return exitCode;
+                }
+                if(!QFileInfo(optarg).isFile()){
+                    qInfo() << "Not a file:" << optarg;
+                    exitCode = -1;
+                    return exitCode;
+                }
+                QDBusConnection daemonConnection = QDBusConnection::sessionBus();
+                if(!daemonConnection.registerService(CLI_SERVICE_NAME)){
+                    qInfo() << "Can NOT connect to session DBus:" << daemonConnection.lastError().message();
+                    exitCode = -1;
+                    return exitCode;
+                }
+                daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
+                cli.sendFile(optarg);
+                return app.exec();
             }
-            if(!QFileInfo(optarg).isFile()){
-                qInfo() << "Not a file:" << optarg;
-                exitCode = -1;
-                return exitCode;
-            }
-            cli.sendFile(optarg);
-            return app.exec();
         case 'x':
             cli.exitDaemon();
             return exitCode;

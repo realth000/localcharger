@@ -174,6 +174,7 @@ void CliController::updateSendProgress(const QString &fileName, const int &fileP
     printf("%s: %d%%\r", fileName.toStdString().c_str(), fileProgress);
     fflush(stdout);
     if(fileProgress >= 100){
+        printf("\n");
         QCoreApplication::exit(0);
     }
 }
