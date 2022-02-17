@@ -7,9 +7,13 @@
 * CMake for Windows and Linux.
 * QMake mainly for Android.
 
-## v1.6.1
+## v1.7.0
 ### Known issues
-### Todo lists
-* Progress bar for total progress sending/receiving directory.
-* Pause, resume and stop transmission.
-* Single application.
+* Files and directories NOT saved to disk on Android.
+* Second connection from daemon to gui will cause gui collapse.
+* missing Cursor after send files or directories through daemon.
+
+### Todo list
+- [ ] Progress bar for total progress sending/receiving directory.
+- [ ] Pause, resume and stop transmission.
+- [ ] Single application.
