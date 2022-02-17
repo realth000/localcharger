@@ -124,11 +124,13 @@ enum class RecverState{
 #define DAEMON_METHOD_GET_SENDER_STATUS_CODE "getSenderStatusCode"
 #define DAEMON_METHOD_GET_RECVER_STATUS_CODE "getRecverStatusCode"
 #define DAEMON_METHOD_SEND_FILE "sendFile"
+#define DAEMON_METHOD_SEND_DIR "sendDir"
 
 // Cli settings
 #define CLI_SERVICE_NAME "th000.localcharger.cli"
 #define CLI_SERVICE_PATH "/th000/localcharger/cli"
 #define CLI_METHOD_UPDATE_SEND_FILE_PROGRESS   "updateSendProgress"
+#define CLI_METHOD_EXIT_CLI  "exitCli"
 
 enum class AppLanguage{
     En = 0,

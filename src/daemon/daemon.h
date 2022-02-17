@@ -30,6 +30,7 @@ public slots:
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
+    void sendDir(const QString &dirPath);
     // NOTE: If use by property() and setProperty(),
     // these two should NOT be slots.
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER

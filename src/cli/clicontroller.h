@@ -23,9 +23,11 @@ public:
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
+    void sendDir(const QString &dirPath);
 
 public slots:
     void updateSendProgress(const QString &fileName, const int &fileProgress);
+    void exitCli(const int &exitCode);
 
 private:
     // FIXME: Can m_daemonInterface use as non-static?
@@ -36,7 +38,10 @@ private:
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
     QTimer m_processTimer;
 #endif
-
+    const QString m_posChar;
+    int m_posTimes;
+    void insertChunkCursor(QString &chunk, const int &pos);
+    QString getProcessBarChunk(const int &process);
     void printProcess(const QString &taskName, const int &process);
 };
 

@@ -16,11 +16,12 @@ CliController::CliController(QObject *parent)
     : QObject(parent),
       m_daemonConnectionStatus(false),
       m_taskName(""),
-      m_process(-3)
+      m_process(-3),
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
-                   ,
-      m_processTimer()
+      m_processTimer(),
 #endif
+     m_posChar("|/-\\"),
+     m_posTimes(0)
 {
     if(!m_daemonInterface.isValid()){
         qInfo() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
@@ -169,13 +170,53 @@ void CliController::sendFile(const QString &filePath)
     m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_FILE, filePath);
 }
 
+void CliController::sendDir(const QString &dirPath)
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_DIR, dirPath);
+}
+
 void CliController::updateSendProgress(const QString &fileName, const int &fileProgress)
 {
-    printf("%s: %d%%\r", fileName.toStdString().c_str(), fileProgress);
+    printf("\33[?25l[%s %3d%%] %s\r", getProcessBarChunk(fileProgress).toStdString().c_str(), fileProgress, fileName.toStdString().c_str());
     fflush(stdout);
     if(fileProgress >= 100){
-        QCoreApplication::exit(0);
+        printf("\n");
     }
+}
+
+void CliController::exitCli(const int &exitCode)
+{
+    QCoreApplication::exit(exitCode);
+}
+
+void CliController::insertChunkCursor(QString &chunk, const int &pos)
+{
+    if(m_posTimes > 3){
+        m_posTimes = 0;
+    }
+    chunk[pos-1] = m_posChar[m_posTimes];
+    m_posTimes++;
+}
+
+QString CliController::getProcessBarChunk(const int &process)
+{
+    QString ret(10, ' ');
+    if(process < 10){
+        insertChunkCursor(ret, 1);
+        return ret;
+    }
+    int pos = 1;
+    for(; pos <= process/10; pos++){
+        ret[pos-1] = '=';
+    }
+    if(process < 100){
+        insertChunkCursor(ret, pos);
+    }
+    return ret;
 }
 
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
