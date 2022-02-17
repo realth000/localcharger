@@ -1,4 +1,9 @@
-﻿#include <QtCore/QRegularExpression>
+﻿#include <QtCore/QCoreApplication>
+#include <QtCore/QFileInfo>
+#include <QtCore/QRegularExpression>
+#include <QtDBus/QDBusConnection>
+#include <QtDBus/QDBusError>
+#include <QtDBus/QDBusInterface>
 #include "getopt.h"
 #include "clicontroller.h"
 
@@ -13,14 +18,15 @@ void printUsage()
 {
     qInfo() << "LocalChargerCli\n"
                 "Usage:\n"
-                "-q, --query       query status\n"
-                "-l, --list        list all connections\n"
-                "-s, --send        send connection to remote(ip:port)\n"
-                "-r, --remove      remove connection\n"
-                "-m, --message     send message\n"
-                "-x, --exit        disconnect and exit\n"
-                "-v, --version     check version\n"
-                "-h, --help        print this help message";
+                "  -q, --query       query status\n"
+                "  -l, --list        list all connections\n"
+                "  -s, --send        send connection to remote(ip:port)\n"
+                "  -r, --remove      remove connection\n"
+                "  -m, --message     send message\n"
+                "  -f, --file        send file\n"
+                "  -x, --exit        disconnect and exit\n"
+                "  -v, --version     check version\n"
+                "  -h, --help        print this help message";
 }
 
 bool checkRemotePath(const QString &remotePath)
@@ -36,6 +42,7 @@ bool checkRemotePath(const QString &remotePath)
 
 int main(int argc, char *argv[])
 {
+    QCoreApplication app(argc, argv);
     int c = 0;
     int option_index = 0;
     int exitCode = 0;
@@ -44,12 +51,21 @@ int main(int argc, char *argv[])
         return -1;
     }
 
+    QDBusConnection daemonConnection = QDBusConnection::sessionBus();
+    if(!daemonConnection.registerService(CLI_SERVICE_NAME)){
+        qInfo() << "Can NOT connect to session DBus:" << daemonConnection.lastError().message();
+        exitCode = -1;
+        return exitCode;
+    }
+    daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
+
     static struct option long_options[] ={
         {"query",        no_argument, 0, 'q'},
         {"list",         no_argument, 0, 'l'},
         {"send",   required_argument, 0, 's'},
         {"remove", optional_argument, 0, 'r'},
         {"message",required_argument, 0, 'm'},
+        {"file",   required_argument, 0, 'f'},
         {"exit",         no_argument, 0, 'x'},
         {"version",      no_argument, 0, 'v'},
         {"help",         no_argument, 0, 'h'},
@@ -59,7 +75,7 @@ int main(int argc, char *argv[])
         printUsage();
         return 0;
     }
-    while((c = getopt_long(argc, argv, "qls:r::m:xvh", long_options, &option_index)) != -1){
+    while((c = getopt_long(argc, argv, "qls:r::m:f:xvh", long_options, &option_index)) != -1){
         switch (c) {
         case 'q':
             cli.getStatus();
@@ -71,7 +87,7 @@ int main(int argc, char *argv[])
         case 's':
             if(!checkRemotePath(optarg)){
                 qInfo() << "Invalid remote path.\n"
-                            "e.g. 192.168.1.1:8080";
+                            "e.g. 192.168.1.1:3080";
                 exitCode = -1;
             }
             else{
@@ -88,6 +104,19 @@ int main(int argc, char *argv[])
             }
             cli.sendMessage(optarg);
             return exitCode;
+        case 'f':
+            if(!QFileInfo::exists(optarg)){
+                qInfo() << "File not exists:" << optarg;
+                exitCode = -1;
+                return exitCode;
+            }
+            if(!QFileInfo(optarg).isFile()){
+                qInfo() << "Not a file:" << optarg;
+                exitCode = -1;
+                return exitCode;
+            }
+            cli.sendFile(optarg);
+            return app.exec();
         case 'x':
             cli.exitDaemon();
             return exitCode;

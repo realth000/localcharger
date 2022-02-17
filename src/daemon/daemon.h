@@ -1,6 +1,7 @@
 #ifndef LOCALCHARGERDAEMON_H
 #define LOCALCHARGERDAEMON_H
 #include <QtCore/QObject>
+#include <QtDBus/QDBusInterface>
 #include "defines.h"
 #include "core/webidentifier.h"
 #include "core/webrecver.h"
@@ -10,6 +11,11 @@ class LocalChargerDaemon : public QObject
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", DAEMON_SERVICE_NAME)
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    // FIXME: Property here not works
+    Q_PROPERTY(QString sendFileName READ getSendFileName)
+    Q_PROPERTY(int sendFileProgress READ getSendFileProgress)
+#endif
 
 public:
     LocalChargerDaemon(QObject *parent = nullptr);
@@ -23,6 +29,13 @@ public slots:
     void exitDaemon();
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
+    void sendFile(const QString &filePath);
+    // NOTE: If use by property() and setProperty(),
+    // these two should NOT be slots.
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    QString getSendFileName();
+    int getSendFileProgress();
+#endif
 
 private:
     QString m_sockerSenderIp;
@@ -34,6 +47,10 @@ private:
     const QString m_configFilePath;
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
+    QString m_sendFileName;
+    int m_sendFileProcess;
+    QDBusInterface m_cliInterface;
+    const bool m_cliDBusConnected;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
@@ -64,6 +81,7 @@ private slots:
     void onRecverDisconnected();
     void onSendFileStart(const QString &filePath, const qint64 &fileSize);
     void onSendFileFinish(const QString &filePath, const qint64 &fileSize);
+    void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void onRecvFileStart(const QString &filePath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &filePath, const qint64 &fileSize);
     void recoredRecvedMsg(const QString &msg);

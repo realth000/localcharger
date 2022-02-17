@@ -132,7 +132,12 @@ bool WebSender::sendFile(const QString &filePath, const MsgType &msgType)
         messageArray.append(fileDataArray);
         m_currentSocket->sendBinaryMessage(messageArray);
         emit sendFileFrameFinish(fileInfo.fileName(), fileFrameID + 1, fileTotalFrameCount);
-        QThread::msleep(1000);
+        /* frame size, time
+         * 10485760,   1000
+         * 1048576,    100
+         */
+        QTimer::singleShot(100, &m_sendIntervalLoop, &QEventLoop::quit);
+        m_sendIntervalLoop.exec();
         messageArray.clear();
         fileSendBytes += fileDataArray.length();
         fileDataArray = fileToSend.read(WEBSOCKET_FILEFRAME_FRAME_LENGTH);
@@ -195,8 +200,8 @@ void WebSender::onNewConnection()
 void WebSender::socketDisconnected()
 {
     emit senderDisconnected();
-    qInfo() << "Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
+    qInfo() << "WebSender: Client disconnected" << pClient->closeCode() << pClient->closeReason();
     if(pClient != nullptr){
         m_currentSocket = nullptr;
         pClient->deleteLater();

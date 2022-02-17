@@ -45,7 +45,7 @@
 #define WEBSOCKET_FILEINFO_FILEID_NAME          "fileID"
 #define WEBSOCKET_FILEINFO_FILEID_LENGTH        32
 #define WEBSOCKET_FILEINFO_FILEFRAME_COUNT_NAME "fileFrameCount"
-#define WEBSOCKET_FILEFRAME_FRAME_LENGTH   10485760 // 1024*1024*10=10MB
+#define WEBSOCKET_FILEFRAME_FRAME_LENGTH   1048576 // 1024*1024*1=1MB
 #define WEBSOCKET_FILEFRAME_ID_LENGTH      8
 
 #define WEBSOCKET_FILEINFO_ARRAYLENGTH_LENGTH  8
@@ -123,10 +123,19 @@ enum class RecverState{
 #define DAEMON_METHOS_SEND_MESSAGE      "sendMessage"
 #define DAEMON_METHOD_GET_SENDER_STATUS_CODE "getSenderStatusCode"
 #define DAEMON_METHOD_GET_RECVER_STATUS_CODE "getRecverStatusCode"
+#define DAEMON_METHOD_SEND_FILE "sendFile"
+
+// Cli settings
+#define CLI_SERVICE_NAME "th000.localcharger.cli"
+#define CLI_SERVICE_PATH "/th000/localcharger/cli"
+#define CLI_METHOD_UPDATE_SEND_FILE_PROGRESS   "updateSendProgress"
 
 enum class AppLanguage{
     En = 0,
     Zh_cn
 };
+
+// FIXME: Can not use timer
+#define DISABLE_UPDATE_PROGRESS_BY_TIMER
 
 #endif // DEFINES_H

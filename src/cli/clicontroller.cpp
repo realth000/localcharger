@@ -3,6 +3,7 @@
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
+#include <QtCore/QTimer>
 #include <QtDBus/QDBusConnection>
 #include <QtDBus/QDBusMessage>
 #include <QtDBus/QDBusReply>
@@ -13,13 +14,44 @@ QDBusInterface CliController::m_daemonInterface(DAEMON_SERVICE_NAME, DAEMON_SERV
 
 CliController::CliController(QObject *parent)
     : QObject(parent),
-      m_daemonConnectionStatus(false)
+      m_daemonConnectionStatus(false),
+      m_taskName(""),
+      m_process(-3)
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+                   ,
+      m_processTimer()
+#endif
 {
     if(!m_daemonInterface.isValid()){
         qInfo() << "Can not connect to service:" << QDBusConnection::sessionBus().lastError().message();
         return;
     }
     m_daemonConnectionStatus = true;
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+    m_processTimer.setSingleShot(false);
+    connect(&m_processTimer, &QTimer::timeout, this,
+            [this](){
+                // FIXME: Property here not works
+                // FIXME: valiation check always fails
+#if 1
+                QDBusReply<QString> nameReply = m_daemonInterface.call("getSendFileName");
+                m_taskName = nameReply.value();
+                QDBusReply<int> progressReply = m_daemonInterface.call("getSendFileProgress");
+                m_process = progressReply.value();
+#else
+                QVariant nameReply = m_daemonInterface.property("sendFileName");
+                m_taskName = nameReply.toString();
+                QVariant progressReply = m_daemonInterface.property("sendFileProgress");
+                m_process = progressReply.toInt();
+#endif
+                qDebug() << m_taskName << m_process << nameReply << progressReply;
+                printProcess(m_taskName, m_process);
+                if(m_process >= 100){
+                    m_processTimer.stop();
+                    QCoreApplication::exit(0);
+                }
+            });
+#endif
 }
 
 QString CliController::getStatus() const
@@ -78,7 +110,7 @@ int CliController::getSenderStatusCode() const
         qInfo() << "Failed to get recver status: invalid reply";
         return reply.value();
     }
-    return static_cast<int>(SenderState::Disconnected);
+    return static_cast<int>(reply.value());
 }
 
 int CliController::getRecverStatusCode() const
@@ -126,3 +158,30 @@ void CliController::sendMessage(const QString &msg)
     }
     m_daemonInterface.call(DAEMON_METHOS_SEND_MESSAGE, msg);
 }
+
+void CliController::sendFile(const QString &filePath)
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return;
+    }
+//    m_processTimer.start(1000);
+    m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_FILE, filePath);
+}
+
+void CliController::updateSendProgress(const QString &fileName, const int &fileProgress)
+{
+    printf("%s: %d%%\r", fileName.toStdString().c_str(), fileProgress);
+    fflush(stdout);
+    if(fileProgress >= 100){
+        QCoreApplication::exit(0);
+    }
+}
+
+#ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
+void CliController::printProcess(const QString &taskName, const int &process)
+{
+    printf("%s  %d\r", taskName.toStdString().c_str(), process);
+    fflush(stdout);
+}
+#endif

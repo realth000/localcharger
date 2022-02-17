@@ -156,7 +156,7 @@ void WebIdentifier::onNewConnection()
 
 void WebIdentifier::socketDisconnected()
 {
-    qInfo() << "Client disconnected";
+    qInfo() << "WebIdentifier: Client disconnected";
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
     if(pClient != nullptr){
         m_inSocket = nullptr;

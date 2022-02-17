@@ -2,6 +2,8 @@
 #define WEBSENDER_H
 
 #include <QtWebSockets/QWebSocket>
+#include <QtCore/QEventLoop>
+#include <QtCore/QTimer>
 #include <QtCore/QObject>
 #include <QtNetwork/QSslError>
 #include <QtWebSockets/QWebSocket>
@@ -49,6 +51,7 @@ private:
     bool startListenPort(const port_t &port);
     QByteArray generateFileInfoMessage(const QString &filePath, const MsgType &msgType = MsgType::SingleFile);
     QString m_rootPath; // Use when sending directory, replace() and get the relative file path.
+    QEventLoop m_sendIntervalLoop;
 };
 
 #endif // WEBSENDER_H
