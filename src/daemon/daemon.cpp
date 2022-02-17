@@ -147,6 +147,7 @@ void LocalChargerDaemon::sendFile(const QString &filePath)
         return;
     }
     m_socketSender.sendFile(filePath);
+    m_cliInterface.call(CLI_METHOD_EXIT_CLI, 0);
 }
 
 void LocalChargerDaemon::sendDir(const QString &dirPath)
@@ -155,6 +156,7 @@ void LocalChargerDaemon::sendDir(const QString &dirPath)
         return;
     }
     m_socketSender.sendDir(dirPath);
+    m_cliInterface.call(CLI_METHOD_EXIT_CLI, 0);
 }
 
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER

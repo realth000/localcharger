@@ -27,6 +27,7 @@ public:
 
 public slots:
     void updateSendProgress(const QString &fileName, const int &fileProgress);
+    void exitCli(const int &exitCode);
 
 private:
     // FIXME: Can m_daemonInterface use as non-static?

@@ -184,8 +184,12 @@ void CliController::updateSendProgress(const QString &fileName, const int &fileP
     fflush(stdout);
     if(fileProgress >= 100){
         printf("\n");
-        QCoreApplication::exit(0);
     }
+}
+
+void CliController::exitCli(const int &exitCode)
+{
+    QCoreApplication::exit(exitCode);
 }
 
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER

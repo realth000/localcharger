@@ -130,6 +130,7 @@ enum class RecverState{
 #define CLI_SERVICE_NAME "th000.localcharger.cli"
 #define CLI_SERVICE_PATH "/th000/localcharger/cli"
 #define CLI_METHOD_UPDATE_SEND_FILE_PROGRESS   "updateSendProgress"
+#define CLI_METHOD_EXIT_CLI  "exitCli"
 
 enum class AppLanguage{
     En = 0,
