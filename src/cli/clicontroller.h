@@ -38,7 +38,10 @@ private:
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
     QTimer m_processTimer;
 #endif
-
+    const QString m_posChar;
+    int m_posTimes;
+    void insertChunkCursor(QString &chunk, const int &pos);
+    QString getProcessBarChunk(const int &process);
     void printProcess(const QString &taskName, const int &process);
 };
 
