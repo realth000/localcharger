@@ -146,8 +146,15 @@ void LocalChargerDaemon::sendFile(const QString &filePath)
     if(m_socketSenderState != SenderState::Connected){
         return;
     }
-    m_sendFileName = filePath;
     m_socketSender.sendFile(filePath);
+}
+
+void LocalChargerDaemon::sendDir(const QString &dirPath)
+{
+    if(m_socketSenderState != SenderState::Connected){
+        return;
+    }
+    m_socketSender.sendDir(dirPath);
 }
 
 #ifndef DISABLE_UPDATE_PROGRESS_BY_TIMER
@@ -354,6 +361,7 @@ void LocalChargerDaemon::onRecverDisconnected()
 void LocalChargerDaemon::onSendFileStart(const QString &filePath, const qint64 &fileSize)
 {
 //    qInfo() << QString("Sending file:%1(%2)").arg(filePath, fileSize);
+    m_sendFileName = filePath;
 }
 
 void LocalChargerDaemon::onSendFileFinish(const QString &filePath, const qint64 &fileSize)

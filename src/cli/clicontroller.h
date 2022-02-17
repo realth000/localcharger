@@ -23,6 +23,7 @@ public:
     void connectRemote(const QString &remotePath);
     void sendMessage(const QString &msg);
     void sendFile(const QString &filePath);
+    void sendDir(const QString &dirPath);
 
 public slots:
     void updateSendProgress(const QString &fileName, const int &fileProgress);

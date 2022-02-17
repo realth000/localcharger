@@ -24,6 +24,7 @@ void printUsage()
                 "  -r, --remove      remove connection\n"
                 "  -m, --message     send message\n"
                 "  -f, --file        send file\n"
+                "  -d, --dir         send dir\n"
                 "  -x, --exit        disconnect and exit\n"
                 "  -v, --version     check version\n"
                 "  -h, --help        print this help message";
@@ -67,7 +68,7 @@ int main(int argc, char *argv[])
         printUsage();
         return 0;
     }
-    while((c = getopt_long(argc, argv, "qls:r::m:f:xvh", long_options, &option_index)) != -1){
+    while((c = getopt_long(argc, argv, "qls:r::m:f:d:xvh", long_options, &option_index)) != -1){
         switch (c) {
         case 'q':
             cli.getStatus();
@@ -123,6 +124,34 @@ int main(int argc, char *argv[])
                 cli.sendFile(optarg);
                 return app.exec();
             }
+        case 'd':
+            {
+                if(cli.getSenderStatusCode() != static_cast<int>(SenderState::Connected)) {
+                    qInfo() << "Sender not connected";
+                    exitCode = -1;
+                    return exitCode;
+                }
+                if(!QFileInfo::exists(optarg)){
+                    qInfo() << "Directory not exists:" << optarg;
+                    exitCode = -1;
+                    return exitCode;
+                }
+                if(!QFileInfo(optarg).isDir()){
+                    qInfo() << "Not a directory:" << optarg;
+                    exitCode = -1;
+                    return exitCode;
+                }
+                QDBusConnection daemonConnection = QDBusConnection::sessionBus();
+                if(!daemonConnection.registerService(CLI_SERVICE_NAME)){
+                    qInfo() << "Can NOT connect to session DBus:" << daemonConnection.lastError().message();
+                    exitCode = -1;
+                    return exitCode;
+                }
+                daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
+                cli.sendDir(optarg);
+                return app.exec();
+            }
+            return exitCode;
         case 'x':
             cli.exitDaemon();
             return exitCode;

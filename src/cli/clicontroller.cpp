@@ -169,6 +169,15 @@ void CliController::sendFile(const QString &filePath)
     m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_FILE, filePath);
 }
 
+void CliController::sendDir(const QString &dirPath)
+{
+    if(!m_daemonConnectionStatus){
+        qInfo() << "Daemon not connected";
+        return;
+    }
+    m_daemonInterface.asyncCall(DAEMON_METHOD_SEND_DIR, dirPath);
+}
+
 void CliController::updateSendProgress(const QString &fileName, const int &fileProgress)
 {
     printf("%s: %d%%\r", fileName.toStdString().c_str(), fileProgress);
