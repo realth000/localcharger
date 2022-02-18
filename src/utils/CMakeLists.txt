@@ -8,5 +8,5 @@
 endif()
 
 if(UNIX AND COMPILE_DAEMON)
-    target_sources(localcharger-daemon PRIVATE randomgenerator.cpp networkinfohelper.cpp)
+    target_sources(localcharger-daemon PRIVATE randomgenerator.cpp networkinfohelper.cpp filehelper.h filehelper.cpp)
 endif()
