@@ -181,7 +181,7 @@ void CliController::sendDir(const QString &dirPath)
 
 void CliController::updateSendProgress(const QString &fileName, const int &fileProgress)
 {
-    printf("\33[?25l[%s %3d%%] %s\r", getProcessBarChunk(fileProgress).toStdString().c_str(), fileProgress, fileName.toStdString().c_str());
+    printf("[%s %3d%%] %s\r", getProcessBarChunk(fileProgress).toStdString().c_str(), fileProgress, fileName.toStdString().c_str());
     fflush(stdout);
     if(fileProgress >= 100){
         printf("\n");

@@ -1,9 +1,12 @@
 #include "daemon.h"
 #include <QtCore/QCoreApplication>
+#include <QtCore/QDir>
+#include <QtCore/QFileInfo>
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
 #include <QtCore/QThread>
 #include <QtNetwork/QNetworkInterface>
+#include "filehelper.h"
 #include "utils/networkinfohelper.h"
 
 LocalChargerDaemon::LocalChargerDaemon(QObject *parent)
@@ -155,6 +158,21 @@ void LocalChargerDaemon::sendDir(const QString &dirPath)
     if(m_socketSenderState != SenderState::Connected){
         return;
     }
+    qint64 fileCount = 0;
+    qint64 totalSize = 0;
+    dir_lists dirVector;
+    if(!FileHelper::checkDirectoryInfo(dirPath, fileCount, totalSize, dirVector)){
+        qInfo() << "Error checking directory:" << dirPath;
+        return;
+    }
+    // test
+    qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    dirVector.prepend(QFileInfo(dirPath).fileName());
+    qInfo() << "all dirs:" << dirVector << QFileInfo(dirPath).fileName();
+    // Set local root path
+    m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    // Let remote make directory
+    m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
     m_cliInterface.call(CLI_METHOD_EXIT_CLI, 0);
 }
