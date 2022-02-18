@@ -1,4 +1,5 @@
 ﻿#include "qmlhandler.h"
+#include <QtCore/QDir>
 #include <QtCore/QFileInfo>
 #include <QtCore/QRandomGenerator>
 #include <QtCore/QSettings>
@@ -356,8 +357,9 @@ void QmlHandler::sendDir(const QString &dirPath)
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector;
-    m_socketSender.setRootPath(dirPath);
+    m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
 }
