@@ -574,6 +574,7 @@ Item {
         id: sendFileFileDialogEx
         fontSize: 12
         onChangeSelectedDir: {
+            close
             var fileSavePath = selectedPath
             console.log("select file", fileSavePath)
             if(workMode === FileDialogEx.WorkMode.SelectFileAndDir){

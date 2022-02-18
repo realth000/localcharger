@@ -10,7 +10,7 @@ project(LocalCharger
 set(COMPILE_GUI    ON CACHE BOOL "Compile GUI version(LocalCharger)" FORCE)
 set(COMPILE_DAEMON ON CACHE BOOL "Compile DBus-daemon(localcharger-daemon)" FORCE)
 set(COMPILE_CLI    ON CACHE BOOL "Compile CLI version(LocalChargerCli), use with dbus" FORCE)
-set(COMPILE_QML    OFF CACHE BOOL "Compile Qt.Quick version LocalCharger" FORCE)
+set(COMPILE_QML    ON CACHE BOOL "Compile Qt.Quick version LocalCharger" FORCE)
 
 
 set(CMAKE_CXX_STANDARD 11)
