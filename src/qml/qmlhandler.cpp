@@ -169,10 +169,12 @@ void QmlHandler::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &QmlHandler::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &QmlHandler::onSendFileFrameFinish);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &QmlHandler::onRecverConnected);
     connect(&m_socketRecver, &WebRecver::recverDisconnected, this, &QmlHandler::onRecverDisconnected);
+    connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &QmlHandler::onRecvFileFrameFinish);
 
     // TODO: transport files
     // passing recver message
@@ -450,6 +452,11 @@ void QmlHandler::onSendFileFinish(const QString &fielPath, const qint64 &sendByt
 
 }
 
+void QmlHandler::onSendFileFrameFinish(const QString &fileName, const qint64 &frameID, const qint64 &fileTotalFrameCount)
+{
+    emit qmlUpdateProgress(fileName, frameID, fileTotalFrameCount);
+}
+
 void QmlHandler::onRecvFileStart(const QString &fielPath, const qint64 &fileSize)
 {
     emit qmlAppendRecvedMessage(QString("<font color=\"%3\">Recving file:</font>"
@@ -464,6 +471,11 @@ void QmlHandler::onRecvFileFinish(const QString &fielPath, const qint64 &recvByt
                                         " %1 "
                                         "<font color=\"%4\">(%2 bytes)</font>").
                                 arg(fielPath, QString::number(recvBytes), MSGRECV_TEXTEDIT_RECVED_HEAD_COLOR, MSGRECV_TEXTEDIT_RECVED_TAIL_COLOR));
+}
+
+void QmlHandler::onRecvFileFrameFinish(const QString &filePath, const qint64 &frameID, const qint64 &fileTotalFrameCount)
+{
+    emit qmlUpdateProgress(filePath, frameID, fileTotalFrameCount);
 }
 
 void QmlHandler::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)

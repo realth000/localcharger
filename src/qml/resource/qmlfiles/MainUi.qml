@@ -95,6 +95,10 @@ ApplicationWindow {
             workPage.updateClientId(id)
         }
 
+        onQmlUpdateProgress: {
+            workPage.updateProgress(filePath, frameID, fileTotalFrameCount)
+        }
+
         // files/messages info display
         onQmlAppendSendedMessage: {
             workPage.appendSendedMessage(msg)
