@@ -1,5 +1,7 @@
-﻿#include <QtCore/QTranslator>
+﻿#include <QtCore/QSharedMemory>
+#include <QtCore/QTranslator>
 #include <QtGui/QFont>
+#include "messageboxexx.h"
 
 #ifdef ENABLE_QML
 #include <QtCore/QCoreApplication>
@@ -83,8 +85,16 @@ int main(int argc, char *argv[])
 
     a.installTranslator(&appTranslator);
     a.setFont(appFont);
+    QSharedMemory sharedMemory("local_charger_daemon_shared_mem");
+    if(sharedMemory.attach()){
+        MessageBoxExY::information("LocalCharger", "Already started, quit now.", "OK");
+        return -1;
+    }
+    sharedMemory.create(1);
     MainUi w(nullptr, appLanguage);
     w.show();
-    return a.exec();
+    const int exitCode = a.exec();
+    sharedMemory.detach();
+    return exitCode;
 #endif
 }
