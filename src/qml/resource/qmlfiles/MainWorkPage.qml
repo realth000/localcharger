@@ -584,16 +584,28 @@ Item {
 
     FileDialogEx {
         id: sendFileFileDialogEx
+        property string currentPath: ""
         fontSize: 12
         onChangeSelectedDir: {
             close
-            var fileSavePath = selectedPath
-            console.log("select file", fileSavePath)
-            if(workMode === FileDialogEx.WorkMode.SelectFileAndDir){
-                mainQmlHandler.sendFile(fileSavePath)
-            }
-            else{
-                mainQmlHandler.sendDir(fileSavePath)
+            currentPath = selectedPath
+            starter.start()
+        }
+        Timer {
+            id: starter
+            interval: 200
+            repeat: false
+            running: false
+            triggeredOnStart: false
+            onTriggered: {
+                var fileSavePath = sendFileFileDialogEx.currentPath
+                console.log("select file", fileSavePath)
+                if(sendFileFileDialogEx.workMode === FileDialogEx.WorkMode.SelectFileAndDir){
+                    mainQmlHandler.sendFile(fileSavePath)
+                }
+                else{
+                    mainQmlHandler.sendDir(fileSavePath)
+                }
             }
         }
     }
