@@ -9,6 +9,7 @@ Item {
     id: mainWorkPageItem
     property int senderState: QmlHandler.SenderDisconnected
     property int recverState: QmlHandler.RecverDisconnected
+    property string currentFile: ""
     enum SenderState {
         SenderDisconnected = 0,
         SenderListening,
@@ -299,6 +300,17 @@ Item {
                 }
             }
         }
+        ProgressBarEx {
+            id: transportProgressBar
+            height: 70
+            width: socketCtlGroupBoxEx.width
+            anchors.top: socketCtlGroupBoxEx.bottom
+            anchors.topMargin: 20
+            leftPadding: socketCtlGroupBoxEx.labelLeftMargin
+            rightPadding: socketCtlGroupBoxEx.labelLeftMargin
+            text: qsTr("File:") + mainWorkPageItem.currentFile
+            value: 0
+        }
 
         GroupBoxEx {
             id: recvedGroupBoxEx
@@ -306,7 +318,7 @@ Item {
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
             height: recvedTextRectangle.height + titleHeight + 10 + 10
-            anchors.top: socketCtlGroupBoxEx.bottom
+            anchors.top: transportProgressBar.bottom
             anchors.topMargin: 20
             Rectangle {
                 id: recvedTextRectangle
@@ -572,19 +584,29 @@ Item {
 
     FileDialogEx {
         id: sendFileFileDialogEx
+        property string currentPath: ""
         fontSize: 12
         onChangeSelectedDir: {
             close
-            var fileSavePath = selectedPath
-            console.log("select file", fileSavePath)
-            if(workMode === FileDialogEx.WorkMode.SelectFileAndDir){
-                mainQmlHandler.sendFile(fileSavePath)
+            currentPath = selectedPath
+            starter.start()
+        }
+        Timer {
+            id: starter
+            interval: 200
+            repeat: false
+            running: false
+            triggeredOnStart: false
+            onTriggered: {
+                var fileSavePath = sendFileFileDialogEx.currentPath
+                console.log("select file", fileSavePath)
+                if(sendFileFileDialogEx.workMode === FileDialogEx.WorkMode.SelectFileAndDir){
+                    mainQmlHandler.sendFile(fileSavePath)
+                }
+                else{
+                    mainQmlHandler.sendDir(fileSavePath)
+                }
             }
-            else{
-                mainQmlHandler.sendDir(fileSavePath)
-            }
-
-
         }
     }
 
@@ -659,6 +681,19 @@ Item {
 
     function updateClientId(id) {
         clientIdTextFieldEx.text = id
+    }
+
+    function updateProgress(fileName, frameID, totalFrame) {
+        currentFile = fileName
+        var percent = (frameID/totalFrame).toFixed(4)
+        if (percent == 1) {
+            transportProgressBar.setIcon("qrc:/pic/connected.png")
+        }
+        else {
+            transportProgressBar.setIcon("qrc:/pic/connecting.png")
+        }
+
+        transportProgressBar.value = percent
     }
 
     function getToSendMessage() {

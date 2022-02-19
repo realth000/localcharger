@@ -46,6 +46,7 @@ signals:
     void qmlUpdateFileSavePath(QString path);
     void qmlAddClient(QString ip, QString port, QString readableName, QString id);
     void qmlUpdateClientAutoConnect(bool isEnabled);
+    void qmlUpdateProgress(QString filePath, qint64 frameID, qint64 fileTotalFrameCount);
 
 public slots:
     void initHandler();
@@ -115,8 +116,10 @@ private slots:
     void onRecoredRecvedMsg(const QString &msg);
     void onSendFileStart(const QString &fielPath, const qint64 &fileSize);
     void onSendFileFinish(const QString &fielPath, const qint64 &sendBytes);
+    void onSendFileFrameFinish(const QString &fileName, const qint64 &frameID, const qint64 &fileTotalFrameCount);
     void onRecvFileStart(const QString &fielPath, const qint64 &fileSize);
     void onRecvFileFinish(const QString &fielPath, const qint64 &recvBytes);
+    void onRecvFileFrameFinish(const QString &filePath, const qint64 &frameID, const qint64 &fileTotalFrameCount);
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
     void autoConnectToClinet(const QString &ip, const QString &port);
     void onGetAutoConnectReply();
