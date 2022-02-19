@@ -685,7 +685,7 @@ Item {
 
     function updateProgress(fileName, frameID, totalFrame) {
         currentFile = fileName
-        var percent = (frameID/totalFrame).toFixed(2)
+        var percent = (frameID/totalFrame).toFixed(4)
         if (percent == 1) {
             transportProgressBar.setIcon("qrc:/pic/connected.png")
         }

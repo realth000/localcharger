@@ -85,7 +85,7 @@ Rectangle {
         }
 
         Text {
-            text: 100*value + "%"
+            text: (100*value).toFixed(2) + "%"
             font.pixelSize: 15
             anchors.horizontalCenter: chunk.horizontalCenter
             anchors.verticalCenter: chunk.verticalCenter
