@@ -7,11 +7,8 @@
 * CMake for Windows and Linux.
 * QMake mainly for Android.
 
-## v1.7.2
+## v1.7.3
 ### Known issues
-* ~~Files and directories NOT saved to disk on Android.~~
-* Second connection from daemon to gui will cause gui collapse.
-* ~~missing Cursor after send files or directories through daemon.~~
 
 ### Todo list
 - [ ] Progress bar for total progress sending/receiving directory.
