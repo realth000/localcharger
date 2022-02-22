@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
@@ -193,7 +193,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="381"/>
-        <location filename="../../gui/mainui.cpp" line="681"/>
+        <location filename="../../gui/mainui.cpp" line="684"/>
         <source>Send dir</source>
         <translation>Send dir</translation>
     </message>
@@ -287,58 +287,63 @@
 <context>
     <name>MainWorkPage</name>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="28"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="34"/>
         <source>Connections</source>
         <translation>Connections</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="84"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="90"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="179"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="185"/>
         <source>Broadcast</source>
         <translation>Broadcast</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="193"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="199"/>
         <source>Connect</source>
         <translation>Connect</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="240"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="246"/>
         <source>Start sender</source>
         <translation>Start sender</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="279"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="285"/>
         <source>Start receiver</source>
         <translation>Start receiver</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="300"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="311"/>
+        <source>File:</source>
+        <translation>File:</translation>
+    </message>
+    <message>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="317"/>
         <source>Received</source>
         <translation>Received</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="390"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="407"/>
         <source>Sended</source>
         <translation>Sended</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="480"/>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="544"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="497"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="568"/>
         <source>Send text</source>
         <translation>Send text</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="508"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="525"/>
         <source>Send dir</source>
         <translation>Send dir</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="526"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="546"/>
         <source>Send file</source>
         <translation>Send file</translation>
     </message>
