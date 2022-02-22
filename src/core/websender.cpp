@@ -203,8 +203,8 @@ void WebSender::socketDisconnected()
 {
     emit senderDisconnected();
     QWebSocket *pClient = qobject_cast<QWebSocket *>(sender());
-    qInfo() << "WebSender: Client disconnected" << pClient->closeCode() << pClient->closeReason();
     if(pClient != nullptr){
+        qInfo() << "WebSender: Client disconnected" << pClient->closeCode() << pClient->closeReason();
         m_currentSocket = nullptr;
         pClient->deleteLater();
     }
