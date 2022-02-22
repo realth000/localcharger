@@ -1,7 +1,6 @@
 ﻿#include <QtCore/QSharedMemory>
 #include <QtCore/QTranslator>
 #include <QtGui/QFont>
-#include "messageboxexx.h"
 
 #ifdef ENABLE_QML
 #include <QtCore/QCoreApplication>
@@ -17,6 +16,8 @@
 
 #ifdef Q_OS_ANDROID
 #include <QtGui/QFontDatabase>
+#else
+#include "messageboxexx.h"
 #endif
 
 #ifdef ENABLE_VID
@@ -85,16 +86,22 @@ int main(int argc, char *argv[])
 
     a.installTranslator(&appTranslator);
     a.setFont(appFont);
+#ifndef Q_OS_ANDROID
     QSharedMemory sharedMemory("local_charger_daemon_shared_mem");
     if(sharedMemory.attach()){
         MessageBoxExY::information("LocalCharger", "Already started, quit now.", "OK");
         return -1;
     }
     sharedMemory.create(1);
+#endif // #ifndef Q_OS_ANDROID
     MainUi w(nullptr, appLanguage);
     w.show();
+#ifndef Q_OS_ANDROID
     const int exitCode = a.exec();
     sharedMemory.detach();
     return exitCode;
+#else
+    return app.exec();
+#endif // #ifndef Q_OS_ANDROID
 #endif
 }
