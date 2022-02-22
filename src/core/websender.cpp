@@ -72,8 +72,10 @@ void WebSender::stop()
 {
     if(m_currentSocket != nullptr){
         m_currentSocket->close();
-        delete m_currentSocket;
-        m_currentSocket = nullptr;
+        // Usually actions below will handle in SLOT socketDisconnected.
+        // FIXME: Be careful, non-connect socket may exists.
+        // delete m_currentSocket;
+        // m_currentSocket = nullptr;
     }
     m_socketServer->close();
 }
