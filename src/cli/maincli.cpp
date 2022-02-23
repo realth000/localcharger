@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         {"remove", optional_argument, 0, 'r'},
         {"message",required_argument, 0, 'm'},
         {"file",   required_argument, 0, 'f'},
+        {"dir",    required_argument, 0, 'd'},
         {"exit",         no_argument, 0, 'x'},
         {"version",      no_argument, 0, 'v'},
         {"help",         no_argument, 0, 'h'},
