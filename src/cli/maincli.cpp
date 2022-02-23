@@ -59,6 +59,7 @@ int main(int argc, char *argv[])
         {"remove", optional_argument, 0, 'r'},
         {"message",required_argument, 0, 'm'},
         {"file",   required_argument, 0, 'f'},
+        {"dir",    required_argument, 0, 'd'},
         {"exit",         no_argument, 0, 'x'},
         {"version",      no_argument, 0, 'v'},
         {"help",         no_argument, 0, 'h'},
@@ -104,12 +105,13 @@ int main(int argc, char *argv[])
                     exitCode = -1;
                     return exitCode;
                 }
-                if(!QFileInfo::exists(optarg)){
+                QFileInfo fileInfo(optarg);
+                if(!fileInfo.exists()){
                     qInfo() << "File not exists:" << optarg;
                     exitCode = -1;
                     return exitCode;
                 }
-                if(!QFileInfo(optarg).isFile()){
+                if(!fileInfo.isFile()){
                     qInfo() << "Not a file:" << optarg;
                     exitCode = -1;
                     return exitCode;
@@ -121,7 +123,7 @@ int main(int argc, char *argv[])
                     return exitCode;
                 }
                 daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
-                cli.sendFile(optarg);
+                cli.sendFile(fileInfo.absoluteFilePath());
                 return app.exec();
             }
         case 'd':
@@ -131,12 +133,13 @@ int main(int argc, char *argv[])
                     exitCode = -1;
                     return exitCode;
                 }
-                if(!QFileInfo::exists(optarg)){
+                QFileInfo dirInfo(optarg);
+                if(!dirInfo.exists()){
                     qInfo() << "Directory not exists:" << optarg;
                     exitCode = -1;
                     return exitCode;
                 }
-                if(!QFileInfo(optarg).isDir()){
+                if(!dirInfo.isDir()){
                     qInfo() << "Not a directory:" << optarg;
                     exitCode = -1;
                     return exitCode;
@@ -148,7 +151,7 @@ int main(int argc, char *argv[])
                     return exitCode;
                 }
                 daemonConnection.registerObject(CLI_SERVICE_PATH, CLI_SERVICE_NAME, &cli, QDBusConnection::ExportAllSlots);
-                cli.sendDir(optarg);
+                cli.sendDir(dirInfo.absoluteFilePath());
                 return app.exec();
             }
             return exitCode;
