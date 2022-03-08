@@ -384,6 +384,7 @@ void MainUi::addDetectedClients(const QString &ip, const QString &port, const QS
                                            tr("ID") + ": %2\n" +
                                            tr("IP") + ": %3\n" +
                                            tr("Port") + ": %4").arg(readableName, id, ip, port));
+    ui->clientsListWidget->setCurrentRow(ui->clientsListWidget->count() - 1);
 }
 
 void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)

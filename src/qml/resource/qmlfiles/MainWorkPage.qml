@@ -165,6 +165,11 @@ Item {
                                 rightBorderColor: "#f0ffff"
                                 radius: 10
                             }
+                            onCountChanged: {
+                                if(count >= 1) {
+                                    currentIndex = count - 1
+                                }
+                            }
                         }
                     }
 
