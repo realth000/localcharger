@@ -77,8 +77,8 @@
     <message>
         <location filename="../../gui/mainui.ui" line="69"/>
         <location filename="../../gui/mainui.ui" line="317"/>
-        <location filename="../../gui/mainui.cpp" line="285"/>
-        <location filename="../../gui/mainui.cpp" line="309"/>
+        <location filename="../../gui/mainui.cpp" line="288"/>
+        <location filename="../../gui/mainui.cpp" line="312"/>
         <source>closed</source>
         <translation>已关闭</translation>
     </message>
@@ -134,8 +134,8 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="368"/>
-        <location filename="../../gui/mainui.cpp" line="469"/>
-        <location filename="../../gui/mainui.cpp" line="669"/>
+        <location filename="../../gui/mainui.cpp" line="481"/>
+        <location filename="../../gui/mainui.cpp" line="683"/>
         <source>Send file</source>
         <translation>发送文件</translation>
     </message>
@@ -156,7 +156,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="467"/>
-        <location filename="../../gui/mainui.cpp" line="383"/>
+        <location filename="../../gui/mainui.cpp" line="386"/>
         <source>Name</source>
         <translation>名称</translation>
     </message>
@@ -177,8 +177,13 @@
         <translation>文件</translation>
     </message>
     <message>
+        <location filename="../../gui/mainui.ui" line="581"/>
+        <source>Total:</source>
+        <translation>总计：</translation>
+    </message>
+    <message>
         <location filename="../../gui/mainui.ui" line="490"/>
-        <location filename="../../gui/mainui.cpp" line="384"/>
+        <location filename="../../gui/mainui.cpp" line="387"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
@@ -189,7 +194,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="381"/>
-        <location filename="../../gui/mainui.cpp" line="684"/>
+        <location filename="../../gui/mainui.cpp" line="698"/>
         <source>Send dir</source>
         <translation>发送文件夹</translation>
     </message>
@@ -199,73 +204,73 @@
         <translation>保存目录</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="290"/>
+        <location filename="../../gui/mainui.cpp" line="293"/>
         <source>listening</source>
         <translation>监听中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="295"/>
-        <location filename="../../gui/mainui.cpp" line="317"/>
+        <location filename="../../gui/mainui.cpp" line="298"/>
+        <location filename="../../gui/mainui.cpp" line="320"/>
         <source>connected</source>
         <translation>已连接</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="313"/>
+        <location filename="../../gui/mainui.cpp" line="316"/>
         <source>connecting</source>
         <translation>连接中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="385"/>
+        <location filename="../../gui/mainui.cpp" line="388"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="386"/>
+        <location filename="../../gui/mainui.cpp" line="389"/>
         <source>Port</source>
         <translation>端口</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="534"/>
+        <location filename="../../gui/mainui.cpp" line="548"/>
         <source>Sending file</source>
         <translation>发送文件中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="542"/>
+        <location filename="../../gui/mainui.cpp" line="556"/>
         <source>File sended</source>
         <translation>文件已发送</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="550"/>
+        <location filename="../../gui/mainui.cpp" line="564"/>
         <source>Recving file</source>
         <translation>接收文件中</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="558"/>
+        <location filename="../../gui/mainui.cpp" line="572"/>
         <source>File recvied</source>
         <translation>文件已接收</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="647"/>
+        <location filename="../../gui/mainui.cpp" line="661"/>
         <source>Cut</source>
         <translation>剪切</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="648"/>
+        <location filename="../../gui/mainui.cpp" line="662"/>
         <source>Copy</source>
         <translation>复制</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="649"/>
+        <location filename="../../gui/mainui.cpp" line="663"/>
         <source>Paste</source>
         <translation>粘贴</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="650"/>
+        <location filename="../../gui/mainui.cpp" line="664"/>
         <source>Select all</source>
         <translation>全选</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="675"/>
+        <location filename="../../gui/mainui.cpp" line="689"/>
         <source>Recv file</source>
         <translation>接收文件</translation>
     </message>
@@ -293,53 +298,58 @@
         <translation>名称</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="185"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="190"/>
         <source>Broadcast</source>
         <translation>广播</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="199"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="204"/>
         <source>Connect</source>
         <translation>连接</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="246"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="251"/>
         <source>Start sender</source>
         <translation>开启发送端</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="285"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="290"/>
         <source>Start receiver</source>
         <translation>开启接收端</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="311"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="316"/>
         <source>File:</source>
-        <translation type="unfinished">文件</translation>
+        <translation>文件</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="317"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="327"/>
+        <source>Total:</source>
+        <translation>总计：</translation>
+    </message>
+    <message>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="333"/>
         <source>Received</source>
         <translation>已接收</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="407"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="423"/>
         <source>Sended</source>
         <translation>已发送</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="497"/>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="568"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="513"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="584"/>
         <source>Send text</source>
         <translation>发送文字</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="525"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="541"/>
         <source>Send dir</source>
         <translation>发送文件夹</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="546"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="562"/>
         <source>Send file</source>
         <translation>发送文件</translation>
     </message>

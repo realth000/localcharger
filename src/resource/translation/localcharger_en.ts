@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE TS>
 <TS version="2.1" language="en_US">
 <context>
@@ -77,8 +77,8 @@
     <message>
         <location filename="../../gui/mainui.ui" line="69"/>
         <location filename="../../gui/mainui.ui" line="317"/>
-        <location filename="../../gui/mainui.cpp" line="285"/>
-        <location filename="../../gui/mainui.cpp" line="309"/>
+        <location filename="../../gui/mainui.cpp" line="288"/>
+        <location filename="../../gui/mainui.cpp" line="312"/>
         <source>closed</source>
         <translation>closed</translation>
     </message>
@@ -134,8 +134,8 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="368"/>
-        <location filename="../../gui/mainui.cpp" line="469"/>
-        <location filename="../../gui/mainui.cpp" line="669"/>
+        <location filename="../../gui/mainui.cpp" line="481"/>
+        <location filename="../../gui/mainui.cpp" line="683"/>
         <source>Send file</source>
         <translation>Send file</translation>
     </message>
@@ -156,7 +156,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="467"/>
-        <location filename="../../gui/mainui.cpp" line="383"/>
+        <location filename="../../gui/mainui.cpp" line="386"/>
         <source>Name</source>
         <translation>Name</translation>
     </message>
@@ -172,6 +172,11 @@
         <translation>File:</translation>
     </message>
     <message>
+        <location filename="../../gui/mainui.ui" line="581"/>
+        <source>Total:</source>
+        <translation>Total:</translation>
+    </message>
+    <message>
         <source>Auto conect</source>
         <translation type="vanished">Auto connect</translation>
     </message>
@@ -182,7 +187,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="490"/>
-        <location filename="../../gui/mainui.cpp" line="384"/>
+        <location filename="../../gui/mainui.cpp" line="387"/>
         <source>ID</source>
         <translation>ID</translation>
     </message>
@@ -193,7 +198,7 @@
     </message>
     <message>
         <location filename="../../gui/mainui.ui" line="381"/>
-        <location filename="../../gui/mainui.cpp" line="684"/>
+        <location filename="../../gui/mainui.cpp" line="698"/>
         <source>Send dir</source>
         <translation>Send dir</translation>
     </message>
@@ -203,73 +208,73 @@
         <translation>Save path</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="290"/>
+        <location filename="../../gui/mainui.cpp" line="293"/>
         <source>listening</source>
         <translation>listening</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="295"/>
-        <location filename="../../gui/mainui.cpp" line="317"/>
+        <location filename="../../gui/mainui.cpp" line="298"/>
+        <location filename="../../gui/mainui.cpp" line="320"/>
         <source>connected</source>
         <translation>connected</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="313"/>
+        <location filename="../../gui/mainui.cpp" line="316"/>
         <source>connecting</source>
         <translation>connecting</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="385"/>
+        <location filename="../../gui/mainui.cpp" line="388"/>
         <source>IP</source>
         <translation>IP</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="386"/>
+        <location filename="../../gui/mainui.cpp" line="389"/>
         <source>Port</source>
         <translation>Port</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="534"/>
+        <location filename="../../gui/mainui.cpp" line="548"/>
         <source>Sending file</source>
         <translation>Sending file</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="542"/>
+        <location filename="../../gui/mainui.cpp" line="556"/>
         <source>File sended</source>
         <translation>File sended</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="550"/>
+        <location filename="../../gui/mainui.cpp" line="564"/>
         <source>Recving file</source>
         <translation>Receiving file</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="558"/>
+        <location filename="../../gui/mainui.cpp" line="572"/>
         <source>File recvied</source>
         <translation>file received</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="647"/>
+        <location filename="../../gui/mainui.cpp" line="661"/>
         <source>Cut</source>
         <translation>Cut</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="648"/>
+        <location filename="../../gui/mainui.cpp" line="662"/>
         <source>Copy</source>
         <translation>Copy</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="649"/>
+        <location filename="../../gui/mainui.cpp" line="663"/>
         <source>Paste</source>
         <translation>Paste</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="650"/>
+        <location filename="../../gui/mainui.cpp" line="664"/>
         <source>Select all</source>
         <translation>Select all</translation>
     </message>
     <message>
-        <location filename="../../gui/mainui.cpp" line="675"/>
+        <location filename="../../gui/mainui.cpp" line="689"/>
         <source>Recv file</source>
         <translation>Receive file</translation>
     </message>
@@ -297,53 +302,58 @@
         <translation>Name</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="185"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="190"/>
         <source>Broadcast</source>
         <translation>Broadcast</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="199"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="204"/>
         <source>Connect</source>
         <translation>Connect</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="246"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="251"/>
         <source>Start sender</source>
         <translation>Start sender</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="285"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="290"/>
         <source>Start receiver</source>
         <translation>Start receiver</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="311"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="316"/>
         <source>File:</source>
         <translation>File:</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="317"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="327"/>
+        <source>Total:</source>
+        <translation>Total:</translation>
+    </message>
+    <message>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="333"/>
         <source>Received</source>
         <translation>Received</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="407"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="423"/>
         <source>Sended</source>
         <translation>Sended</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="497"/>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="568"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="513"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="584"/>
         <source>Send text</source>
         <translation>Send text</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="525"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="541"/>
         <source>Send dir</source>
         <translation>Send dir</translation>
     </message>
     <message>
-        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="546"/>
+        <location filename="../../qml/resource/qmlfiles/MainWorkPage.qml" line="562"/>
         <source>Send file</source>
         <translation>Send file</translation>
     </message>
