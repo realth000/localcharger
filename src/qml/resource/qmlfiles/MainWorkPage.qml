@@ -326,6 +326,7 @@ Item {
             onRightPaddingChanged: transportProgressBar.rightPadding
             text: qsTr("Total:")
             value: 0
+            useIcon: false
         }
 
         GroupBoxEx {
