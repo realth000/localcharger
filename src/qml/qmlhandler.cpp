@@ -189,6 +189,9 @@ void QmlHandler::initConnections()
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &QmlHandler::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &QmlHandler::onGetAutoConnectReply);
+
+    // Close all sockets before app quit is need on Android
+    connect(qApp, &QCoreApplication::aboutToQuit, this, &QmlHandler::closeAllSocket);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -369,6 +372,12 @@ void QmlHandler::sendDir(const QString &dirPath)
 int QmlHandler::getSenderState()
 {
     return m_socketSenderState;
+}
+
+void QmlHandler::closeAllSocket()
+{
+    m_socketSender.closeAllSocket();
+    m_socketRecver.closeAllSocket();
 }
 
 void QmlHandler::getLocalIp()

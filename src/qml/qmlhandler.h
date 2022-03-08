@@ -71,6 +71,7 @@ public slots:
     void setAutoConnect(const bool &isEnabled);
     void sendDir(const QString &dirPath);
     int getSenderState();
+    void closeAllSocket();
 
 private:
     WebSender m_socketSender;

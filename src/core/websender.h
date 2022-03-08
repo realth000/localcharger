@@ -39,6 +39,7 @@ public slots:
     bool sendFile(const QString &filePath, const MsgType &msgType = MsgType::SingleFile);
     void sendDir(const QString &dirPath);
     void makeDir(const dir_lists &dirs);
+    void closeAllSocket();
 
 private slots:
     void onNewConnection();

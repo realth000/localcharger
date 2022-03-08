@@ -184,6 +184,16 @@ void WebSender::makeDir(const dir_lists &dirs)
     m_currentSocket->sendBinaryMessage(messageArray);
 }
 
+void WebSender::closeAllSocket()
+{
+    if (m_socketServer->isListening()) {
+        m_socketServer->close();
+    }
+    if (m_currentSocket != nullptr && m_currentSocket->state() != QAbstractSocket::UnconnectedState) {
+        m_currentSocket->abort();
+    }
+}
+
 void WebSender::onNewConnection()
 {
     emit senderConnected();

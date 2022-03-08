@@ -36,6 +36,7 @@ signals:
 public slots:
     void sendMessage(const QString &msg);
     void onPrepareRecvFile();
+    void closeAllSocket();
 
 private slots:
     void openUrl(const url_t &url);

@@ -76,6 +76,13 @@ void WebRecver::onPrepareRecvFile()
     m_fileSavedSize = 0;
 }
 
+void WebRecver::closeAllSocket()
+{
+    if(m_socket.state() != QAbstractSocket::UnconnectedState) {
+        m_socket.abort();
+    }
+}
+
 void WebRecver::openUrl(const url_t &url)
 {
     m_socket.open(url);
