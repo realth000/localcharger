@@ -178,6 +178,7 @@ void MainUi::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &MainUi::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
 
     // passing recver state
@@ -187,6 +188,7 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
 
     // clear info before send file
@@ -406,6 +408,14 @@ void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, con
     m_clientsMap.insert(id, port);
 }
 
+void MainUi::resetProgressRecord()
+{
+    m_fileFinishedCount = 0;
+    m_fileTotalCount = 1;
+    ui->fileTransportProgressBar->setValue(0);
+    ui->fileTransportTotalProgressBar->setValue(0);
+}
+
 void MainUi::on_startSenderPushButton_clicked()
 {
     stopSender();
@@ -476,6 +486,7 @@ void MainUi::on_sendFilePushButton_clicked()
         qInfo() << "file not exists:" << filePath;
         return;
     }
+    resetProgressRecord();
     m_socketSender.sendFile(filePath) ? qInfo() << "send file finish:" << filePath : qInfo() << "error sending file:" << filePath;
 }
 
@@ -695,6 +706,10 @@ void MainUi::selectSendDir()
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    resetProgressRecord();
+    if(fileCount > 0) {
+        m_fileTotalCount = fileCount;
+    }
     dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector << QFileInfo(dirPath).fileName();
     // Set local root path
@@ -702,5 +717,11 @@ void MainUi::selectSendDir()
     // Let remote make directory
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
+}
+
+void MainUi::onTransportProgressChanged()
+{
+    m_fileFinishedCount++;
+    ui->fileTransportTotalProgressBar->setValue(100*m_fileFinishedCount/m_fileTotalCount);
 }
 

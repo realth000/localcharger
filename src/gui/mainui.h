@@ -53,6 +53,7 @@ private slots:
     void onSendFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void selectSendDir();
+    void onTransportProgressChanged();
 
 private:
     Ui::MainUi *ui;
@@ -71,6 +72,8 @@ private:
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
     const AppLanguage m_appLanguage;
+    qint64 m_fileFinishedCount;
+    qint64 m_fileTotalCount;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
@@ -98,5 +101,6 @@ private:
     void getLocalIp();
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void resetProgressRecord();
 };
 #endif // MAINUI_H
