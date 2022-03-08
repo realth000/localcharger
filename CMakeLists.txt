@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.7.3)
+set(APP_VERSION 1.8.0)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
