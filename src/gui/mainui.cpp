@@ -178,6 +178,7 @@ void MainUi::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &MainUi::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
 
     // passing recver state
@@ -187,7 +188,9 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &MainUi::recoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &MainUi::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
+    connect(&m_socketRecver, &WebRecver::resetProgress, this, &MainUi::resetProgressRecord);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -384,6 +387,7 @@ void MainUi::addDetectedClients(const QString &ip, const QString &port, const QS
                                            tr("ID") + ": %2\n" +
                                            tr("IP") + ": %3\n" +
                                            tr("Port") + ": %4").arg(readableName, id, ip, port));
+    ui->clientsListWidget->setCurrentRow(ui->clientsListWidget->count() - 1);
 }
 
 void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id)
@@ -403,6 +407,14 @@ void MainUi::onIdentityMessageParsed(const QString &ip, const QString &port, con
     }
     addDetectedClients(ip, port, readableName, id);
     m_clientsMap.insert(id, port);
+}
+
+void MainUi::resetProgressRecord(const int &fileCount)
+{
+    m_fileFinishedCount = 0;
+    m_fileTotalCount = fileCount;
+    ui->fileTransportProgressBar->setValue(0);
+    ui->fileTransportTotalProgressBar->setValue(0);
 }
 
 void MainUi::on_startSenderPushButton_clicked()
@@ -475,6 +487,8 @@ void MainUi::on_sendFilePushButton_clicked()
         qInfo() << "file not exists:" << filePath;
         return;
     }
+    resetProgressRecord();
+    m_socketSender.notifyStart();
     m_socketSender.sendFile(filePath) ? qInfo() << "send file finish:" << filePath : qInfo() << "error sending file:" << filePath;
 }
 
@@ -694,12 +708,23 @@ void MainUi::selectSendDir()
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    resetProgressRecord();
+    if(fileCount > 0) {
+        m_fileTotalCount = fileCount;
+    }
     dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector << QFileInfo(dirPath).fileName();
     // Set local root path
     m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    m_socketSender.notifyStart(fileCount);
     // Let remote make directory
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
+}
+
+void MainUi::onTransportProgressChanged()
+{
+    m_fileFinishedCount++;
+    ui->fileTransportTotalProgressBar->setValue(100*m_fileFinishedCount/m_fileTotalCount);
 }
 

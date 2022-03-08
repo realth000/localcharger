@@ -98,6 +98,13 @@ ApplicationWindow {
         onQmlUpdateProgress: {
             workPage.updateProgress(filePath, frameID, fileTotalFrameCount)
         }
+        onQmlUpdateTotalProgress: {
+            workPage.updateTotalProgress(fileFinishCount, fileTotalCount);
+        }
+
+        onQmlClearTransportProgress: {
+            workPage.clearProgress()
+        }
 
         // files/messages info display
         onQmlAppendSendedMessage: {

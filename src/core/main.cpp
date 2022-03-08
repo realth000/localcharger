@@ -16,7 +16,7 @@
 
 #ifdef Q_OS_ANDROID
 #include <QtGui/QFontDatabase>
-#else
+#elif !defined(ENABLE_QML)
 #include "messageboxexx.h"
 #endif
 

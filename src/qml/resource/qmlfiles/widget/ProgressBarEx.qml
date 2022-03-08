@@ -1,4 +1,4 @@
-import QtQuick 2.10
+﻿import QtQuick 2.10
 
 Rectangle {
     id: mainRect
@@ -12,6 +12,7 @@ Rectangle {
     property real value: 0.4
     property color textColor: "#f0ffff"
     property string text: ""
+    property bool useIcon: true
     color: "transparent"
     height: 200
 //    border.color: "#00ff00"
@@ -40,6 +41,7 @@ Rectangle {
         anchors.leftMargin: mainRect.leftPadding
         width: 30
         height: 30
+        visible: mainRect.useIcon
     }
 
     TextFieldEx {
@@ -51,7 +53,7 @@ Rectangle {
         height: 30
         anchors.top: sepTop.bottom
         anchors.topMargin: mainRect.topPadding
-        anchors.left: statusIcon.right
+        anchors.left: mainRect.useIcon ? statusIcon.right : statusIcon.left
         anchors.leftMargin: 5
         anchors.right: mainRect.right
         anchors.rightMargin: mainRect.rightPadding
@@ -106,6 +108,10 @@ Rectangle {
 
     function setIcon(iconPath) {
         statusIcon.iconUnchecked = iconPath
+    }
+
+    function clearValue() {
+        mainRect.value = 0
     }
 }
 

@@ -12,6 +12,8 @@
 #include "src/utils/networkinfohelper.h"
 #include "src/utils/filehelper.h"
 
+using MsgType = WebSocketBinaryMessageType;
+
 QmlHandler::QmlHandler(QObject *parent)
     : QObject(parent),
       m_socketSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
@@ -129,6 +131,8 @@ void QmlHandler::sendFile(const QString &filePath)
         qDebug() << "send file failed:" << filePath << "is not a file";
         return;
     }
+    resetProgressRecord();
+    m_socketSender.notifyStart();
     m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
 }
 
@@ -169,6 +173,7 @@ void QmlHandler::initConnections()
     // passing sender message
     connect(&m_socketSender, &WebSender::sendFileStart, this, &QmlHandler::onSendFileStart);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::onSendFileFinish);
+    connect(&m_socketSender, &WebSender::sendFileFinish, this, &QmlHandler::updateTotalProgress);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &QmlHandler::onSendFileFrameFinish);
 
     // passing recver state
@@ -181,6 +186,8 @@ void QmlHandler::initConnections()
     connect(&m_socketRecver, &WebRecver::recvedMessage, this, &QmlHandler::onRecoredRecvedMsg);
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &QmlHandler::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::onRecvFileFinish);
+    connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::updateTotalProgress);
+    connect(&m_socketRecver, &WebRecver::resetProgress, this, &QmlHandler::resetProgressRecord);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -189,6 +196,9 @@ void QmlHandler::initConnections()
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &QmlHandler::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &QmlHandler::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &QmlHandler::onGetAutoConnectReply);
+
+    // Close all sockets before app quit is need on Android
+    connect(qApp, &QCoreApplication::aboutToQuit, this, &QmlHandler::closeAllSocket);
 }
 
 void QmlHandler::startSender(const port_t &port)
@@ -359,9 +369,14 @@ void QmlHandler::sendDir(const QString &dirPath)
     }
     // test
     qInfo("Check dir %s: fileCount=%lld, totalSize=%lld", dirPath.toStdString().c_str(), fileCount, totalSize);
+    resetProgressRecord();
+    if(fileCount > 0) {
+        m_fileTotalCount = fileCount;
+    }
     dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector;
     m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    m_socketSender.notifyStart(fileCount);
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
 }
@@ -369,6 +384,12 @@ void QmlHandler::sendDir(const QString &dirPath)
 int QmlHandler::getSenderState()
 {
     return m_socketSenderState;
+}
+
+void QmlHandler::closeAllSocket()
+{
+    m_socketSender.closeAllSocket();
+    m_socketRecver.closeAllSocket();
 }
 
 void QmlHandler::getLocalIp()
@@ -395,6 +416,13 @@ void QmlHandler::getLocalIp()
 void QmlHandler::addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id)
 {
     emit qmlAddClient(ip, port, readableName, id);
+}
+
+void QmlHandler::resetProgressRecord(const int fileCount)
+{
+    m_fileFinishedCount = 0;
+    m_fileTotalCount = fileCount;
+    emit qmlClearTransportProgress();
 }
 
 #ifdef Q_OS_ANDROID
@@ -519,4 +547,10 @@ void QmlHandler::autoConnectToClinet(const QString &ip, const QString &port)
 void QmlHandler::onGetAutoConnectReply()
 {
     startRecver();
+}
+
+void QmlHandler::updateTotalProgress()
+{
+    m_fileFinishedCount++;
+    emit qmlUpdateTotalProgress(m_fileFinishedCount, m_fileTotalCount);
 }
