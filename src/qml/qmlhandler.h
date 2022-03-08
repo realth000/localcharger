@@ -74,6 +74,7 @@ public slots:
     void sendDir(const QString &dirPath);
     int getSenderState();
     void closeAllSocket();
+    void resetProgressRecord(const int fileCount = 1);
 
 private:
     WebSender m_socketSender;
@@ -112,7 +113,7 @@ private:
     void loadConfig();
     void getLocalIp();
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
-    void resetProgressRecord();
+
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
     void callAndroidToast(const QString &message);

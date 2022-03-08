@@ -94,11 +94,16 @@ struct WebSocketFileInfo{
  *    S i n  g l e F
  *   5 1 17 8 1 E F
  *
+ * TODO: Message should mention the start of whole progress first,
+ * whether send file or dir.
+ * NOTE: The changes above may be incompatible
  */
 enum  WebSocketBinaryMessageType{
-    SingleFile = 0x511781EF,
-    SingleFileWithPath = SingleFile + 1,
-    MakeDir = SingleFile + 10
+    SingleFile = 0x511781EF,                // Send a file this time(maybe part of dir)
+    SingleFileWithPath = SingleFile + 1,    // Used in sending dir
+    MakeDir = SingleFile + 10,              // Mkdir before send dir
+//    SingleFileOnly = SingleFile + 15        // The file is whole progress
+    StartProgress = SingleFile + 100         // Notify the start of progress
 };
 
 enum class SenderState{

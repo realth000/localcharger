@@ -54,6 +54,7 @@ private slots:
     void onRecvFileFrameFinish(const QString fileName, const qint64 frameID, const qint64 fileTotalFrameCount);
     void selectSendDir();
     void onTransportProgressChanged();
+    void resetProgressRecord(const int &fileCount = 1);
 
 private:
     Ui::MainUi *ui;
@@ -101,6 +102,5 @@ private:
     void getLocalIp();
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
-    void resetProgressRecord();
 };
 #endif // MAINUI_H

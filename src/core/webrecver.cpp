@@ -120,6 +120,8 @@ void WebRecver::onBinaryMessageReceived(const QByteArray &message)
     case MsgType::MakeDir:
         makeDir(message);
         break;
+    case MsgType::StartProgress:
+        parseStartMessage(message);
     default:
         break;
     }
@@ -232,4 +234,10 @@ void WebRecver::makeDir(const QByteArray &dirListsArrary)
             qInfo() << "WebRecver: failed to make directory" << dir;
         }
     }
+}
+
+void WebRecver::parseStartMessage(const QByteArray &message)
+{
+    const int fileCount = QString::fromUtf8(message.right(message.length() - WEBSOCKET_MESSAGETYPE_LENGTH)).toInt();
+    emit resetProgress(fileCount);
 }

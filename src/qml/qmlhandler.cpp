@@ -12,6 +12,8 @@
 #include "src/utils/networkinfohelper.h"
 #include "src/utils/filehelper.h"
 
+using MsgType = WebSocketBinaryMessageType;
+
 QmlHandler::QmlHandler(QObject *parent)
     : QObject(parent),
       m_socketSenderIp(QStringLiteral(WEBSOCKET_SENDER_IP_DEFAULT)),
@@ -130,6 +132,7 @@ void QmlHandler::sendFile(const QString &filePath)
         return;
     }
     resetProgressRecord();
+    m_socketSender.notifyStart();
     m_socketSender.sendFile(filePath) ? qDebug() << "send file finish:" << filePath : qDebug() << "error sending file:" << filePath;
 }
 
@@ -184,6 +187,7 @@ void QmlHandler::initConnections()
     connect(&m_socketRecver, &WebRecver::recvFileStart, this, &QmlHandler::onRecvFileStart);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::onRecvFileFinish);
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &QmlHandler::updateTotalProgress);
+    connect(&m_socketRecver, &WebRecver::resetProgress, this, &QmlHandler::resetProgressRecord);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -372,6 +376,7 @@ void QmlHandler::sendDir(const QString &dirPath)
     dirVector.prepend(QFileInfo(dirPath).fileName());
     qInfo() << "all dirs:" << dirVector;
     m_socketSender.setRootPath(QFileInfo(dirPath).absoluteDir().absolutePath());
+    m_socketSender.notifyStart(fileCount);
     m_socketSender.makeDir(dirVector);
     m_socketSender.sendDir(dirPath);
 }
@@ -413,10 +418,10 @@ void QmlHandler::addDetectedClients(const QString &ip, const QString &port, cons
     emit qmlAddClient(ip, port, readableName, id);
 }
 
-void QmlHandler::resetProgressRecord()
+void QmlHandler::resetProgressRecord(const int fileCount)
 {
     m_fileFinishedCount = 0;
-    m_fileTotalCount = 1;
+    m_fileTotalCount = fileCount;
     emit qmlClearTransportProgress();
 }
 

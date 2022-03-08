@@ -194,6 +194,14 @@ void WebSender::closeAllSocket()
     }
 }
 
+void WebSender::notifyStart(const int &fileCount)
+{
+    QByteArray messageArray;
+    messageArray.append(QString::number(MsgType::StartProgress).toUtf8());
+    messageArray.append(QString::number(fileCount).toUtf8());
+    m_currentSocket->sendBinaryMessage(messageArray);
+}
+
 void WebSender::onNewConnection()
 {
     emit senderConnected();

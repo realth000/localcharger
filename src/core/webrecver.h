@@ -32,6 +32,7 @@ signals:
     void recvFileStart(QString filePath, qint64 recvBytes);
     void recvFileFinish(QString filePath, qint64 recvBytes);
     void recvFileFrameFinish(QString filePath, qint64 frameID, qint64 fileTotalFrameCount);
+    void resetProgress(int fileCount);
 
 public slots:
     void sendMessage(const QString &msg);
@@ -54,6 +55,7 @@ private:
     WebSocketBinaryMessageType parseBinaryMessageType(const QByteArray &message);
     void saveSingleFileFrame(const QByteArray &message);
     void makeDir(const QByteArray &dirListsArrary);
+    void parseStartMessage(const QByteArray &message);
 };
 
 #endif // WEBRECVER_H

@@ -40,6 +40,7 @@ public slots:
     void sendDir(const QString &dirPath);
     void makeDir(const dir_lists &dirs);
     void closeAllSocket();
+    void notifyStart(const int &fileCount = 1);
 
 private slots:
     void onNewConnection();
