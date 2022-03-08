@@ -1,4 +1,4 @@
-import QtQuick 2.10
+﻿import QtQuick 2.10
 
 Rectangle {
     id: mainRect
@@ -106,6 +106,10 @@ Rectangle {
 
     function setIcon(iconPath) {
         statusIcon.iconUnchecked = iconPath
+    }
+
+    function clearValue() {
+        mainRect.value = 0
     }
 }
 

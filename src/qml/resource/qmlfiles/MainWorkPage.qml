@@ -316,6 +316,17 @@ Item {
             text: qsTr("File:") + mainWorkPageItem.currentFile
             value: 0
         }
+        ProgressBarEx {
+            id: transportTotalProgressBar
+            height: transportProgressBar.height
+            width: transportProgressBar.width
+            anchors.top: transportProgressBar.bottom
+            anchors.topMargin: 20
+            leftPadding: transportProgressBar.leftPadding
+            onRightPaddingChanged: transportProgressBar.rightPadding
+            text: qsTr("Total:")
+            value: 0
+        }
 
         GroupBoxEx {
             id: recvedGroupBoxEx
@@ -323,7 +334,7 @@ Item {
             labelHeight: 40
             iconPath: "qrc:/pic/received2.png"
             height: recvedTextRectangle.height + titleHeight + 10 + 10
-            anchors.top: transportProgressBar.bottom
+            anchors.top: transportTotalProgressBar.bottom
             anchors.topMargin: 20
             Rectangle {
                 id: recvedTextRectangle
@@ -699,6 +710,15 @@ Item {
         }
 
         transportProgressBar.value = percent
+    }
+
+    function updateTotalProgress(fileFinishCount, fileTotalCount) {
+        transportTotalProgressBar.value = (fileFinishCount/fileTotalCount).toFixed(4)
+    }
+
+    function clearProgress() {
+        transportProgressBar.clearValue()
+        transportTotalProgressBar.clearValue()
     }
 
     function getToSendMessage() {

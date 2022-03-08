@@ -47,6 +47,8 @@ signals:
     void qmlAddClient(QString ip, QString port, QString readableName, QString id);
     void qmlUpdateClientAutoConnect(bool isEnabled);
     void qmlUpdateProgress(QString filePath, qint64 frameID, qint64 fileTotalFrameCount);
+    void qmlUpdateTotalProgress(qint64 fileFinishCount, qint64 fileTotalCount);
+    void qmlClearTransportProgress();
 
 public slots:
     void initHandler();
@@ -89,6 +91,8 @@ private:
     QString m_saveFileDirPath;
     bool m_enableAutoConnect;
     QClipboard *m_clipBoard;
+    qint64 m_fileFinishedCount;
+    qint64 m_fileTotalCount;
 
     // for WebIdentifier
     QMap<QString, QString> m_clientsMap;
@@ -108,6 +112,7 @@ private:
     void loadConfig();
     void getLocalIp();
     void addDetectedClients(const QString &ip, const QString &port, const QString &readableName, const QString &id);
+    void resetProgressRecord();
 #ifdef Q_OS_ANDROID
     void requestAndroidPermissions();
     void callAndroidToast(const QString &message);
@@ -124,6 +129,7 @@ private slots:
     void onIdentityMessageParsed(const QString &ip, const QString &port, const QString &readableName, const QString &id);
     void autoConnectToClinet(const QString &ip, const QString &port);
     void onGetAutoConnectReply();
+    void updateTotalProgress();
 };
 
 #endif // QMLHANDLER_H
