@@ -15,6 +15,8 @@ Rectangle {
     property int fontSize: 18
     property ButtonEx selectedFileButtonEx
     property string selectedFilePath
+    property bool showHidden: true
+    property bool sortCaseSensitive: false
 
     signal changeSelectedDir(string selectedPath)
 
@@ -37,7 +39,9 @@ Rectangle {
         showDirs: true
         showDirsFirst: dirsFirst
         showDotAndDotDot: false
-        showHidden: false
+        // TODO: Make configs: showHidden and sortCaseSensitive
+        showHidden: mainDialog.showHidden
+        sortCaseSensitive: mainDialog.sortCaseSensitive
         folder: "file:///storage/emulated/0"
     }
     Rectangle {
