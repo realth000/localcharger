@@ -158,7 +158,7 @@ void WebSender::sendDir(const QString &dirPath)
         qInfo() << "source directory not exists:" << dirPath;
         return;
     }
-    const QFileInfoList sourceDirEntryList = sourceDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::Name);
+    const QFileInfoList sourceDirEntryList = sourceDir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Hidden, QDir::Name);
     for(const QFileInfo &sourceInfo : sourceDirEntryList){
         /*
          * TODO: now only handle on symbol link, file and directory,
