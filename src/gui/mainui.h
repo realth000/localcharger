@@ -6,6 +6,7 @@
 #include "src/core/webidentifier.h"
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
+#include "src/core/websocketwatcher.h"
 #include "proxystyle.h"
 
 QT_BEGIN_NAMESPACE
@@ -60,6 +61,7 @@ private:
     Ui::MainUi *ui;
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    WebSocketWatcher m_socketWatcher;
     WebIdentifier *m_identifier;
     QString m_sockerSenderIp;
     port_t m_socketSenderPort;
