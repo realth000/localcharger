@@ -7,13 +7,16 @@
 * CMake for Windows and Linux.
 * QMake mainly for Android.
 
-## v1.8.0
+## v1.8.1
 ### Known issues
 * Transmission is not sync on the two sides in some condition.
 * Require processing when transmission interrupted.
-* Hidden files missing when from Android.
+* ~~Hidden files missing when from Android.~~
 
 ### Todo list
 - [x] Progress bar for total progress sending/receiving directory.
 - [ ] Pause, resume and stop transmission.
 - [x] Single application.
+- [ ] Handle incomming requests automaticly as a server. 
+- [ ] Support multiple connections.
+- [ ] Log and files on rec.
