@@ -208,6 +208,8 @@ void MainUi::initConnections()
     connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
 
     connect(ui->sendDirPushButton, &QPushButton::clicked, this, &MainUi::selectSendDir);
+
+    connect(&m_socketWatcher, &WebSocketWatcher::watcherMessaged, this, &MainUi::showMessage);
 }
 
 MainUi::~MainUi()
@@ -418,6 +420,24 @@ void MainUi::resetProgressRecord(const int &fileCount)
     m_fileTotalCount = fileCount;
     ui->fileTransportProgressBar->setValue(0);
     ui->fileTransportTotalProgressBar->setValue(0);
+}
+
+void MainUi::showMessage(MBoxLevel level, QString msg)
+{
+    switch (level) {
+    case MBoxLevel::Critical:
+        MessageBoxExY::critical("Error", msg);
+        break;
+    case MBoxLevel::Warning:
+        MessageBoxExY::warning("Warning", msg);
+        break;
+    case MBoxLevel::Information:
+        MessageBoxExY::information("Information", msg);
+        break;
+    default:
+        qInfo() << "WebSocketWatcher: Invalid message level" <<  static_cast<int>(level)
+                << "with message" << msg;
+    }
 }
 
 void MainUi::on_startSenderPushButton_clicked()

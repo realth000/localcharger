@@ -39,9 +39,11 @@ void WebSocketWatcher::initConnections()
 void WebSocketWatcher::onInterrupted()
 {
     qInfo() << "WebSocketWatcher: Transmission interrupted on file" << m_fileName;
+    emit watcherMessaged(MBoxLevel::Critical, "Transmission interrupted on file " + m_fileName);
 }
 
 void WebSocketWatcher::onAutoConnectTimeout()
 {
     qInfo() << "WebSocketWatcher: Autoconnect timeout";
+    emit watcherMessaged(MBoxLevel::Critical, "Autoconnect timeout");
 }

@@ -58,6 +58,7 @@ private slots:
     void selectSendDir();
     void onTransportProgressChanged();
     void resetProgressRecord(const int &fileCount = 1);
+    void showMessage(MBoxLevel level, QString msg);
 
 private:
     Ui::MainUi *ui;
