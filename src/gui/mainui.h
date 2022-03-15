@@ -23,6 +23,8 @@ public:
     void initUi();
     void initConnections();
     ~MainUi();
+signals:
+    void autoConnectFinished();
 
 private slots:
     void on_sendMsgPushButton_clicked();

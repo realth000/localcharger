@@ -202,6 +202,7 @@ void MainUi::initConnections()
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
     connect(m_identifier, &WebIdentifier::autoConnectStarted, &m_socketWatcher, &WebSocketWatcher::startAutoConnectTimeout);
+    connect(this, &MainUi::autoConnectFinished, &m_socketWatcher, &WebSocketWatcher::finishAutoConnectTimeout);
     connect(ui->msgSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgRecvTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
@@ -646,6 +647,7 @@ void MainUi::on_autoConnectComboBox_stateChanged(int arg1)
 void MainUi::onGetAutoConnectReply()
 {
     on_startRecverPushButton_clicked();
+    emit autoConnectFinished();
 }
 
 void MainUi::on_openDownloadDirPushButton_clicked()

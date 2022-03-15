@@ -25,6 +25,11 @@ void WebSocketWatcher::startAutoConnectTimeout()
     m_autoconnectTimer.start();
 }
 
+void WebSocketWatcher::finishAutoConnectTimeout()
+{
+    m_autoconnectTimer.stop();
+}
+
 void WebSocketWatcher::initConnections()
 {
     connect(&m_interruptTimer, &QTimer::timeout, this, &WebSocketWatcher::onInterrupted);

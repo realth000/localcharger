@@ -16,6 +16,7 @@ public:
 public slots:
     void updateCurrentFile(QString fileName);
     void startAutoConnectTimeout();
+    void finishAutoConnectTimeout();
 
 signals:
 
