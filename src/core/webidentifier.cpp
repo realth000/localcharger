@@ -107,6 +107,7 @@ void WebIdentifier::startAutoConnect(const url_t &url)
     if(m_outSocket.state() != QAbstractSocket::UnconnectedState && m_outSocket.state() != QAbstractSocket::ClosingState){
         m_outSocket.abort();
     }
+    emit autoConnectStarted();
     m_outSocket.open(url);
     qInfo() << "connecting" << url;
 }

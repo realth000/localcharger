@@ -5,6 +5,7 @@
 #include <QtCore/QTimer>
 
 #define SOCKETWATCHER_INTERRUPT_TIME 3000 // 3s
+#define SOCKETWATCHER_AUTOCONNECT_TIME 5000 // 5s
 
 class WebSocketWatcher : public QObject
 {
@@ -14,17 +15,20 @@ public:
 
 public slots:
     void updateCurrentFile(QString fileName);
+    void startAutoConnectTimeout();
 
 signals:
 
 private:
     QTimer m_interruptTimer;
+    QTimer m_autoconnectTimer;
     QString m_fileName;
 
     void initConnections();
 
 private slots:
     void onInterrupted();
+    void onAutoConnectTimeout();
 };
 
 #endif // WEBSOCKETWATCHER_H

@@ -31,6 +31,7 @@ signals:
     void identityMessageParsed(QString ip, QString port, QString readableName, QString id);
     void getClientToConnect(QString ip, QString port);
     void getAutoConnectReply();
+    void autoConnectStarted();
 
 public slots:
     void boardcastIdentityMessage();
