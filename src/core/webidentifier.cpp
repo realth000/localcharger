@@ -1,6 +1,7 @@
 ﻿#include "webidentifier.h"
 #include <QtCore/QDebug>
 #include <QtCore/QFile>
+#include <QtNetwork/QNetworkInterface>
 #include <QtNetwork/QSslCertificate>
 #include <QtNetwork/QSslKey>
 #include <QRandomGenerator>
@@ -89,7 +90,11 @@ void WebIdentifier::boardcastIdentityMessage()
 {
     QByteArray datagram = generateIdentidyData(m_identityReadableName, m_socketWorkingPort);
     qInfo() << "boardcast: name" << m_identityReadableName << "port" << m_socketWorkingPort;
-    m_identifierSocket.writeDatagram(datagram, QHostAddress::Broadcast, IDENTIFIER_UDP_PORT);
+    foreach(auto interfaces,  QNetworkInterface::allInterfaces()) {
+        foreach(auto address, interfaces.addressEntries()) {
+            m_identifierSocket.writeDatagram(datagram, address.broadcast(), IDENTIFIER_UDP_PORT);
+        }
+    }
 }
 
 void WebIdentifier::openUrl(const url_t &url)
@@ -102,6 +107,7 @@ void WebIdentifier::startAutoConnect(const url_t &url)
     if(m_outSocket.state() != QAbstractSocket::UnconnectedState && m_outSocket.state() != QAbstractSocket::ClosingState){
         m_outSocket.abort();
     }
+    emit autoConnectStarted();
     m_outSocket.open(url);
     qInfo() << "connecting" << url;
 }

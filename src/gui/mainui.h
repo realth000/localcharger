@@ -6,6 +6,7 @@
 #include "src/core/webidentifier.h"
 #include "src/core/websender.h"
 #include "src/core/webrecver.h"
+#include "src/core/websocketwatcher.h"
 #include "proxystyle.h"
 
 QT_BEGIN_NAMESPACE
@@ -22,6 +23,8 @@ public:
     void initUi();
     void initConnections();
     ~MainUi();
+signals:
+    void autoConnectFinished();
 
 private slots:
     void on_sendMsgPushButton_clicked();
@@ -55,11 +58,13 @@ private slots:
     void selectSendDir();
     void onTransportProgressChanged();
     void resetProgressRecord(const int &fileCount = 1);
+    void showMessage(MBoxLevel level, QString msg);
 
 private:
     Ui::MainUi *ui;
     WebSender m_socketSender;
     WebRecver m_socketRecver;
+    WebSocketWatcher m_socketWatcher;
     WebIdentifier *m_identifier;
     QString m_sockerSenderIp;
     port_t m_socketSenderPort;

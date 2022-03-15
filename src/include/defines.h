@@ -145,4 +145,13 @@ enum class AppLanguage{
 // FIXME: Can not use timer
 #define DISABLE_UPDATE_PROGRESS_BY_TIMER
 
+enum class MessageBoxExMessageLevel : int
+{
+    Critical = 6,
+    Warning,
+    Information
+};
+
+using MBoxLevel = MessageBoxExMessageLevel;
+
 #endif // DEFINES_H

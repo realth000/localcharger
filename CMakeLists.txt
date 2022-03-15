@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.13)
 
-set(APP_VERSION 1.8.1)
+set(APP_VERSION 1.8.2)
 
 project(LocalCharger
     VERSION ${APP_VERSION}
@@ -18,9 +18,6 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-set(CMAKE_PREFIX_PATH $ENV{QT_CMAKE_PATH})
-
-message(STATUS "CMake prefix path =${CMAKE_PREFIX_PATH}")
 
 # Find Qt5 packages
 find_package(Qt5 CONFIG REQUIRED Core)
@@ -60,11 +57,6 @@ elseif(UNIX)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} --std=c++11 -s -Wall -O2 -g -Wl,-z,relro,-z,now -fstack-protector-all -Wl,-z,noexecstack -fPIE -pie -D_FORTIFY_SOURCE=2")
 endif()
 
-include_directories(${CMAKE_PREFIX_PATH}/../../include)
-include_directories(${CMAKE_PREFIX_PATH}/../../include/QtCore)
-include_directories(${CMAKE_PREFIX_PATH}/../../include/QtGui)
-include_directories(${CMAKE_PREFIX_PATH}/../../include/QtWidgets)
-include_directories(${CMAKE_PREFIX_PATH}/../../include/QtDBus)
 include_directories(src/)
 include_directories(src/include)
 include_directories(src/utils)

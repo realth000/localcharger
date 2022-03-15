@@ -180,6 +180,7 @@ void MainUi::initConnections()
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onSendFileFinish);
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
+    connect(&m_socketSender, &WebSender::sendFileStart, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &MainUi::onRecverConnected);
@@ -191,6 +192,7 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
     connect(&m_socketRecver, &WebRecver::resetProgress, this, &MainUi::resetProgressRecord);
+    connect(&m_socketRecver, &WebRecver::recvFileStart, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -199,12 +201,15 @@ void MainUi::initConnections()
     connect(m_identifier, &WebIdentifier::identityMessageParsed, this, &MainUi::onIdentityMessageParsed);
     connect(m_identifier, &WebIdentifier::getClientToConnect, this, &MainUi::autoConnectToClinet);
     connect(m_identifier, &WebIdentifier::getAutoConnectReply, this, &MainUi::onGetAutoConnectReply);
-
+    connect(m_identifier, &WebIdentifier::autoConnectStarted, &m_socketWatcher, &WebSocketWatcher::startAutoConnectTimeout);
+    connect(this, &MainUi::autoConnectFinished, &m_socketWatcher, &WebSocketWatcher::finishAutoConnectTimeout);
     connect(ui->msgSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgRecvTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
     connect(ui->msgReadyToSendTextEdit, &QTextEdit::customContextMenuRequested, this, &MainUi::textEditContextMenu);
 
     connect(ui->sendDirPushButton, &QPushButton::clicked, this, &MainUi::selectSendDir);
+
+    connect(&m_socketWatcher, &WebSocketWatcher::watcherMessaged, this, &MainUi::showMessage);
 }
 
 MainUi::~MainUi()
@@ -415,6 +420,24 @@ void MainUi::resetProgressRecord(const int &fileCount)
     m_fileTotalCount = fileCount;
     ui->fileTransportProgressBar->setValue(0);
     ui->fileTransportTotalProgressBar->setValue(0);
+}
+
+void MainUi::showMessage(MBoxLevel level, QString msg)
+{
+    switch (level) {
+    case MBoxLevel::Critical:
+        MessageBoxExY::critical("Error", msg);
+        break;
+    case MBoxLevel::Warning:
+        MessageBoxExY::warning("Warning", msg);
+        break;
+    case MBoxLevel::Information:
+        MessageBoxExY::information("Information", msg);
+        break;
+    default:
+        qInfo() << "WebSocketWatcher: Invalid message level" <<  static_cast<int>(level)
+                << "with message" << msg;
+    }
 }
 
 void MainUi::on_startSenderPushButton_clicked()
@@ -644,6 +667,7 @@ void MainUi::on_autoConnectComboBox_stateChanged(int arg1)
 void MainUi::onGetAutoConnectReply()
 {
     on_startRecverPushButton_clicked();
+    emit autoConnectFinished();
 }
 
 void MainUi::on_openDownloadDirPushButton_clicked()
