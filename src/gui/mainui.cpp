@@ -212,6 +212,8 @@ void MainUi::initConnections()
     connect(ui->sendDirPushButton, &QPushButton::clicked, this, &MainUi::selectSendDir);
 
     connect(&m_socketWatcher, &WebSocketWatcher::watcherMessaged, this, &MainUi::showMessage);
+
+    connect(this, &MainUi::transmissionFinished, &m_socketWatcher, &WebSocketWatcher::finishInterruptTimeout);
 }
 
 MainUi::~MainUi()
@@ -752,5 +754,8 @@ void MainUi::onTransportProgressChanged()
 {
     m_fileFinishedCount++;
     ui->fileTransportTotalProgressBar->setValue(100*m_fileFinishedCount/m_fileTotalCount);
+    if(m_fileFinishedCount == m_fileTotalCount) {
+        emit transmissionFinished();
+    }
 }
 
