@@ -181,6 +181,7 @@ void MainUi::initConnections()
     connect(&m_socketSender, &WebSender::sendFileFinish, this, &MainUi::onTransportProgressChanged);
     connect(&m_socketSender, &WebSender::sendFileFrameFinish, this, &MainUi::onSendFileFrameFinish);
     connect(&m_socketSender, &WebSender::sendFileStart, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
+    connect(&m_socketSender, &WebSender::sendFileFrameFinish, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
 
     // passing recver state
     connect(&m_socketRecver, &WebRecver::recverConnected, this, &MainUi::onRecverConnected);
@@ -193,6 +194,7 @@ void MainUi::initConnections()
     connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, this, &MainUi::onRecvFileFrameFinish);
     connect(&m_socketRecver, &WebRecver::resetProgress, this, &MainUi::resetProgressRecord);
     connect(&m_socketRecver, &WebRecver::recvFileStart, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
+    connect(&m_socketRecver, &WebRecver::recvFileFrameFinish, &m_socketWatcher, &WebSocketWatcher::updateCurrentFile);
 
     // clear info before send file
     connect(&m_socketSender, &WebSender::prepareRecvFile, &m_socketRecver, &WebRecver::onPrepareRecvFile);
@@ -210,6 +212,8 @@ void MainUi::initConnections()
     connect(ui->sendDirPushButton, &QPushButton::clicked, this, &MainUi::selectSendDir);
 
     connect(&m_socketWatcher, &WebSocketWatcher::watcherMessaged, this, &MainUi::showMessage);
+
+    connect(this, &MainUi::transmissionFinished, &m_socketWatcher, &WebSocketWatcher::finishInterruptTimeout);
 }
 
 MainUi::~MainUi()
@@ -750,5 +754,8 @@ void MainUi::onTransportProgressChanged()
 {
     m_fileFinishedCount++;
     ui->fileTransportTotalProgressBar->setValue(100*m_fileFinishedCount/m_fileTotalCount);
+    if(m_fileFinishedCount == m_fileTotalCount) {
+        emit transmissionFinished();
+    }
 }
 

@@ -22,6 +22,7 @@ public slots:
     void updateCurrentFile(QString fileName);
     void startAutoConnectTimeout();
     void finishAutoConnectTimeout();
+    void finishInterruptTimeout();
 
 private:
     QTimer m_interruptTimer;

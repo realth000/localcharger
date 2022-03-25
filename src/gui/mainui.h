@@ -25,6 +25,7 @@ public:
     ~MainUi();
 signals:
     void autoConnectFinished();
+    void transmissionFinished();
 
 private slots:
     void on_sendMsgPushButton_clicked();
